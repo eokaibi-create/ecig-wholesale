@@ -53,6 +53,7 @@ export type TranslationKey =
   | 'hero.newProduct' | 'hero.video' | 'hero.videoDesc'
   | 'hero.vaporDesc'
   | 'hero.previous' | 'hero.next' | 'hero.viewDetails' | 'hero.comingSoon' | 'hero.noVideoSupport' | 'hero.slide' | 'hero.productVideo'
+  | 'hero.noProducts'
   // Orders
   | 'orders.title' | 'orders.desc' | 'orders.empty' | 'orders.emptyDesc' | 'orders.browse' | 'orders.loading'
   | 'orders.number' | 'orders.total' | 'orders.status' | 'orders.note'
@@ -112,6 +113,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'hero.noVideoSupport': '您的浏览器不支持视频播放',
     'hero.slide': '第',
     'hero.productVideo': '产品视频',
+    'hero.noProducts': '暂无产品，请先在后台添加',
     'orders.title': '我的订单',
     'orders.desc': '查看您的采购订单状态',
     'orders.empty': '暂无订单',
@@ -392,6 +394,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'hero.noVideoSupport': 'Your browser does not support video',
     'hero.slide': 'Slide',
     'hero.productVideo': 'Product Video',
+    'hero.noProducts': 'No products yet, add some in admin',
     'orders.title': 'My Orders',
     'orders.desc': 'Track your purchase orders',
     'orders.empty': 'No orders yet',
