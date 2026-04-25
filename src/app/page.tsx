@@ -38,16 +38,24 @@ export default async function HomePage() {
     disposable: '💨', 'pod-system': '⚡', 'e-liquid': '🧪', accessories: '🔧', 'nicotine-pouches': '🟤',
   }
 
+  // 联系资料可见性（默认全可见）
+  const contactVisibility = {
+    showWhatsapp: settings.show_whatsapp !== 'false',
+    showEmail: settings.show_email !== 'false',
+    showPhone: settings.show_phone !== 'false',
+    showAddress: settings.show_address !== 'false',
+    showWechat: settings.show_wechat !== 'false',
+  }
+
   const contact = {
-    whatsapp: settings.whatsapp || '+13239260829',
-    email: settings.email || 'EOKAIBI@GMAIL.COM',
-    phone: settings.phone || '+1 (323) 926-0829',
-    wechat: settings.wechat || 'EA_YONG',
-    address: settings.address || 'Los Angeles, CA',
+    whatsapp: contactVisibility.showWhatsapp ? (settings.whatsapp || '+13239260829') : '',
+    email: contactVisibility.showEmail ? (settings.email || 'EOKAIBI@GMAIL.COM') : '',
+    phone: contactVisibility.showPhone ? (settings.phone || '+1 (323) 926-0829') : '',
+    wechat: contactVisibility.showWechat ? (settings.wechat || 'EA_YONG') : '',
+    address: contactVisibility.showAddress ? (settings.address || 'Los Angeles, CA') : '',
     siteName: settings.site_name || 'VAPOR-X USA',
     minOrder: settings.min_order || '500',
   }
-
   // 英文模式：强制使用英文翻译
   // 中文模式：优先数据库自定义内容，其次默认翻译
   const sections = {
@@ -62,7 +70,7 @@ export default async function HomePage() {
     contactDesc: lang === 'en' ? t('contact.desc') : (settings.section_contact_desc || t('contact.desc')),
   }
 
-  const whatsappNum = contact.whatsapp.replace(/[^0-9]/g, '')
+  const whatsappNum = contact.whatsapp ? contact.whatsapp.replace(/[^0-9]/g, '') : ''
 
   return (
     <div>
@@ -248,13 +256,15 @@ export default async function HomePage() {
               </div>
               <p className="text-gray-600 text-lg mb-8">{sections.contactDesc}</p>
               <div className="space-y-5">
-                {[
-                  { icon: '💬', bg: 'bg-green-100', label: 'WhatsApp', val: contact.whatsapp, href: `https://wa.me/${whatsappNum}` },
-                  { icon: '📧', bg: 'bg-blue-100', label: 'Email', val: contact.email, href: `mailto:${contact.email}` },
-                  { icon: '📞', bg: 'bg-amber-100', label: t('contact.phone'), val: contact.phone, href: `tel:${contact.phone.replace(/[^0-9+]/g, '')}` },
-                  { icon: '📍', bg: 'bg-red-100', label: t('contact.address'), val: contact.address },
-                  ...(contact.wechat ? [{ icon: '💚', bg: 'bg-green-100', label: 'WeChat', val: contact.wechat }] : []),
-                ].map((item, i) => (
+                {(() => {
+                  const items = []
+                  if (contact.whatsapp) items.push({ icon: '💬', bg: 'bg-green-100', label: 'WhatsApp', val: contact.whatsapp, href: `https://wa.me/${whatsappNum}` })
+                  if (contact.email) items.push({ icon: '📧', bg: 'bg-blue-100', label: 'Email', val: contact.email, href: `mailto:${contact.email}` })
+                  if (contact.phone) items.push({ icon: '📞', bg: 'bg-amber-100', label: t('contact.phone'), val: contact.phone, href: `tel:${contact.phone.replace(/[^0-9+]/g, '')}` })
+                  if (contact.address) items.push({ icon: '📍', bg: 'bg-red-100', label: t('contact.address'), val: contact.address })
+                  if (contact.wechat) items.push({ icon: '💚', bg: 'bg-green-100', label: 'WeChat', val: contact.wechat })
+                  return items
+                })().map((item, i) => (
                   <div key={i} className={`flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-100 transition`}>
                     <div className={`w-12 h-12 ${item.bg} rounded-full flex items-center justify-center flex-shrink-0`}><span className="text-xl">{item.icon}</span></div>
                     <div>

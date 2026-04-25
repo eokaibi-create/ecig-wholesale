@@ -62,7 +62,7 @@ async function main() {
     { key: 'whatsapp', value: '+13239260829' },
     { key: 'wechat', value: 'EA_YONG' },
     { key: 'email', value: 'EOKAIBI@GMAIL.COM' },
-    { key: 'phone', value: '+1 (555) 123-4567' },
+    { key: 'phone', value: '+1 (323) 926-0829' },
     { key: 'address', value: '美国全境配送，支持海外直邮' },
     { key: 'min_order', value: '500' },
     { key: 'shipping_info', value: '全美48州免运费，订单满$500起批。支持海外直邮。' },
@@ -119,3 +119,21 @@ main()
   .finally(async () => {
     await prisma.$disconnect()
   })
+
+  // 创建联系资料可见性设置（默认全可见）
+  const visibilitySettings = [
+    { key: 'show_whatsapp', value: 'true' },
+    { key: 'show_email', value: 'true' },
+    { key: 'show_phone', value: 'true' },
+    { key: 'show_address', value: 'true' },
+    { key: 'show_wechat', value: 'true' },
+  ]
+
+  for (const s of visibilitySettings) {
+    await prisma.setting.upsert({
+      where: { key: s.key },
+      update: {},
+      create: s,
+    })
+  }
+  console.log('✅ Contact visibility settings created')

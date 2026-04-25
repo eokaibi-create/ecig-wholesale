@@ -15,19 +15,17 @@ export default function Footer() {
   })
 
   useEffect(() => {
-    fetch('/api/settings')
+    // 使用 /api/contact API，它根据登录状态和可见性设置自动过滤
+    fetch('/api/contact')
       .then(res => res.json())
       .then(data => {
-        if (data && data.length > 0) {
-          const map = Object.fromEntries(data.map((s: any) => [s.key, s.value]))
-          setContact({
-            whatsapp: map.whatsapp || '+13239260829',
-            email: map.email || 'EOKAIBI@GMAIL.COM',
-            phone: map.phone || '+1 (323) 926-0829',
-            address: map.address || 'Los Angeles, CA',
-            siteName: map.site_name || 'VAPOR-X USA',
-          })
-        }
+        setContact({
+          whatsapp: data.whatsapp || '+13239260829',
+          email: data.email || 'EOKAIBI@GMAIL.COM',
+          phone: data.phone || '+1 (323) 926-0829',
+          address: data.address || 'Los Angeles, CA',
+          siteName: data.siteName || 'VAPOR-X USA',
+        })
       })
       .catch(() => {})
   }, [])
@@ -56,8 +54,8 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-3">{t('footer.quickLinks')}</h4>
             <div className="space-y-2 text-sm">
               <Link href="/products" className="block text-gray-400 hover:text-amber-400 transition">{t('nav.products')}</Link>
+              <Link href="/brands" className="block text-gray-400 hover:text-amber-400 transition">{t('nav.brands')}</Link>
               <Link href="/contact" className="block text-gray-400 hover:text-amber-400 transition">{t('nav.contact')}</Link>
-
               <Link href="/login" className="block text-gray-400 hover:text-amber-400 transition">{t('nav.login')}</Link>
               <Link href="/register" className="block text-gray-400 hover:text-amber-400 transition">{t('nav.register')}</Link>
             </div>
@@ -66,13 +64,18 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-3">{t('contact.title')}</h4>
             <div className="space-y-2 text-sm">
-              <p>📧 {contact.email}</p>
-              <p>📞 {contact.phone}</p>
-              <p>📍 {contact.address}</p>
-              <a href={`https://wa.me/${whatsappNum}`} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition">
-                💬 {t('contact.whatsapp')}
-              </a>
+              {contact.email && <p>📧 {contact.email}</p>}
+              {contact.phone && <p>📞 {contact.phone}</p>}
+              {contact.address && <p>📍 {contact.address}</p>}
+              {contact.whatsapp && (
+                <a href={`https://wa.me/${whatsappNum}`} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition">
+                  💬 {t('contact.whatsapp')}
+                </a>
+              )}
+              {!contact.email && !contact.phone && !contact.address && !contact.whatsapp && (
+                <p className="text-sm text-gray-500">{t('contact.title')}</p>
+              )}
             </div>
           </div>
         </div>

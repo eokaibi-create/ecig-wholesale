@@ -51,7 +51,7 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link href="/" className="hover:text-amber-400 transition">{t('nav.home')}</Link>
             <Link href="/products" className="hover:text-amber-400 transition">{t('nav.products')}</Link>
-            <Link href="/brands" className="hover:text-amber-400 transition">{t('nav.pricing')}</Link>
+            <Link href="/brands" className="hover:text-amber-400 transition">{t('nav.brands')}</Link>
             <Link href="/contact" className="hover:text-amber-400 transition">{t('nav.contact')}</Link>
           </nav>
 

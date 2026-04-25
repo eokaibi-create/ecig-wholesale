@@ -1,21 +1,53 @@
-import { prisma } from '@/lib/prisma'
-import { getServerLang, serverT, type Lang } from '@/i18n/server'
+'use client'
 
-export default async function ContactPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ success?: string; error?: string }>
-}) {
-  const lang = await getServerLang()
-  const t = (key: any) => serverT(key, lang)
+import { useState, useEffect } from 'react'
+import { useLanguage } from '@/i18n/LanguageProvider'
+import Link from 'next/link'
 
-  const [settings, params] = await Promise.all([
-    prisma.setting.findMany(),
-    searchParams,
-  ])
-  const settingMap = Object.fromEntries(settings.map(s => [s.key, s.value]))
-  const success = params.success === 'true'
-  const error = params.error === 'true'
+export default function ContactPage() {
+  const { t } = useLanguage()
+  const [contact, setContact] = useState({
+    whatsapp: '+13239260829',
+    email: 'EOKAIBI@GMAIL.COM',
+    phone: '+1 (323) 926-0829',
+    address: 'Los Angeles, CA',
+    wechat: 'EA_YONG',
+    siteName: 'VAPOR-X USA',
+    minOrder: '500',
+    shippingInfo: '全美48州免运费，订单满$500起批',
+    isLoggedIn: false,
+  })
+  const [loading, setLoading] = useState(true)
+  const [searchParams, setSearchParams] = useState<{ success?: string; error?: string }>({})
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setSearchParams({
+      success: params.get('success') || undefined,
+      error: params.get('error') || undefined,
+    })
+
+    fetch('/api/contact')
+      .then(res => res.json())
+      .then(data => {
+        setContact(prev => ({
+          ...prev,
+          whatsapp: data.whatsapp || '+13239260829',
+          email: data.email || 'EOKAIBI@GMAIL.COM',
+          phone: data.phone || '+1 (323) 926-0829',
+          address: data.address || 'Los Angeles, CA',
+          wechat: data.wechat || 'EA_YONG',
+          siteName: data.siteName || 'VAPOR-X USA',
+          minOrder: data.minOrder || '500',
+          shippingInfo: data.shippingInfo || '全美48州免运费，订单满$500起批',
+          isLoggedIn: data.isLoggedIn || false,
+        }))
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [])
+
+  const { success, error } = searchParams
 
   return (
     <div className="bg-white min-h-screen">
@@ -89,56 +121,88 @@ export default async function ContactPage({
 
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('contact.title')}</h2>
-            <div className="space-y-6">
-              <div className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
-                <div className="text-2xl">📍</div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">{t('contact.address')}</h3>
-                  <p className="text-gray-600">{settingMap.address || '1234 Commerce Blvd, Los Angeles, CA 90001'}</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-4 p-4 bg-green-50 rounded-xl border border-green-100">
-                <div className="text-2xl">💬</div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">WhatsApp</h3>
-                  <a href={`https://wa.me/${(settingMap.whatsapp || '+13239260829').replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer"
-                    className="text-green-600 hover:text-green-700 font-medium">{settingMap.whatsapp || '+13239260829'}</a>
-                  <p className="text-sm text-gray-500">{t('contact.replyTime')}</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-4 p-4 bg-green-50 rounded-xl border border-green-100">
-                <div className="text-2xl">💚</div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">WeChat</h3>
-                  <p className="text-green-600 font-medium">{settingMap.wechat || 'EA_YONG'}</p>
-                  <p className="text-sm text-gray-500">{t('contact.wechatDesc')}</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
-                <div className="text-2xl">📧</div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Email</h3>
-                  <a href={`mailto:${settingMap.email || 'EOKAIBI@GMAIL.COM'}`} className="text-blue-600 hover:text-blue-700 font-medium">{settingMap.email || 'EOKAIBI@GMAIL.COM'}</a>
-                  <p className="text-sm text-gray-500">{t('contact.replyHour')}</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
-                <div className="text-2xl">📞</div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">{t('contact.phone')}</h3>
-                  <p className="text-gray-600">{settingMap.phone || '+1 (555) 123-4567'}</p>
-                  <p className="text-sm text-gray-500">{t('contact.hours')}</p>
-                </div>
-              </div>
-            </div>
+            {loading ? (
+              <div className="text-gray-400 text-center py-8">{t('orders.loading')}</div>
+            ) : (
+              <>
+                <div className="space-y-6">
+                  {contact.email && (
+                    <div className="flex items-start space-x-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                      <div className="text-2xl">📧</div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Email</h3>
+                        <a href={`mailto:${contact.email}`} className="text-blue-600 hover:text-blue-700 font-medium">{contact.email}</a>
+                        <p className="text-sm text-gray-500">{t('contact.replyHour')}</p>
+                      </div>
+                    </div>
+                  )}
 
-            <div className="mt-8 p-6 bg-amber-50 rounded-xl border border-amber-200">
-              <h3 className="font-bold text-gray-900 mb-2">{t('contact.wholesaleTip')}</h3>
-              <p className="text-sm text-gray-600">
-                {t('contact.minOrder')}: <strong>${settingMap.min_order || '500'}</strong><br/>
-                {settingMap.shipping_info || t('contact.shippingInfo')}
-              </p>
-            </div>
+                  {contact.phone && (
+                    <div className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                      <div className="text-2xl">📞</div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{t('contact.phone')}</h3>
+                        <p className="text-gray-600">{contact.phone}</p>
+                        <p className="text-sm text-gray-500">{t('contact.hours')}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {contact.whatsapp && (
+                    <div className="flex items-start space-x-4 p-4 bg-green-50 rounded-xl border border-green-100">
+                      <div className="text-2xl">💬</div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">WhatsApp</h3>
+                        <a href={`https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer"
+                          className="text-green-600 hover:text-green-700 font-medium">{contact.whatsapp}</a>
+                        <p className="text-sm text-gray-500">{t('contact.replyTime')}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {contact.wechat && (
+                    <div className="flex items-start space-x-4 p-4 bg-green-50 rounded-xl border border-green-100">
+                      <div className="text-2xl">💚</div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">WeChat</h3>
+                        <p className="text-green-600 font-medium">{contact.wechat}</p>
+                        <p className="text-sm text-gray-500">{t('contact.wechatDesc')}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {contact.address && (
+                    <div className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                      <div className="text-2xl">📍</div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{t('contact.address')}</h3>
+                        <p className="text-gray-600">{contact.address}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {!contact.email && !contact.phone && !contact.whatsapp && !contact.wechat && !contact.address && (
+                    <div className="text-center py-12 text-gray-400">
+                      <div className="text-4xl mb-3">🔒</div>
+                      <p className="text-sm">联系资料已隐藏</p>
+                      {!contact.isLoggedIn && (
+                        <Link href="/login" className="text-amber-600 hover:underline text-sm mt-2 inline-block">
+                          {t('login.title')}
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-8 p-6 bg-amber-50 rounded-xl border border-amber-200">
+                  <h3 className="font-bold text-gray-900 mb-2">{t('contact.wholesaleTip')}</h3>
+                  <p className="text-sm text-gray-600">
+                    {t('contact.minOrder')}: <strong>${contact.minOrder}</strong><br/>
+                    {contact.shippingInfo || t('contact.shippingInfo')}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
