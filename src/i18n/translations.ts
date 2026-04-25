@@ -2,18 +2,7 @@
 export type Lang = 'zh' | 'en'
 
 export type TranslationKey =
-  // 导航
-  | 'nav.home' | 'nav.products' | 'nav.cart' | 'nav.login' | 'nav.register'
-  | 'nav.admin' | 'nav.logout' | 'nav.hello' | 'nav.pricing' | 'nav.contact'
-  | 'nav.brands' | 'nav.myPi' | 'nav.myOrders'
-  // Hero
-  | 'hero.title' | 'hero.subtitle' | 'hero.browse' | 'hero.login'
-  | 'hero.newProduct' | 'hero.video' | 'hero.videoDesc'
-  | 'hero.vaporDesc'
-  | 'hero.previous' | 'hero.next' | 'hero.viewDetails' | 'hero.comingSoon' | 'hero.noVideoSupport' | 'hero.slide'
-  | 'orders.title' | 'orders.desc' | 'orders.empty' | 'orders.emptyDesc' | 'orders.browse' | 'orders.loading'
-  | 'orders.number' | 'orders.total' | 'orders.status' | 'orders.note'
-  | 'orders.pending' | 'orders.processing' | 'orders.shipped' | 'orders.completed' | 'orders.cancelled'  // 产品
+  // 产品
   | 'product.title' | 'product.desc' | 'product.all' | 'product.none'
   | 'product.addToCart' | 'product.added' | 'product.quantity' | 'product.chooseFlavor'
   | 'product.params' | 'product.brand' | 'product.nicotine' | 'product.capacity'
@@ -23,6 +12,8 @@ export type TranslationKey =
   | 'product.notFound' | 'product.backToProducts' | 'product.filterByBrand'
   | 'product.productsCount' | 'product.comingSoon' | 'product.hot'
   | 'product.search' | 'product.viewAll'
+  | 'product.shortBc5000' | 'product.shortPulse' | 'product.shortLostMary' | 'product.shortRaz' | 'product.shortMeloso' | 'product.shortElf600'
+  | 'product.emptyDesc'
   // 品牌
   | 'brand.title' | 'brand.desc' | 'brand.partner' | 'brand.becomePartner'
   | 'brand.becomeDesc' | 'brand.noBrands'
@@ -43,50 +34,33 @@ export type TranslationKey =
   | 'cart.title' | 'cart.empty' | 'cart.emptyDesc' | 'cart.checkout' | 'cart.total'
   | 'cart.remove' | 'cart.flavor' | 'cart.continue' | 'cart.clear'
   | 'cart.itemsCount' | 'cart.submitInquiry' | 'cart.loading'
-  | 'cart.loginRequired' | 'cart.loginRequiredDesc'
-  | 'cart.goToLogin' | 'cart.browseProducts'
+  | 'cart.loginRequired' | 'cart.loginRequiredDesc' | 'cart.goToLogin' | 'cart.browseProducts'
   // PI
-  | 'pi.title' | 'pi.empty' | 'pi.emptyDesc' | 'pi.loading'
-  | 'pi.loginRequired' | 'pi.itemsCount'
-  // 注册登录
+  | 'pi.title' | 'pi.empty' | 'pi.emptyDesc' | 'pi.loading' | 'pi.loginRequired' | 'pi.itemsCount'
+  // 注册
   | 'register.title' | 'register.desc' | 'register.name' | 'register.email'
-  | 'register.password' | 'register.confirm' | 'register.phone' | 'register.company'
-  | 'register.companyAddress' | 'register.state' | 'register.submit'
-  | 'register.loading' | 'register.haveAccount' | 'register.loginNow'
-  | 'register.passwordMismatch' | 'register.passwordTooShort'
-  | 'login.title' | 'login.desc' | 'login.email' | 'login.password'
-  | 'login.submit' | 'login.loading' | 'login.noAccount' | 'login.registerNow'
-  | 'login.adminEntry' | 'login.adminLogin'
-  // Footer
-  | 'footer.powered' | 'footer.rights' | 'footer.age'
-  | 'footer.quickLinks'
-  // About
-  | 'about.title' | 'about.desc' | 'about.story' | 'about.story1' | 'about.story2' | 'about.story3'
-  | 'about.stats' | 'about.statsDesc' | 'about.statsYear' | 'about.statsYearLabel'
-  | 'about.statsCustomers' | 'about.statsCustomersLabel' | 'about.statsBrands' | 'about.statsBrandsLabel'
-  | 'about.statsStates' | 'about.statsStatesLabel'
-  | 'about.whyUs' | 'about.whyUsDesc'
-  | 'about.benefit1' | 'about.benefit1Desc'
-  | 'about.benefit2' | 'about.benefit2Desc'
-  | 'about.benefit3' | 'about.benefit3Desc'
-  | 'about.benefit4' | 'about.benefit4Desc'
-  | 'about.benefit5' | 'about.benefit5Desc'
-  | 'about.benefit6' | 'about.benefit6Desc'
-  | 'about.cooperation' | 'about.cooperationDesc'
-  | 'about.promise' | 'about.promiseDesc'
-  | 'about.promise1' | 'about.promise1Desc'
-  | 'about.promise2' | 'about.promise2Desc'
-  | 'about.promise3' | 'about.promise3Desc'
-  | 'about.cta' | 'about.ctaDesc' | 'about.whatsappConsult' | 'about.onlineInquiry'
-  | 'about.wechatAdd' | 'about.browseProducts' | 'about.contactCooperate'
-  | 'about.since'
-  // 管理员
-  | 'admin.dashboard' | 'admin.home' | 'admin.hero' | 'admin.products' | 'admin.brands'
-  | 'admin.platforms' | 'admin.sections' | 'admin.settings' | 'admin.customers'
-  | 'admin.admins' | 'admin.pi' | 'admin.categories' | 'admin.login'
-  | 'admin.save' | 'admin.cancel' | 'admin.delete' | 'admin.edit' | 'admin.create'
-  | 'admin.confirm' | 'admin.search'
-
+  | 'register.password' | 'register.company' | 'register.address'
+  | 'register.phone' | 'register.submit' | 'register.success' | 'register.error'
+  | 'register.hasAccount' | 'register.login'
+  // 登录
+  | 'login.title' | 'login.email' | 'login.password' | 'login.submit'
+  | 'login.error' | 'login.noAccount' | 'login.register'
+  // 导航
+  | 'nav.home' | 'nav.products' | 'nav.cart' | 'nav.login' | 'nav.register'
+  | 'nav.admin' | 'nav.logout' | 'nav.hello' | 'nav.pricing' | 'nav.contact'
+  | 'nav.brands' | 'nav.myPi' | 'nav.myOrders'
+  // Hero
+  | 'hero.title' | 'hero.subtitle' | 'hero.browse' | 'hero.login'
+  | 'hero.newProduct' | 'hero.video' | 'hero.videoDesc'
+  | 'hero.vaporDesc'
+  | 'hero.previous' | 'hero.next' | 'hero.viewDetails' | 'hero.comingSoon' | 'hero.noVideoSupport' | 'hero.slide'
+  // Orders
+  | 'orders.title' | 'orders.desc' | 'orders.empty' | 'orders.emptyDesc' | 'orders.browse' | 'orders.loading'
+  | 'orders.number' | 'orders.total' | 'orders.status' | 'orders.note'
+  | 'orders.pending' | 'orders.processing' | 'orders.shipped' | 'orders.completed' | 'orders.cancelled'
+  | 'orders.id' | 'orders.items' | 'orders.contact'
+  // 关于
+  | 'about.title'
 export const translations: Record<Lang, Record<TranslationKey, string>> = {
   zh: {
     // 导航
@@ -166,6 +140,14 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'product.hot': '热销',
     'product.search': '搜索',
     'product.viewAll': '查看全部 →',
+    'product.shortBc5000': '5000口 | 50mg | 15ml | 17种口味',
+    'product.shortPulse': '15000口 | 5%尼古丁 | LED显示屏 | 12种口味',
+    'product.shortLostMary': '20000口 | 网状线圈 | 可调节气流 | 10种口味',
+    'product.shortRaz': '9000口 | 数字电量显示 | 冰感体验',
+    'product.shortMeloso': '600口 | 20mg尼古丁盐 | 1.2ml | 迷你便携',
+    'product.shortElf600': '600口 | 20mg尼古丁盐 | 2ml | 经典入门款',
+    'product.emptyDesc': '浏览我们的产品目录，发现更多选择',
+
 
     // 品牌
     'brand.title': '合作品牌',
@@ -422,6 +404,14 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'product.hot': 'HOT',
     'product.search': 'Search',
     'product.viewAll': 'View All →',
+    'product.shortBc5000': '5000 puffs | 50mg | 15ml | 17 flavors',
+    'product.shortPulse': '15000 puffs | 5% nicotine | LED display | 12 flavors',
+    'product.shortLostMary': '20000 puffs | Mesh coil | Adjustable airflow | 10 flavors',
+    'product.shortRaz': '9000 puffs | Digital battery display | Icy experience',
+    'product.shortMeloso': '600 puffs | 20mg nicotine salt | 1.2ml | Mini portable',
+    'product.shortElf600': '600 puffs | 20mg nicotine salt | 2ml | Classic entry',
+    'product.emptyDesc': 'Browse our product catalog for more choices',
+
 
     // 品牌
     'brand.title': 'Brand Partners',

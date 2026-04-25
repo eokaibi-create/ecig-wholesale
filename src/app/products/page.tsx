@@ -123,12 +123,12 @@ export default async function ProductsPage({
                   <p className="mt-1 text-sm text-gray-500 line-clamp-1">{(() => {
                     if (lang !== 'en' || !product.shortDesc) return product.shortDesc
                     const shortMap: Record<string, string> = {
-                      'elfbar-bc5000': serverT('product.shortBc5000'),
-                      'geek-bar-pulse': serverT('product.shortPulse'),
-                      'lost-mary-mo20000-pro': serverT('product.shortLostMary'),
-                      'raz-tn9000': serverT('product.shortRaz'),
-                      'geek-bar-meloso-mini': serverT('product.shortMeloso'),
-                      'elfbar-600': serverT('product.shortElf600'),
+                      'elfbar-bc5000': t('product.shortBc5000'),
+                      'geek-bar-pulse': t('product.shortPulse'),
+                      'lost-mary-mo20000-pro': t('product.shortLostMary'),
+                      'raz-tn9000': t('product.shortRaz'),
+                      'geek-bar-meloso-mini': t('product.shortMeloso'),
+                      'elfbar-600': t('product.shortElf600'),
                     }
                     return shortMap[product.slug] || product.shortDesc
                   })()}</p>

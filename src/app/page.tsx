@@ -119,7 +119,18 @@ export default async function HomePage() {
                     <span className="text-lg font-bold text-amber-600">${product.price.toFixed(2)}</span>
                     {product.wholesalePrice && <span className="text-sm text-gray-400 line-through">${product.wholesalePrice.toFixed(2)}</span>}
                   </div>
-                  {product.shortDesc && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{product.shortDesc}</p>}
+                  {(() => {
+                    if (lang !== 'en' || !product.shortDesc) return <p className="text-xs text-gray-500 mt-1 line-clamp-2">{product.shortDesc}</p>
+                    const shortMap: Record<string, string> = {
+                      'elfbar-bc5000': '5000 puffs | 50mg | 15ml | 17 flavors',
+                      'geek-bar-pulse': '15000 puffs | 5% nicotine | LED display | 12 flavors',
+                      'lost-mary-mo20000-pro': '20000 puffs | Mesh coil | Adjustable airflow | 10 flavors',
+                      'raz-tn9000': '9000 puffs | Digital battery display | Icy experience',
+                      'geek-bar-meloso-mini': '600 puffs | 20mg nicotine salt | 1.2ml | Mini portable',
+                      'elfbar-600': '600 puffs | 20mg nicotine salt | 2ml | Classic entry',
+                    }
+                    return <p className="text-xs text-gray-500 mt-1 line-clamp-2">{shortMap[product.slug] || product.shortDesc}</p>
+                  })()}
                 </div>
               </Link>
             )) : (
