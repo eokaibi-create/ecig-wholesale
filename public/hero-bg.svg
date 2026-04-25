@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 800" width="1440" height="800">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="35%" stop-color="#1e293b"/>
+      <stop offset="70%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="glow-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glow-2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="blur1">
+      <feGaussianBlur stdDeviation="80"/>
+    </filter>
+    <filter id="blur2">
+      <feGaussianBlur stdDeviation="120"/>
+    </filter>
+  </defs>
+  <!-- Base background -->
+  <rect width="1440" height="800" fill="url(#bg-grad)"/>
+  <!-- Glowing orbs -->
+  <circle cx="200" cy="400" r="250" fill="url(#glow-1)" filter="url(#blur2)"/>
+  <circle cx="1200" cy="300" r="200" fill="url(#glow-2)" filter="url(#blur2)"/>
+  <circle cx="720" cy="500" r="150" fill="#FBBF24" opacity="0.04" filter="url(#blur2)"/>
+  <!-- Grid pattern -->
+  <g stroke="#ffffff" stroke-opacity="0.02" stroke-width="0.5">
+    <line x1="0" y1="100" x2="1440" y2="100"/>
+    <line x1="0" y1="200" x2="1440" y2="200"/>
+    <line x1="0" y1="300" x2="1440" y2="300"/>
+    <line x1="0" y1="400" x2="1440" y2="400"/>
+    <line x1="0" y1="500" x2="1440" y2="500"/>
+    <line x1="0" y1="600" x2="1440" y2="600"/>
+    <line x1="0" y1="700" x2="1440" y2="700"/>
+    <line x1="240" y1="0" x2="240" y2="800"/>
+    <line x1="480" y1="0" x2="480" y2="800"/>
+    <line x1="720" y1="0" x2="720" y2="800"/>
+    <line x1="960" y1="0" x2="960" y2="800"/>
+    <line x1="1200" y1="0" x2="1200" y2="800"/>
+  </g>
+  <!-- Vapor wave decoration -->
+  <path d="M0 650 Q 180 550, 360 620 T 720 600 T 1080 630 T 1440 580" stroke="#FBBF24" stroke-width="2" fill="none" opacity="0.08"/>
+  <path d="M0 680 Q 200 610, 400 660 T 800 640 T 1200 670 T 1440 620" stroke="#FBBF24" stroke-width="1.5" fill="none" opacity="0.05"/>
+  <!-- Particle dots -->
+  <circle cx="150" cy="180" r="2" fill="#FBBF24" opacity="0.3"/>
+  <circle cx="380" cy="120" r="1.5" fill="#FBBF24" opacity="0.2"/>
+  <circle cx="520" cy="250" r="1" fill="#FBBF24" opacity="0.4"/>
+  <circle cx="700" cy="100" r="2" fill="#FBBF24" opacity="0.25"/>
+  <circle cx="900" cy="200" r="1.5" fill="#FBBF24" opacity="0.3"/>
+  <circle cx="1100" cy="150" r="1" fill="#FBBF24" opacity="0.2"/>
+  <circle cx="1300" cy="280" r="2" fill="#FBBF24" opacity="0.3"/>
+  <circle cx="250" cy="350" r="1.5" fill="#FBBF24" opacity="0.15"/>
+  <circle cx="800" cy="320" r="1" fill="#FBBF24" opacity="0.25"/>
+  <circle cx="1050" cy="380" r="1.5" fill="#FBBF24" opacity="0.2"/>
+  <circle cx="450" cy="450" r="1" fill="#FBBF24" opacity="0.15"/>
+</svg>

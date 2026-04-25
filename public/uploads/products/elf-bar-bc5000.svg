@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e94560"/>
+      <stop offset="100%" style="stop-color:#c23152"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" rx="20" fill="url(#bg)"/>
+  <rect x="150" y="80" width="100" height="320" rx="12" fill="url(#body)"/>
+  <rect x="160" y="100" width="80" height="50" rx="8" fill="rgba(233,69,96,0.3)"/>
+  <circle cx="200" cy="250" r="25" fill="rgba(255,255,255,0.15)"/>
+  <text x="200" y="256" text-anchor="middle" fill="white" font-size="10" font-weight="bold">ELF</text>
+  <rect x="160" y="310" width="80" height="10" rx="5" fill="#4ecca3"/>
+  <rect x="175" y="370" width="50" height="20" rx="4" fill="#333"/>
+  <text x="200" y="475" text-anchor="middle" fill="#888" font-size="14">Elf Bar BC5000</text>
+</svg>

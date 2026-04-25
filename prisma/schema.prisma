@@ -1,0 +1,198 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  slug      String    @unique
+  image     String?
+  sortOrder Int       @default(0)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Brand {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  slug      String    @unique
+  logo      String?   @db.Text
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id             Int        @id @default(autoincrement())
+  name           String
+  slug           String     @unique
+  description    String     @db.Text
+  shortDesc      String?
+  categoryId     Int
+  category       Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  brand          String?
+  price          Float
+  wholesalePrice Float?
+  msrp           Float?
+  image          String?    @db.Text
+  images         String[]   @default([])
+  stock          Int        @default(0)
+  featured       Boolean    @default(false)
+  published      Boolean    @default(false)
+  hot            Boolean    @default(false)
+  nicotine       String?
+  capacity       String?
+  puffs          String?
+  flavor         String?
+  size           String?
+  heroItems      HeroItem[]
+  cartItems       CartItem[]
+  proformaInvoiceItems ProformaInvoiceItem[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Customer {
+  id              Int       @id @default(autoincrement())
+  name            String
+  email           String    @unique
+  phone           String?
+  company         String?
+  companyAddress  String?   @db.Text
+  state           String?
+  notes           String?
+  approved        Boolean   @default(false)
+  password        String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  inquiries       Inquiry[]
+  cartItems       CartItem[]
+  proformaInvoices ProformaInvoice[]
+  orders          Order[]
+}
+
+model Inquiry {
+  id         Int      @id @default(autoincrement())
+  customerId Int
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  subject    String?
+  message    String   @db.Text
+  status     String   @default("new")
+  createdAt  DateTime @default(now())
+}
+
+model Order {
+  id         Int       @id @default(autoincrement())
+  customerId Int?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items      Json
+  total      Float
+  status     String    @default("pending")
+  note       String?   @db.Text
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Video {
+  id        Int      @id @default(autoincrement())
+  title     String
+  url       String   @db.Text
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Platform {
+  id          Int      @id @default(autoincrement())
+  name        String
+  logo        String?  @db.Text
+  description String?  @db.Text
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Setting {
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  value String @db.Text
+}
+
+model HeroItem {
+  id        Int      @id @default(autoincrement())
+  image     String?  @db.Text
+  videoUrl  String?  @db.Text
+  title     String?
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id         Int      @id @default(autoincrement())
+  customerId Int
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  flavor     String? // 口味选择
+  quantity   Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ProformaInvoice {
+  id         Int                     @id @default(autoincrement())
+  piNumber   String                  @unique
+  customerId Int
+  customer   Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  items      ProformaInvoiceItem[]
+  subtotal   Float                   @default(0)
+  discount   Float                   @default(0)
+  totalAmount Float                  @default(0)
+  status     String                  @default("pending")
+  notes      String?                 @db.Text
+  validUntil DateTime?
+  createdAt  DateTime                @default(now())
+  updatedAt  DateTime                @updatedAt
+}
+
+model ProformaInvoiceItem {
+  id                 Int             @id @default(autoincrement())
+  proformaInvoiceId  Int
+  proformaInvoice    ProformaInvoice @relation(fields: [proformaInvoiceId], references: [id], onDelete: Cascade)
+  productId          Int
+  product            Product         @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName        String
+  flavor             String?  // 口味选择
+  quantity           Int
+  unitPrice          Float
+  total              Float
+  createdAt          DateTime        @default(now())
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1a1a2e"/><stop offset="100%" style="stop-color:#16213e"/></linearGradient></defs>
+  <rect width="400" height="500" rx="20" fill="url(#bg)"/>
+  <rect x="120" y="60" width="160" height="380" rx="16" fill="#e94560"/>
+  <rect x="140" y="80" width="120" height="60" rx="8" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="200" cy="250" r="30" fill="rgba(255,255,255,0.15)"/>
+  <text x="200" y="256" text-anchor="middle" fill="white" font-size="12" font-weight="bold">ELF BAR</text>
+  <rect x="140" y="320" width="120" height="12" rx="6" fill="#4ecca3"/>
+  <rect x="155" y="380" width="90" height="30" rx="6" fill="#333"/>
+  <text x="200" y="475" text-anchor="middle" fill="#888" font-size="13">BC5000 - 侧面</text>
+</svg>
+
+cat > ~/ecig-wholesale/public/uploads/products/elf-bar-bc5000-3.svg << 'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1a1a2e"/><stop offset="100%" style="stop-color:#16213e"/></linearGradient></defs>
+  <rect width="400" height="500" rx="20" fill="url(#bg)"/>
+  <rect x="100" y="40" width="200" height="420" rx="20" fill="#e94560"/>
+  <text x="200" y="250" text-anchor="middle" fill="white" font-size="24" font-weight="bold">5000</text>
+  <text x="200" y="275" text-anchor="middle" fill="white" font-size="12">PUFFS</text>
+  <rect x="130" y="330" width="140" height="14" rx="7" fill="#4ecca3"/>
+  <text x="200" y="475" text-anchor="middle" fill="#888" font-size="13">BC5000 - 包装</text>
+</svg>
+
+echo "✅ Elf Bar 3 images created"

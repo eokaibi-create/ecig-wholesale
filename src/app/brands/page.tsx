@@ -1,0 +1,77 @@
+import { prisma } from '@/lib/prisma'
+import Link from 'next/link'
+
+export default async function BrandsPage() {
+  const brands = await prisma.brand.findMany({
+    orderBy: { sortOrder: 'asc' },
+  })
+
+  // 查询每种品牌的产品数
+  const brandProducts = await prisma.product.groupBy({
+    by: ['brand'],
+    _count: { id: true },
+    where: { brand: { not: null }, published: true },
+  })
+  const brandCountMap = new Map(brandProducts.map(b => [b.brand, b._count.id]))
+
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      {/* 头部 */}
+      <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl font-bold">合作品牌</h1>
+          <p className="mt-2 text-lg text-gray-300">全球顶级电子烟品牌官方授权合作</p>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* 品牌展示 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {brands.length === 0 ? (
+            <div className="col-span-full text-center py-20">
+              <div className="text-6xl mb-4">🏷️</div>
+              <p className="text-gray-400">暂无品牌信息</p>
+            </div>
+          ) : (
+            brands.map((brand) => {
+              const count = brandCountMap.get(brand.name) || 0
+              return (
+                <Link
+                  key={brand.id}
+                  href={`/products?brand=${brand.slug}`}
+                  className="group bg-white rounded-xl border border-gray-200 p-8 text-center hover:border-amber-300 hover:shadow-lg transition-all"
+                >
+                  <div className="h-16 flex items-center justify-center mb-4">
+                    {brand.logo ? (
+                      <img src={brand.logo} alt={brand.name} className="h-full w-auto" />
+                    ) : (
+                      <span className="text-4xl">🏷️</span>
+                    )}
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 group-hover:text-amber-600 transition">
+                    {brand.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {count > 0 ? `${count} 款产品在售` : '即将上线'}
+                  </p>
+                </Link>
+              )
+            })
+          )}
+        </div>
+
+        {/* CTA */}
+        <div className="mt-16 bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-10 text-center">
+          <h2 className="text-2xl font-bold text-gray-900">成为 VAPOR-X 合作伙伴</h2>
+          <p className="mt-2 text-gray-600 max-w-lg mx-auto">我们希望与更多优质品牌合作，为我们的客户提供更多选择。欢迎联系我们洽谈合作。</p>
+          <Link
+            href="/contact"
+            className="mt-6 inline-block px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition"
+          >
+            联系我们
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}

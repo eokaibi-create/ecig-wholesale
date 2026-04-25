@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0f0f23"/><stop offset="100%" style="stop-color:#1a1a3e"/></linearGradient></defs>
+  <rect width="400" height="500" rx="20" fill="url(#bg)"/>
+  <rect x="100" y="50" width="200" height="400" rx="18" fill="#00d2ff"/>
+  <text x="200" y="240" text-anchor="middle" fill="white" font-size="28" font-weight="bold">7500</text>
+  <text x="200" y="270" text-anchor="middle" fill="white" font-size="14">PUFFS</text>
+  <text x="200" y="475" text-anchor="middle" fill="#888" font-size="13">Pulse 7500 - 包装</text>
+</svg>
+
+# SMOK Nord 5
+cat > ~/ecig-wholesale/public/uploads/products/smok-nord-5.svg << 'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2d2d2d"/><stop offset="100%" style="stop-color:#1a1a1a"/></linearGradient></defs>
+  <rect width="400" height="500" rx="20" fill="url(#bg)"/>
+  <rect x="160" y="60" width="80" height="360" rx="10" fill="#444"/>
+  <rect x="165" y="70" width="70" height="100" rx="8" fill="#333"/>
+  <rect x="165" y="180" width="70" height="80" rx="8" fill="#222"/>
+  <text x="200" y="228" text-anchor="middle" fill="#00d2ff" font-size="12" font-weight="bold">NORD 5</text>
+  <rect x="165" y="280" width="70" height="60" rx="8" fill="#333"/>
+  <rect x="170" y="360" width="60" height="12" rx="6" fill="#555"/>
+  <text x="200" y="475" text-anchor="middle" fill="#888" font-size="14">SMOK Nord 5</text>
+</svg>
+
+# JUUL
+cat > ~/ecig-wholesale/public/uploads/products/juul-starter-kit.svg << 'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1a1a2e"/><stop offset="100%" style="stop-color:#0f3460"/></linearGradient></defs>
+  <rect width="400" height="500" rx="20" fill="url(#bg)"/>
+  <rect x="175" y="40" width="50" height="380" rx="8" fill="#e8e8e8"/>
+  <rect x="178" y="50" width="44" height="15" rx="3" fill="#333"/>
+  <rect x="178" y="350" width="44" height="50" rx="4" fill="#ccc"/>
+  <text x="200" y="280" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">JUUL</text>
+  <text x="200" y="475" text-anchor="middle" fill="#888" font-size="14">JUUL 入门套件</text>
+</svg>
+
+# Naked 100
+cat > ~/ecig-wholesale/public/uploads/products/naked-100-mango.svg << 'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#fff8e1"/><stop offset="100%" style="stop-color:#ffe0b2"/></linearGradient></defs>
+  <rect width="400" height="500" rx="20" fill="url(#bg)"/>
+  <rect x="155" y="60" width="90" height="360" rx="12" fill="#ff9800"/>
+  <rect x="158" y="65" width="84" height="30" rx="6" fill="#e65100"/>
+  <text x="200" y="86" text-anchor="middle" fill="white" font-size="9" font-weight="bold">NAKED 100</text>
+  <text x="200" y="240" text-anchor="middle" fill="white" font-size="18" font-weight="bold">MANGO</text>
+  <text x="200" y="270" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="12">60ml - 3mg</text>
+  <rect x="160" y="320" width="80" height="30" rx="4" fill="rgba(0,0,0,0.1)"/>
+  <text x="200" y="340" text-anchor="middle" fill="#e65100" font-size="9">70/30 VG/PG</text>
+  <text x="200" y="475" text-anchor="middle" fill="#888" font-size="14">Naked 100 芒果味</text>
+</svg>
+
+echo "✅ 4 more images created"
