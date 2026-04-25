@@ -23,8 +23,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 过滤掉无效值（如 [object Object]）
     for (const [key, value] of entries) {
-      if (key && value !== undefined) {
+      if (key && value !== undefined && value !== null && value !== '[object Object]') {
         await prisma.setting.upsert({
           where: { key },
           update: { value: String(value) },
@@ -43,5 +44,31 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Settings API error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const key = searchParams.get('key')
+    
+    if (key) {
+      // 删除单个设置项
+      await prisma.setting.delete({ where: { key } })
+    } else {
+      // 删除所有脏数据（[object Object]）
+      const allSettings = await prisma.setting.findMany()
+      const dirtyKeys = allSettings
+        .filter(s => s.value === '[object Object]' || s.key === 'test_key' || s.key === 'key' || s.key === 'value')
+        .map(s => s.key)
+      
+      for (const k of dirtyKeys) {
+        await prisma.setting.delete({ where: { key: k } })
+      }
+    }
+    
+    return NextResponse.json({ success: true })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 })
   }
 }
