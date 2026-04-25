@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 const adminNavItems = [
-  { href: '/admin/dashboard', label: '仪表盘', icon: '📊', roles: ['admin', 'superadmin'] },
+  { href: '/admin/dashboard', label: '仪表盘', icon: '📊', roles: ['admin', 'superadmin', 'product'] },
   { href: '/admin/home', label: '首页内容', icon: '🏠', roles: ['admin', 'superadmin'] },
   { href: '/admin/hero', label: '新品管理', icon: '🆕', roles: ['admin', 'superadmin'] },
-  { href: '/admin/products', label: '产品管理', icon: '📦', roles: ['admin', 'superadmin', 'product_admin'] },
-  { href: '/admin/categories', label: '分类管理', icon: '📁', roles: ['admin', 'superadmin'] },
-  { href: '/admin/brands', label: '品牌管理', icon: '🏷️', roles: ['admin', 'superadmin'] },
+  { href: '/admin/products', label: '产品管理', icon: '📦', roles: ['admin', 'superadmin', 'product'] },
+  { href: '/admin/categories', label: '分类管理', icon: '📁', roles: ['admin', 'superadmin', 'product'] },
+  { href: '/admin/brands', label: '品牌管理', icon: '🏷️', roles: ['admin', 'superadmin', 'product'] },
   { href: '/admin/platforms', label: '平台管理', icon: '🤝', roles: ['admin', 'superadmin'] },
   { href: '/admin/videos', label: '视频管理', icon: '🎬', roles: ['admin', 'superadmin'] },
   { href: '/admin/sections', label: '区块标题', icon: '📑', roles: ['admin', 'superadmin'] },
@@ -40,12 +40,12 @@ export default function AdminLayout({ children, active }: { children: React.Reac
       {/* 左侧边栏 */}
       <aside className="w-60 bg-gray-900 text-white flex-shrink-0 overflow-y-auto hidden lg:block">
         <div className="p-4 border-b border-gray-700">
-          <Link href={role === 'product_admin' ? '/admin/products' : '/admin/dashboard'} className="flex items-center space-x-2">
+          <Link href={role === 'product' ? '/admin/products' : '/admin/dashboard'} className="flex items-center space-x-2">
             <span className="text-2xl">⚡</span>
             <span className="font-bold text-amber-400 text-lg">VAPOR-X</span>
           </Link>
           <p className="text-xs text-gray-500 mt-0.5">
-            {role === 'product_admin' ? '产品管理平台' : '批发管理平台'}
+            {role === 'product' ? '产品管理平台' : '批发管理平台'}
           </p>
         </div>
         <nav className="p-2 space-y-0.5">
@@ -75,7 +75,7 @@ export default function AdminLayout({ children, active }: { children: React.Reac
       {/* 移动端导航 */}
       <nav className="lg:hidden bg-gray-900 text-white fixed top-0 left-0 right-0 z-50">
         <div className="flex items-center justify-between px-4 h-12">
-          <Link href={role === 'product_admin' ? '/admin/products' : '/admin/dashboard'} className="font-bold text-amber-400">VAPOR-X 后台</Link>
+          <Link href={role === 'product' ? '/admin/products' : '/admin/dashboard'} className="font-bold text-amber-400">VAPOR-X 后台</Link>
           <div className="flex space-x-3 overflow-x-auto no-scrollbar">
             {allowedNavItems.slice(0, 5).map((item) => (
               <Link

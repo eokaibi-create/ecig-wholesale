@@ -5,6 +5,8 @@ const productAdminAllowed = [
   '/admin/login',
   '/admin/dashboard',
   '/admin/products',
+  '/admin/categories',
+  '/admin/brands',
 ]
 
 export async function middleware(request: NextRequest) {
@@ -34,8 +36,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
-    // 产品管理员 - 只能访问产品相关页面
-    if (role === 'product_admin') {
+    // 产品管理员 - 只能访问产品和仪表盘
+    if (role === 'product') {
       const allowed = productAdminAllowed.some(prefix => 
         pathname === prefix || pathname.startsWith(prefix + '/')
       )

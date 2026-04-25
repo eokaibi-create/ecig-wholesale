@@ -26,7 +26,7 @@ async function main() {
       username: 'product',
       email: 'product@vaporx.com',
       password: prodHash,
-      role: 'product_admin',
+      role: 'product',
     },
   })
   console.log('✅ Product admin created (product / product123)')
