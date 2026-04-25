@@ -37,18 +37,26 @@ export default function CustomerPIPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-amber-500">VAPOR-X</Link>
           <div className="flex items-center gap-4">
-            <Link href="/cart" className="text-sm text-gray-600 hover:text-amber-500">🛒 {t('nav.cart')}</Link>
+            <Link href="/products" className="text-sm text-gray-600 hover:text-amber-500">📦 {t('nav.products')}</Link>
             <span className="text-sm text-gray-500">👤 {customer.email || customer.name}</span>
           </div>
         </div>
       </header>
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">📄 {t('pi.title')}</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">📄 {t('pi.title')}</h1>
+          <Link href="/products" className="text-sm text-amber-600 hover:text-amber-700 font-medium">
+            {lang === 'en' ? '+ Request New PI' : '+ 申请新PI'}
+          </Link>
+        </div>
         {loading ? <div className="text-center py-12 text-gray-400">{t('pi.loading')}</div> : pis.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border p-12 text-center">
             <div className="text-6xl mb-4">📄</div>
             <h2 className="text-xl font-bold text-gray-700 mb-2">{t('pi.empty')}</h2>
             <p className="text-gray-400">{t('pi.emptyDesc')}</p>
+            <Link href="/products" className="mt-4 inline-block px-6 py-2.5 bg-amber-500 text-black font-semibold rounded-lg">
+              📦 {lang === 'en' ? 'Browse Products' : '浏览产品'}
+            </Link>
           </div>
         ) : (
           <div className="space-y-4">

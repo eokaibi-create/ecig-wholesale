@@ -60,7 +60,6 @@ model Product {
   flavor         String?
   size           String?
   heroItems      HeroItem[]
-  cartItems       CartItem[]
   proformaInvoiceItems ProformaInvoiceItem[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
@@ -74,13 +73,13 @@ model Customer {
   company         String?
   companyAddress  String?   @db.Text
   state           String?
+  type            String?   @default("wholesaler")
   notes           String?
   approved        Boolean   @default(false)
   password        String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   inquiries       Inquiry[]
-  cartItems       CartItem[]
   proformaInvoices ProformaInvoice[]
   orders          Order[]
 }
@@ -145,17 +144,6 @@ model HeroItem {
   updatedAt DateTime @updatedAt
 }
 
-model CartItem {
-  id         Int      @id @default(autoincrement())
-  customerId Int
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  productId  Int
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  flavor     String? // 口味选择
-  quantity   Int      @default(1)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
 
 model ProformaInvoice {
   id         Int                     @id @default(autoincrement())

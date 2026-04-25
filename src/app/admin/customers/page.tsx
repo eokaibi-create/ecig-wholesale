@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import AdminLayout from '@/components/AdminLayout'
-import Link from 'next/link'
 
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState<any[]>([])
@@ -29,6 +28,7 @@ export default function AdminCustomersPage() {
       company: c.company || '',
       companyAddress: c.companyAddress || '',
       state: c.state || '',
+      type: c.type || 'wholesaler',
       notes: c.notes || '',
       approved: c.approved,
     })
@@ -60,13 +60,18 @@ export default function AdminCustomersPage() {
     fetchCustomers()
   }
 
+  const typeBadge = (type: string) => {
+    if (type === 'wholesaler') return <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">批发商</span>
+    return <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-medium">个人</span>
+  }
+
   return (
     <AdminLayout active="客户管理">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">👥 客户管理</h1>
-            <p className="text-sm text-gray-500 mt-1">管理客户信息，支持编辑</p>
+            <p className="text-sm text-gray-500 mt-1">管理客户信息、类型（批发商/个人）及审核状态</p>
           </div>
         </div>
 
@@ -81,6 +86,7 @@ export default function AdminCustomersPage() {
                 <tr>
                   <th className="text-left px-3 py-3 text-sm font-semibold text-gray-600">客户</th>
                   <th className="text-left px-3 py-3 text-sm font-semibold text-gray-600">公司/地址</th>
+                  <th className="text-left px-3 py-3 text-sm font-semibold text-gray-600">类型</th>
                   <th className="text-left px-3 py-3 text-sm font-semibold text-gray-600">电话</th>
                   <th className="text-left px-3 py-3 text-sm font-semibold text-gray-600">备注</th>
                   <th className="text-center px-3 py-3 text-sm font-semibold text-gray-600">状态</th>
@@ -89,9 +95,9 @@ export default function AdminCustomersPage() {
               </thead>
               <tbody className="divide-y">
                 {loading ? (
-                  <tr><td colSpan={6} className="px-3 py-8 text-center text-gray-400">加载中...</td></tr>
+                  <tr><td colSpan={7} className="px-3 py-8 text-center text-gray-400">加载中...</td></tr>
                 ) : customers.length === 0 ? (
-                  <tr><td colSpan={6} className="px-3 py-8 text-center text-gray-400">暂无客户</td></tr>
+                  <tr><td colSpan={7} className="px-3 py-8 text-center text-gray-400">暂无客户</td></tr>
                 ) : (
                   customers.map((c) => (
                     <tr key={c.id} className="hover:bg-gray-50">
@@ -112,6 +118,13 @@ export default function AdminCustomersPage() {
                               className="w-full px-2 py-1 border rounded text-sm mt-1" placeholder="州/省" />
                           </td>
                           <td className="px-3 py-2">
+                            <select value={editForm.type} onChange={e => setEditForm({...editForm, type: e.target.value})}
+                              className="w-full px-2 py-1 border rounded text-sm">
+                              <option value="wholesaler">批发商</option>
+                              <option value="individual">个人</option>
+                            </select>
+                          </td>
+                          <td className="px-3 py-2">
                             <input value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})}
                               className="w-full px-2 py-1 border rounded text-sm" placeholder="电话" />
                           </td>
@@ -120,7 +133,7 @@ export default function AdminCustomersPage() {
                               className="w-full px-2 py-1 border rounded text-sm" placeholder="备注" />
                           </td>
                           <td className="px-3 py-2 text-center">
-                            <button onClick={() => toggleApproved(c.id, !editForm.approved)}
+                            <button onClick={() => setEditForm({...editForm, approved: !editForm.approved})}
                               className={`text-xs px-2 py-1 rounded-full font-medium ${editForm.approved ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                               {editForm.approved ? '已审核' : '待审核'}
                             </button>
@@ -141,8 +154,9 @@ export default function AdminCustomersPage() {
                             {c.companyAddress && <p className="text-xs text-gray-400">{c.companyAddress}</p>}
                             {!c.company && !c.companyAddress && <span className="text-gray-300">-</span>}
                           </td>
+                          <td className="px-3 py-3">{typeBadge(c.type || 'wholesaler')}</td>
                           <td className="px-3 py-3 text-sm text-gray-600">{c.phone || '-'}</td>
-                          <td className="px-3 py-3 text-sm text-gray-500 max-w-[150px] truncate">{c.notes || '-'}</td>
+                          <td className="px-3 py-3 text-sm text-gray-500 max-w-[120px] truncate">{c.notes || '-'}</td>
                           <td className="px-3 py-3 text-center">
                             <span className={`text-xs px-2 py-1 rounded-full font-medium ${c.approved ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                               {c.approved ? '已审核' : '待审核'}

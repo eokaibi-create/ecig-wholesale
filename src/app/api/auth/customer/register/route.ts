@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, phone, company, companyAddress, state, password } = await request.json()
+    const { name, email, phone, company, companyAddress, state, type, password } = await request.json()
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: '姓名、邮箱和密码为必填项' }, { status: 400 })
@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
         company: company || null,
         companyAddress: companyAddress || null,
         state: state || null,
+        type: type || 'wholesaler',
         password: hashedPassword,
         approved: true,
       },
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest) {
         name: customer.name,
         email: customer.email,
         company: customer.company,
+        type: customer.type,
       }
     })
 

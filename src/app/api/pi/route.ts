@@ -53,10 +53,17 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json()
-    const { customerEmail, items, notes, discount, validUntil } = data
-    
-    const customer = await prisma.customer.findUnique({ where: { email: customerEmail } })
+    const { customerId, customerEmail, items: rawItems, orderItems, notes, discount, validUntil } = data
+    const items = rawItems || orderItems || []
+
+    let customer
+    if (customerId) {
+      customer = await prisma.customer.findUnique({ where: { id: Number(customerId) } })
+    } else if (customerEmail) {
+      customer = await prisma.customer.findUnique({ where: { email: customerEmail } })
+    }
     if (!customer) return NextResponse.json({ error: '客户不存在' }, { status: 404 })
+    if (items.length === 0) return NextResponse.json({ error: '请添加至少一个产品' }, { status: 400 })
     
     const piNumber = 'PI-' + Date.now().toString(36).toUpperCase()
     

@@ -32,6 +32,8 @@ export default function Header() {
 
   const handleLogout = async () => {
     await fetch('/api/auth/customer/logout', { method: 'POST' })
+    localStorage.removeItem('customer_token')
+    localStorage.removeItem('customer_info')
     setCustomer(null)
     setUserMenu(false)
     router.push('/')
@@ -66,12 +68,6 @@ export default function Header() {
               )}
             </button>
 
-            <Link href="/cart" className="relative p-2 hover:bg-gray-800 rounded-lg transition group">
-              <svg className="w-5 h-5 text-gray-300 group-hover:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
-              </svg>
-            </Link>
-
             {loading ? null : customer ? (
               <div className="relative">
                 <button
@@ -96,13 +92,6 @@ export default function Header() {
                         <p className="text-xs text-gray-500 truncate">{customer.email}</p>
                         {customer.company && <p className="text-xs text-gray-400">{customer.company}</p>}
                       </div>
-                      <Link href="/cart" onClick={() => setUserMenu(false)}
-                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition flex items-center space-x-2">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
-                        </svg>
-                        <span>{t('nav.cart')}</span>
-                      </Link>
                       <Link href="/account/pi" onClick={() => setUserMenu(false)}
                         className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition flex items-center space-x-2">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -166,7 +155,6 @@ export default function Header() {
             <Link href="/products" className="block px-4 py-2 hover:bg-gray-800 rounded" onClick={() => setOpen(false)}>{t('nav.products')}</Link>
             <Link href="/brands" className="block px-4 py-2 hover:bg-gray-800 rounded" onClick={() => setOpen(false)}>{t('nav.brands')}</Link>
             <Link href="/contact" className="block px-4 py-2 hover:bg-gray-800 rounded" onClick={() => setOpen(false)}>{t('nav.contact')}</Link>
-            <Link href="/cart" className="block px-4 py-2 hover:bg-gray-800 rounded" onClick={() => setOpen(false)}>🛒 {t('nav.cart')}</Link>
             <hr className="border-gray-700 my-2" />
             {customer ? (
               <>

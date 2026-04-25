@@ -15,6 +15,7 @@ export default function RegisterPage() {
     company: '',
     companyAddress: '',
     state: '',
+    type: 'wholesaler',
     password: '',
     confirm: '',
   })
@@ -45,9 +46,10 @@ export default function RegisterPage() {
           name: form.name,
           email: form.email,
           phone: form.phone || undefined,
-          company: form.company || undefined,
+          company: form.type === 'wholesaler' ? (form.company || undefined) : undefined,
           companyAddress: form.companyAddress || undefined,
           state: form.state || undefined,
+          type: form.type,
           password: form.password,
         }),
       })
@@ -72,6 +74,11 @@ export default function RegisterPage() {
     }
   }
 
+  const customerTypes = [
+    { value: 'wholesaler', label: { zh: '批发商', en: 'Wholesaler' } },
+    { value: 'individual', label: { zh: '个人客户', en: 'Individual' } },
+  ]
+
   return (
     <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4">
       <div className="max-w-lg w-full bg-white rounded-2xl shadow-lg p-8">
@@ -87,6 +94,28 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 客户类型 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('register.customerType')} *</label>
+            <div className="grid grid-cols-2 gap-3">
+              {customerTypes.map(ct => (
+                <button
+                  key={ct.value}
+                  type="button"
+                  onClick={() => setForm({ ...form, type: ct.value })}
+                  className={`px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
+                    form.type === ct.value
+                      ? 'border-amber-500 bg-amber-50 text-amber-700'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                  }`}
+                >
+                  {ct.value === 'wholesaler' ? '🏬 ' : '👤 '}
+                  {lang === 'en' ? ct.label.en : ct.label.zh}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.name')} *</label>
             <input type="text" required value={form.name}
@@ -111,13 +140,15 @@ export default function RegisterPage() {
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
                 placeholder="+1 (xxx) xxx-xxxx" />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.company')}</label>
-              <input type="text" value={form.company}
-                onChange={e => setForm({ ...form, company: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder={t('register.company')} />
-            </div>
+            {form.type === 'wholesaler' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.company')}</label>
+                <input type="text" value={form.company}
+                  onChange={e => setForm({ ...form, company: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                  placeholder={t('register.company')} />
+              </div>
+            )}
           </div>
 
           <div>
