@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma'
-import { cookies } from 'next/headers'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
 
 export default async function ContactPage({
@@ -7,8 +6,7 @@ export default async function ContactPage({
 }: {
   searchParams: Promise<{ success?: string; error?: string }>
 }) {
-  const cookieStore = await cookies()
-  const lang = (cookieStore.get('vaporx-lang')?.value === 'en' ? 'en' : 'zh') as Lang
+  const lang = await getServerLang()
   const t = (key: any) => serverT(key, lang)
 
   const [settings, params] = await Promise.all([
@@ -138,7 +136,7 @@ export default async function ContactPage({
               <h3 className="font-bold text-gray-900 mb-2">{t('contact.wholesaleTip')}</h3>
               <p className="text-sm text-gray-600">
                 {t('contact.minOrder')}: <strong>${settingMap.min_order || '500'}</strong><br/>
-                {settingMap.shipping_info || (lang === 'en' ? 'Free shipping to 48 states, min order $1000' : '全美48州免运费，订单满$1000起批')}
+                {settingMap.shipping_info || t('contact.shippingInfo')}
               </p>
             </div>
           </div>

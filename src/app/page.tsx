@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import HeroSwiper from '@/components/HeroSwiper'
-import { cookies } from 'next/headers'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
 
 async function getData() {
@@ -29,8 +28,7 @@ async function getData() {
 }
 
 export default async function HomePage() {
-  const cookieStore = await cookies()
-  const lang = (cookieStore.get('vaporx-lang')?.value === 'en' ? 'en' : 'zh') as Lang
+  const lang = await getServerLang()
   const t = (key: any) => serverT(key, lang)
 
   const data = await getData()

@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { cookies } from 'next/headers'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
 
 export default async function ProductsPage({
@@ -8,8 +7,7 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<{ category?: string; search?: string; brand?: string }>
 }) {
-  const cookieStore = await cookies()
-  const lang = (cookieStore.get('vaporx-lang')?.value === 'en' ? 'en' : 'zh') as Lang
+  const lang = await getServerLang()
   const t = (key: any) => serverT(key, lang)
 
   const params = await searchParams
