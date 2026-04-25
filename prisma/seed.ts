@@ -21,7 +21,7 @@ async function main() {
   const prodHash = await bcrypt.hash('product123', 12)
   await prisma.admin.upsert({
     where: { username: 'product' },
-    update: {},
+    update: { role: 'product' },
     create: {
       username: 'product',
       email: 'product@vaporx.com',

@@ -42,12 +42,15 @@ export async function POST(request: NextRequest) {
     const valid = await bcrypt.compare(password, admin.password)
     if (!valid) return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
 
-    // Token 格式: admin:id:username:role:timestamp
-    const token = Buffer.from(`admin:${admin.id}:${admin.username}:${admin.role}:${Date.now()}`).toString('base64')
+    // 统一角色名（兼容旧数据）
+    const normalizedRole = admin.role === 'product_admin' ? 'product' : admin.role
 
-    const response = NextResponse.json({ success: true, token, user: { id: admin.id, username: admin.username, role: admin.role, email: admin.email } })
+    // Token 格式: admin:id:username:role:timestamp
+    const token = Buffer.from(`admin:${admin.id}:${admin.username}:${normalizedRole}:${Date.now()}`).toString('base64')
+
+    const response = NextResponse.json({ success: true, token, user: { id: admin.id, username: admin.username, role: normalizedRole, email: admin.email } })
     response.cookies.set('admin_token', token, { httpOnly: true, path: '/', maxAge: 86400, sameSite: 'lax' })
-    response.cookies.set('admin_role', admin.role, { httpOnly: false, path: '/', maxAge: 86400, sameSite: 'lax' })
+    response.cookies.set('admin_role', normalizedRole, { httpOnly: false, path: '/', maxAge: 86400, sameSite: 'lax' })
     return response
   } catch (error: any) {
     console.error('Admin login error:', error)
