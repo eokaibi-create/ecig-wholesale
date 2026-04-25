@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // 产品管理员允许的路由前缀
 const productAdminAllowed = [
-  '/admin',
   '/admin/login',
   '/admin/dashboard',
   '/admin/products',
@@ -44,6 +43,10 @@ export async function middleware(request: NextRequest) {
 
     // 产品管理员 - 只能访问产品和仪表盘
     if (normalizedRole === 'product') {
+      // 精确 /admin 放行（页面会重定向到 /admin/dashboard）
+      if (pathname === '/admin') {
+        return NextResponse.next()
+      }
       const allowed = productAdminAllowed.some(prefix => 
         pathname === prefix || pathname.startsWith(prefix + '/')
       )
