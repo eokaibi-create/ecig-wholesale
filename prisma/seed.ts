@@ -59,11 +59,11 @@ async function main() {
     { key: 'site_description', value: '美国电子烟批发首选 - 全美发货 · 批发价直供 · 支持海外直邮' },
     { key: 'hero_title', value: 'VAPOR-X' },
     { key: 'hero_subtitle', value: '美国本土电子烟批发平台' },
-    { key: 'whatsapp', value: '+13239260829' },
+    { key: 'whatsapp', value: '+1 (323) 926-0829' },
     { key: 'wechat', value: 'EA_YONG' },
     { key: 'email', value: 'EOKAIBI@GMAIL.COM' },
     { key: 'phone', value: '+1 (323) 926-0829' },
-    { key: 'address', value: '美国全境配送，支持海外直邮' },
+    { key: 'address', value: 'Los Angeles, CA' },
     { key: 'min_order', value: '500' },
     { key: 'shipping_info', value: '全美48州免运费，订单满$500起批。支持海外直邮。' },
     // 联系资料可见性设置（默认全可见）

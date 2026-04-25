@@ -33,7 +33,7 @@ export async function GET() {
 
   return NextResponse.json({
     isLoggedIn,
-    whatsapp: showWhatsapp ? (map.whatsapp || '+13239260829') : null,
+    whatsapp: showWhatsapp ? (map.whatsapp || '+1 (323) 926-0829') : null,
     email: showEmail ? (map.email || 'EOKAIBI@GMAIL.COM') : null,
     phone: showPhone ? (map.phone || '+1 (323) 926-0829') : null,
     address: showAddress ? (map.address || 'Los Angeles, CA') : null,
