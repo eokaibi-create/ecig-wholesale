@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const loginName = username || email
 
     if (!loginName || !password) {
-      return NextResponse.json({ error: '请填写用户名/邮箱和密码' }, { status: 400 })
+      return NextResponse.json({ error: 'Please enter username/email and password' }, { status: 400 })
     }
 
     // 先查 User 表（旧）
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
     if (user) {
       const valid = await bcrypt.compare(password, user.password)
-      if (!valid) return NextResponse.json({ error: '密码错误' }, { status: 401 })
+      if (!valid) return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
       
       const token = Buffer.from(`user:${user.id}:${user.username}:${Date.now()}`).toString('base64')
       
@@ -35,10 +35,10 @@ export async function POST(request: NextRequest) {
       where: { OR: [{ username: loginName }, { email: loginName }] }
     })
 
-    if (!admin) return NextResponse.json({ error: '用户名或密码错误' }, { status: 401 })
+    if (!admin) return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 })
 
     const valid = await bcrypt.compare(password, admin.password)
-    if (!valid) return NextResponse.json({ error: '密码错误' }, { status: 401 })
+    if (!valid) return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
 
     const token = Buffer.from(`admin:${admin.id}:${admin.username}:${Date.now()}`).toString('base64')
 
@@ -47,6 +47,6 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error: any) {
     console.error('Admin login error:', error)
-    return NextResponse.json({ error: '服务器错误' }, { status: 500 })
+    return NextResponse.json({ error: 'Server error, please try again' }, { status: 500 })
   }
 }

@@ -46,7 +46,7 @@ export default function CustomerPIPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900">📄 {t('pi.title')}</h1>
           <Link href="/products" className="text-sm text-amber-600 hover:text-amber-700 font-medium">
-            {lang === 'en' ? '+ Request New PI' : '+ 申请新PI'}
+            {t('pi.applyNew')}
           </Link>
         </div>
         {loading ? <div className="text-center py-12 text-gray-400">{t('pi.loading')}</div> : pis.length === 0 ? (
@@ -55,7 +55,7 @@ export default function CustomerPIPage() {
             <h2 className="text-xl font-bold text-gray-700 mb-2">{t('pi.empty')}</h2>
             <p className="text-gray-400">{t('pi.emptyDesc')}</p>
             <Link href="/products" className="mt-4 inline-block px-6 py-2.5 bg-amber-500 text-black font-semibold rounded-lg">
-              📦 {lang === 'en' ? 'Browse Products' : '浏览产品'}
+              📦 {t('pi.browseProducts')}
             </Link>
           </div>
         ) : (

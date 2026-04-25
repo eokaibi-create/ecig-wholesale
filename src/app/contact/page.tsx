@@ -24,7 +24,7 @@ export default async function ContactPage({
       <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold">{t('contact.title')}</h1>
-          <p className="mt-2 text-lg text-gray-300">{lang === 'en' ? 'We will reply within 24 hours' : '24小时内回复，期待与您合作'}</p>
+          <p className="mt-2 text-lg text-gray-300">{t('contact.prefix')}</p>
         </div>
       </section>
 
@@ -80,7 +80,7 @@ export default async function ContactPage({
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('contact.message')} *</label>
                 <textarea name="message" rows={5} required
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                  placeholder={lang === 'en' ? 'Please describe products, quantities and your requirements...' : '请描述您需要采购的产品、数量和您的需求...'}></textarea>
+                  placeholder={t('contact.placeholder')}></textarea>
               </div>
               <button type="submit"
                 className="w-full px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition text-lg">
@@ -113,7 +113,7 @@ export default async function ContactPage({
                 <div>
                   <h3 className="font-semibold text-gray-900">WeChat</h3>
                   <p className="text-green-600 font-medium">{settingMap.wechat || 'EA_YONG'}</p>
-                  <p className="text-sm text-gray-500">{lang === 'en' ? 'Scan to add, get catalog and price list' : '扫码添加，获取产品目录和报价单'}</p>
+                  <p className="text-sm text-gray-500">{t('contact.wechatDesc')}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
@@ -121,7 +121,7 @@ export default async function ContactPage({
                 <div>
                   <h3 className="font-semibold text-gray-900">Email</h3>
                   <a href={`mailto:${settingMap.email || 'EOKAIBI@GMAIL.COM'}`} className="text-blue-600 hover:text-blue-700 font-medium">{settingMap.email || 'EOKAIBI@GMAIL.COM'}</a>
-                  <p className="text-sm text-gray-500">{lang === 'en' ? 'Reply within 24 hours' : '24小时内回复'}</p>
+                  <p className="text-sm text-gray-500">{t('contact.replyHour')}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">

@@ -7,25 +7,25 @@ export async function POST(request: NextRequest) {
     const { email, password } = await request.json()
 
     if (!email || !password) {
-      return NextResponse.json({ error: '请填写邮箱和密码' }, { status: 400 })
+      return NextResponse.json({ error: 'Please enter email and password' }, { status: 400 })
     }
 
     const customer = await prisma.customer.findUnique({ where: { email } })
     if (!customer) {
-      return NextResponse.json({ error: '邮箱未注册' }, { status: 401 })
+      return NextResponse.json({ error: 'Email not registered' }, { status: 401 })
     }
 
     if (!customer.password) {
-      return NextResponse.json({ error: '该账户尚未设置密码，请使用注册功能' }, { status: 401 })
+      return NextResponse.json({ error: 'Account has no password set yet' }, { status: 401 })
     }
 
     const valid = await bcrypt.compare(password, customer.password)
     if (!valid) {
-      return NextResponse.json({ error: '密码错误' }, { status: 401 })
+      return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
     }
 
     if (!customer.approved) {
-      return NextResponse.json({ error: '账户正在审核中，请稍后再试' }, { status: 403 })
+      return NextResponse.json({ error: 'Account pending approval, please try again later' }, { status: 403 })
     }
 
     const token = Buffer.from(`customer:${customer.id}:${customer.email}:${Date.now()}`).toString('base64')
@@ -50,6 +50,6 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error('Customer login error:', error)
-    return NextResponse.json({ error: '服务器错误' }, { status: 500 })
+    return NextResponse.json({ error: 'Server error, please try again' }, { status: 500 })
   }
 }

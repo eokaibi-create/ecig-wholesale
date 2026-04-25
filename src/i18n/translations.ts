@@ -61,6 +61,23 @@ export type TranslationKey =
   | 'orders.id' | 'orders.items' | 'orders.contact'
   // 关于
   | 'about.title'
+  // 产品描述
+  | 'product.elfbarBc5000' | 'product.geekBarPulse' | 'product.lostMary' | 'product.razTn9000' | 'product.geekBarMelosoMini' | 'product.elfbar600'
+  | 'product.inStock'
+  | 'products.emptyDesc' | 'products.withBrand' | 'products.brandSeries'
+  // 底部
+  | 'footer.siteDesc'
+  // 语言切换
+  | 'header.switchToEn' | 'header.switchToZh' | 'header.langLabel'
+  // 关于
+  | 'about.subtitle'
+  // 品牌
+  | 'brands.desc'
+  // PI
+  | 'pi.applyNew' | 'pi.browseProducts'
+  // 联系
+  | 'contact.placeholder' | 'contact.wechatDesc' | 'contact.replyHour' | 'contact.shippingText'
+  | 'contact.prefix'
 export const translations: Record<Lang, Record<TranslationKey, string>> = {
   zh: {
     // 导航
@@ -77,6 +94,9 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'nav.brands': '品牌',
     'nav.myPi': '我的PI',
     'nav.myOrders': '我的订单',
+    'header.switchToEn': '切换到英文',
+    'header.switchToZh': '切换到中文',
+    'header.langLabel': '语言',
 
     // Hero
     'hero.title': '新品热荐',
@@ -146,7 +166,17 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'product.shortRaz': '9000口 | 数字电量显示 | 冰感体验',
     'product.shortMeloso': '600口 | 20mg尼古丁盐 | 1.2ml | 迷你便携',
     'product.shortElf600': '600口 | 20mg尼古丁盐 | 2ml | 经典入门款',
+    'product.elfbarBc5000': 'ELF BAR BC5000 一次性电子烟，5000口大容量，内置可充电电池，17种丰富口味选择，为成年吸烟者提供便捷的即用即弃 vaping 体验。',
+    'product.geekBarPulse': 'Geek Bar Pulse 15000口一次性电子烟，配备 LED 智能显示屏，实时显示电量与剩余口数，5%尼古丁强度，12种冰爽口味。',
+    'product.lostMary': 'Lost Mary MO20000 Pro 20000口一次性电子烟，采用网状线圈技术，可调节气流系统，10种精选口味，超长续航 vaping 体验。',
+    'product.razTn9000': 'RAZ TN9000 9000口一次性电子烟，配备数字电量显示屏幕，冰感体验系列，为追求品质的成年用户打造。',
+    'product.geekBarMelosoMini': 'Geek Bar Meloso Mini 600口迷你一次性电子烟，20mg尼古丁盐，1.2ml烟油容量，小巧便携设计，适合入门用户。',
+    'product.elfbar600': 'ELF BAR 600 600口经典一次性电子烟，20mg尼古丁盐，2ml烟油容量，经典入门款，多种畅销口味。',
+
     'product.emptyDesc': '浏览我们的产品目录，发现更多选择',
+    'products.emptyDesc': '浏览我们的产品目录，发现更多选择',
+    'products.withBrand': '产品',
+    'products.brandSeries': '系列产品批发',
 
 
     // 品牌
@@ -156,6 +186,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'brand.becomePartner': '成为 VAPOR-X 合作伙伴',
     'brand.becomeDesc': '我们希望与更多优质品牌合作，为我们的客户提供更多选择。欢迎联系我们洽谈合作。',
     'brand.noBrands': '暂无品牌信息',
+    'brands.desc': '全球顶级电子烟品牌官方授权合作',
 
     // 平台
     'platform.title': '合作平台',
@@ -190,6 +221,11 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'contact.wholesaleTip': '💡 批发提示',
     'contact.minOrder': '最低起订量',
     'contact.shippingInfo': '全美48州免运费，订单满$1000起批',
+    'contact.placeholder': '请描述您需要采购的产品、数量和您的需求...',
+    'contact.wechatDesc': '扫码添加，获取产品目录和报价单',
+    'contact.replyHour': '24小时内回复',
+    'contact.shippingText': '全美48州免运费，订单满$1000起批',
+    'contact.prefix': '24小时内回复，期待与您合作',
 
     // 购物车
     'cart.title': '购物车',
@@ -216,6 +252,8 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'pi.loading': '加载中...',
     'pi.loginRequired': '请先登录',
     'pi.itemsCount': '件产品',
+    'pi.applyNew': '申请新PI',
+    'pi.browseProducts': '浏览产品',
 
     // 注册
     'register.title': '注册账户',
@@ -248,6 +286,8 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'login.adminLogin': '管理员后台登录',
 
     // Footer
+    'footer.siteDesc': '美国电子烟批发供应商',
+    'footer.siteDesc': 'Premium Vape Wholesale Supplier USA',
     'footer.powered': 'POWERED BY ALOKAIBI TRADING GROUP',
     'footer.rights': 'All Rights Reserved',
     'footer.age': '18+ 仅限成年批发客户',
@@ -255,6 +295,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
 
     // About
     'about.title': '关于 VAPOR-X',
+    'about.subtitle': '美国电子烟批发首选',
     'about.desc': '美国领先的电子烟批发供应商 — 自2018年成立以来，已服务超过5000+批发客户',
     'about.story': '我们的故事',
     'about.story1': '成立于2018年，总部位于美国加利福尼亚州洛杉矶。我们从一家小型电子烟批发商起步，凭借着对产品质量的严格把控和对客户服务的执着追求，迅速发展成为全美知名的电子烟批发供应商。',
@@ -341,6 +382,9 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'nav.brands': 'Brands',
     'nav.myPi': 'My PI',
     'nav.myOrders': 'My Orders',
+    'header.switchToEn': 'Switch to English',
+    'header.switchToZh': 'Switch to Chinese',
+    'header.langLabel': 'Language',
 
     // Hero
     'hero.title': 'New Arrivals',
@@ -410,7 +454,17 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'product.shortRaz': '9000 puffs | Digital battery display | Icy experience',
     'product.shortMeloso': '600 puffs | 20mg nicotine salt | 1.2ml | Mini portable',
     'product.shortElf600': '600 puffs | 20mg nicotine salt | 2ml | Classic entry',
+    'product.elfbarBc5000': 'ELF BAR BC5000 disposable vape with 5000 puffs, built-in rechargeable battery, 17 rich flavors for a convenient puff-and-go experience.',
+    'product.geekBarPulse': 'Geek Bar Pulse 15000-puff disposable vape with LED smart display showing battery and puff count, 5% nicotine, 12 icy flavors.',
+    'product.lostMary': 'Lost Mary MO20000 Pro 20000-puff disposable vape with mesh coil technology, adjustable airflow system, 10 selected flavors.',
+    'product.razTn9000': 'RAZ TN9000 9000-puff disposable vape with digital battery display screen, icy experience series, crafted for quality-seeking adult users.',
+    'product.geekBarMelosoMini': 'Geek Bar Meloso Mini 600-puff mini disposable vape, 20mg nicotine salt, 1.2ml capacity, compact and portable design.',
+    'product.elfbar600': 'ELF BAR 600 classic 600-puff disposable vape, 20mg nicotine salt, 2ml capacity, entry-level classic with popular flavors.',
+
     'product.emptyDesc': 'Browse our product catalog for more choices',
+    'products.emptyDesc': 'Browse our product catalog for more choices',
+    'products.withBrand': 'Products',
+    'products.brandSeries': 'Wholesale Series',
 
 
     // 品牌
@@ -420,6 +474,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'brand.becomePartner': 'Become a VAPOR-X Partner',
     'brand.becomeDesc': 'We look forward to partnering with more quality brands to offer our customers more choices. Contact us to discuss cooperation.',
     'brand.noBrands': 'No brands yet',
+    'brands.desc': 'Official authorized partnerships with top global vape brands',
 
     // 平台
     'platform.title': 'Platforms',
@@ -480,6 +535,8 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'pi.loading': 'Loading...',
     'pi.loginRequired': 'Please Login First',
     'pi.itemsCount': 'product(s)',
+    'pi.applyNew': 'Request New PI',
+    'pi.browseProducts': 'Browse Products',
 
     // 注册
     'register.title': 'Customer Registration',
@@ -512,6 +569,8 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'login.adminLogin': 'Admin Login',
 
     // Footer
+    'footer.siteDesc': '美国电子烟批发供应商',
+    'footer.siteDesc': 'Premium Vape Wholesale Supplier USA',
     'footer.powered': 'POWERED BY ALOKAIBI TRADING GROUP',
     'footer.rights': 'All Rights Reserved',
     'footer.age': '18+ Adult Wholesale Customers Only',
@@ -519,6 +578,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
 
     // About
     'about.title': 'About VAPOR-X',
+    'about.subtitle': 'Premium Vape Wholesale USA',
     'about.desc': "America's Leading Vape Wholesale Supplier — Serving 5000+ wholesale clients since 2018",
     'about.story': 'Our Story',
     'about.story1': 'Founded in 2018 and headquartered in Los Angeles, California. We started as a small vape wholesaler and rapidly grew into a nationally recognized vape wholesale supplier through strict quality control and dedicated customer service.',

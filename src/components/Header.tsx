@@ -59,7 +59,7 @@ export default function Header() {
             <button
               onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')}
               className="flex items-center space-x-1 px-2 py-1.5 rounded-lg border border-gray-700 hover:border-amber-500 text-xs transition"
-              title={lang === 'zh' ? 'Switch to English' : '切换到中文'}
+              title={lang === 'zh' ? t('header.switchToEn') : t('header.switchToZh')}
             >
               {lang === 'zh' ? (
                 <><span className="text-base">🇨🇳</span><span className="text-gray-300">EN</span></>

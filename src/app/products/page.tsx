@@ -46,11 +46,11 @@ export default async function ProductsPage({
       <div className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold">
-            {currentBrand ? `${currentBrand.name} ${lang === 'en' ? 'Products' : '产品'}` : t('product.title')}
+            {currentBrand ? `${currentBrand.name} ${t('products.withBrand')}` : t('product.title')}
           </h1>
           <p className="mt-2 text-gray-400 text-lg">
             {currentBrand
-              ? `${currentBrand.name} ${lang === 'en' ? 'Wholesale Series' : '系列产品批发'}`
+              ? `${currentBrand.name} ${t('products.brandSeries')}`
               : t('product.desc')}
           </p>
         </div>

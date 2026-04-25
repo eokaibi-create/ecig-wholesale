@@ -34,7 +34,7 @@ export default function Footer() {
 
   const whatsappNum = contact.whatsapp.replace(/[^0-9]/g, '')
 
-  const siteDesc = lang === 'en' ? 'Premium Vape Wholesale Supplier USA' : '美国电子烟批发供应商'
+  const siteDesc = t('footer.siteDesc')
 
   return (
     <footer className="bg-gray-900 text-gray-400">

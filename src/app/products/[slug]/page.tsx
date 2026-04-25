@@ -118,7 +118,7 @@ export default function ProductDetailPage() {
       })
       const data = await res.json()
       if (res.ok) {
-        setPiMsg('✅ PI #' + data.piNumber + ' ' + (language === 'en' ? 'created!' : '已创建！'))
+        setPiMsg('✅ PI #' + data.piNumber + ' ' + t('product.created'))
         setTimeout(() => window.location.href = '/account/pi', 1200)
       } else {
         setPiMsg('❌ ' + (data.error || 'Failed'))
@@ -243,7 +243,7 @@ export default function ProductDetailPage() {
                   {product.puffs && <tr><td className="py-1 text-gray-500 pr-4">{t('product.puffs')}</td><td className="font-medium">{product.puffs}</td></tr>}
                   {product.flavor && <tr><td className="py-1 text-gray-500 pr-4">{t('product.flavor')}</td><td className="font-medium">{product.flavor}</td></tr>}
                   {product.size && <tr><td className="py-1 text-gray-500 pr-4">{t('product.size')}</td><td className="font-medium">{product.size}</td></tr>}
-                  <tr><td className="py-1 text-gray-500 pr-4">{t('product.stock')}</td><td className="font-medium text-green-600">{product.stock}+ {language === 'en' ? 'in stock' : '库存'}</td></tr>
+                  <tr><td className="py-1 text-gray-500 pr-4">{t('product.stock')}</td><td className="font-medium text-green-600">{product.stock}+ {t('product.inStock')}</td></tr>
                 </tbody>
               </table>
             </div>
