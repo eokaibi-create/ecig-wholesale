@@ -39,7 +39,41 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
   const { t, lang } = useLanguage()
 
   const filteredItems = items.filter(i => i.image || i.product?.image)
-  const heroVideo = items.find(i => i.videoUrl)?.videoUrl || null
+
+  const defaultProducts: HeroItemData[] = [
+    {
+      id: 0,
+      title: 'ELF BAR BC5000',
+      image: 'https://dbh4s5ja0maaw.cloudfront.net/products/bc5000/card-1.jpg',
+      product: { id: 1, name: 'ELF BAR BC5000', slug: 'elfbar-bc5000', price: 12.99, wholesalePrice: 8.50, image: 'https://dbh4s5ja0maaw.cloudfront.net/products/bc5000/card-1.jpg' }
+    },
+    {
+      id: 1,
+      title: 'Geek Bar Pulse 15000',
+      image: 'https://oss.geekbar.com/products/pulse/20251105/1.png',
+      product: { id: 2, name: 'Geek Bar Pulse 15000', slug: 'geek-bar-pulse-15000', price: 18.99, wholesalePrice: 13.50, image: 'https://oss.geekbar.com/products/pulse/20251105/1.png' }
+    },
+    {
+      id: 2,
+      title: 'Lost Mary MO20000 Pro',
+      image: 'https://ezpuff.com/cdn/shop/files/lost-mary-mo20000-pro_500x500.png',
+      product: { id: 3, name: 'Lost Mary MO20000 Pro', slug: 'lost-mary-mo20000-pro', price: 22.99, wholesalePrice: 16.80, image: 'https://ezpuff.com/cdn/shop/files/lost-mary-mo20000-pro_500x500.png' }
+    },
+    {
+      id: 3,
+      title: 'RAZ TN9000',
+      image: 'https://officialrazvape.com/wp-content/uploads/2024/01/raz-tn9000-main.png',
+      product: { id: 4, name: 'RAZ TN9000', slug: 'raz-tn9000', price: 15.99, wholesalePrice: 11.20, image: 'https://officialrazvape.com/wp-content/uploads/2024/01/raz-tn9000-main.png' }
+    },
+    {
+      id: 4,
+      title: 'Geek Bar Meloso Mini',
+      image: 'https://oss.geekbar.com/products/meloso-ultra/1/Frozen%20Cherry%20Apple.png',
+      product: { id: 5, name: 'Geek Bar Meloso Mini', slug: 'geek-bar-meloso-mini', price: 8.99, wholesalePrice: 5.80, image: 'https://oss.geekbar.com/products/meloso-ultra/1/Frozen%20Cherry%20Apple.png' }
+    }
+  ]
+
+  const slides = filteredItems.length > 0 ? filteredItems : defaultProducts
 
   return (
     <section className="relative bg-gray-900 text-white overflow-hidden min-h-[600px] md:min-h-screen flex items-center">
@@ -81,99 +115,104 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2">
-            <div className="relative rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 shadow-2xl">
-              {filteredItems.length > 0 ? (
-                <>
-                  <Swiper
-                    modules={[Autoplay, EffectFade]}
-                    effect="fade"
-                    spaceBetween={0}
-                    slidesPerView={1}
-                    autoplay={{ delay: 4000, disableOnInteraction: false }}
-                    onSwiper={(s) => { swiperRef.current = s }}
-                    onSlideChange={(s) => setActiveIndex(s.realIndex)}
-                    style={{ aspectRatio: '16/9' }}
-                  >
-                    {filteredItems.map((item, idx) => {
-                      const imgSrc = item.image || item.product?.image || ''
-                      return (
-                        <SwiperSlide key={item.id || idx}>
-                          <div className="relative w-full h-full min-h-[300px] md:min-h-[450px] flex items-center justify-center bg-gray-800">
-                            {imgSrc ? (
-                              <img src={imgSrc} alt={item.title || item.product?.name || 'New'} className="w-full h-full object-contain" />
-                            ) : (
-                              <div className="text-6xl text-gray-600">🆕</div>
-                            )}
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 md:p-6">
-                              <div className="flex items-end justify-between">
-                                <div>
-                                  <h3 className="text-lg md:text-xl font-bold text-white drop-shadow-lg">
-                                    {item.title || item.product?.name || t('hero.newProduct')}
-                                  </h3>
-                                  {item.product && (
-                                    <div className="flex items-center gap-2 mt-1">
-                                      <span className="text-lg font-bold text-amber-400">${item.product.price.toFixed(2)}</span>
-                                      {item.product.wholesalePrice && (
-                                        <span className="text-sm text-gray-400 line-through">${item.product.wholesalePrice.toFixed(2)}</span>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                                {item.product && (
-                                  <Link href={`/products/${item.product.slug}`}
-                                    className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black text-sm font-bold rounded-lg transition shrink-0">
-                                    {t('hero.viewDetails')}
-                                  </Link>
+        {/* 一体式轮播：每个slide包含产品（左2/3）+ 视频（右1/3） */}
+        <div className="relative rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 shadow-2xl">
+          <Swiper
+            modules={[Autoplay, EffectFade]}
+            effect="fade"
+            spaceBetween={0}
+            slidesPerView={1}
+            autoplay={{ delay: 4000, disableOnInteraction: false }}
+            loop={true}
+            onSwiper={(s) => { swiperRef.current = s }}
+            onSlideChange={(s) => setActiveIndex(s.realIndex)}
+          >
+            {slides.map((item, idx) => {
+              const imgSrc = item.image || item.product?.image || ''
+              const prod = item.product
+              const hasVideo = !!item.videoUrl
+
+              return (
+                <SwiperSlide key={item.id || idx}>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 min-h-[350px] md:min-h-[500px]">
+                    {/* 左 2/3：产品图片 */}
+                    <div className="lg:col-span-2 relative flex items-center justify-center bg-gray-800 min-h-[300px] md:min-h-[500px]">
+                      {imgSrc ? (
+                        <img src={imgSrc} alt={item.title || prod?.name || ''} className="w-full h-full object-contain p-4 md:p-8" />
+                      ) : (
+                        <div className="text-6xl text-gray-600">🆕</div>
+                      )}
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 md:p-6">
+                        <div className="flex items-end justify-between">
+                          <div>
+                            <h3 className="text-lg md:text-xl font-bold text-white drop-shadow-lg">
+                              {item.title || prod?.name || t('hero.newProduct')}
+                            </h3>
+                            {prod && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-lg font-bold text-amber-400">${prod.price.toFixed(2)}</span>
+                                {prod.wholesalePrice && (
+                                  <span className="text-sm text-gray-400 line-through">${prod.wholesalePrice.toFixed(2)}</span>
                                 )}
                               </div>
+                            )}
+                          </div>
+                          {prod && (
+                            <Link href={`/products/${prod.slug}`}
+                              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black text-sm font-bold rounded-lg transition shrink-0">
+                              {t('hero.viewDetails')}
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 右 1/3：视频展示 */}
+                    <div className="lg:col-span-1 relative bg-black min-h-[250px] md:min-h-[500px] flex items-center justify-center">
+                      {hasVideo ? (
+                        <video src={item.videoUrl || ''} controls className="w-full h-full object-contain" poster={imgSrc || undefined}>
+                          {t('hero.noVideoSupport')}
+                        </video>
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 p-4">
+                          <div className="relative w-full max-w-[200px] aspect-[9/16] rounded-xl overflow-hidden border-2 border-gray-700/50 flex items-center justify-center bg-gray-900/80">
+                            <div className="absolute inset-0 flex items-center justify-center z-10">
+                              <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-amber-500/90 flex items-center justify-center shadow-lg shadow-amber-500/30 hover:bg-amber-400 transition cursor-pointer group">
+                                <svg className="w-6 h-6 md:w-7 md:h-7 text-black ml-0.5 group-hover:scale-110 transition" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M8 5v14l11-7z" />
+                                </svg>
+                              </div>
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900" />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center opacity-30">
+                              <div className="text-3xl mb-1">🎬</div>
+                              <p className="text-[10px] tracking-widest uppercase">{t('hero.productVideo')}</p>
+                            </div>
+                            <div className="absolute top-2 left-2 z-20">
+                              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded border border-amber-500/30">DEMO</span>
                             </div>
                           </div>
-                        </SwiperSlide>
-                      )
-                    })}
-                  </Swiper>
-
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
-                    {filteredItems.map((_, idx) => (
-                      <button key={idx} onClick={() => swiperRef.current?.slideTo(idx)}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                          idx === activeIndex ? 'bg-amber-400 w-6' : 'bg-white/40 hover:bg-white/60'
-                        }`}
-                        aria-label={`${t('hero.slide')} ${idx + 1}`} />
-                    ))}
+                          <p className="text-xs text-gray-600 mt-3">{t('hero.productVideo')}</p>
+                          {prod && (
+                            <p className="text-xs text-gray-700 mt-1 text-center max-w-[180px]">{item.title || prod.name}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </>
-              ) : (
-                <div className="min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center text-gray-500">
-                  <div className="text-6xl mb-3">🛒</div>
-                  <h2 className="text-xl font-bold text-amber-400 mb-2">{heroTitle}</h2>
-                  <p className="text-gray-400">{t('hero.comingSoon')}</p>
-                </div>
-              )}
-            </div>
-          </div>
+                </SwiperSlide>
+              )
+            })}
+          </Swiper>
 
-          <div className="lg:col-span-1">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">🎬</span>
-              <h2 className="text-base font-bold text-amber-400">{t('hero.video')}</h2>
-            </div>
-            <div className="aspect-[9/16] max-h-[450px] rounded-xl overflow-hidden bg-black border border-gray-700 shadow-xl">
-              {heroVideo ? (
-                <video src={heroVideo} controls className="w-full h-full object-contain"
-                  poster={filteredItems[activeIndex]?.image || filteredItems[0]?.image || undefined}>
-                  {t('hero.noVideoSupport')}
-                </video>
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
-                  <div className="text-4xl mb-2">🎥</div>
-                  <p className="text-sm">{t('hero.video')}</p>
-                  <p className="text-xs text-gray-600 mt-1">{t('hero.videoDesc')}</p>
-                </div>
-              )}
-            </div>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+            {slides.map((_, idx) => (
+              <button key={idx} onClick={() => swiperRef.current?.slideTo(idx)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  idx === activeIndex ? 'bg-amber-400 w-6' : 'bg-white/40 hover:bg-white/60'
+                }`}
+                aria-label={`${t('hero.slide')} ${idx + 1}`} />
+            ))}
           </div>
         </div>
 

@@ -13,7 +13,6 @@ const navItems = [
   { href: '/admin/videos', label: '视频管理', icon: '🎬' },
   { href: '/admin/sections', label: '区块标题', icon: '📑' },
   { href: '/admin/inquiries', label: '询价管理', icon: '📋' },
-  { href: '/admin/pi', label: 'PI管理', icon: '📄' },
   { href: '/admin/orders', label: '订单管理', icon: '📑' },
   { href: '/admin/customers', label: '客户管理', icon: '👥' },
   { href: '/admin/admins', label: '管理员', icon: '👑' },

@@ -35,8 +35,7 @@ export type TranslationKey =
   | 'cart.remove' | 'cart.flavor' | 'cart.continue' | 'cart.clear'
   | 'cart.itemsCount' | 'cart.submitInquiry' | 'cart.loading'
   | 'cart.loginRequired' | 'cart.loginRequiredDesc' | 'cart.goToLogin' | 'cart.browseProducts'
-  // PI
-  | 'pi.title' | 'pi.empty' | 'pi.emptyDesc' | 'pi.loading' | 'pi.loginRequired' | 'pi.itemsCount'
+  // PI | 'pi.empty' | 'pi.emptyDesc' | 'pi.loading' | 'pi.loginRequired' | 'pi.itemsCount'
   // 注册
   | 'register.title' | 'register.desc' | 'register.name' | 'register.email'
   | 'register.password' | 'register.company' | 'register.address'
@@ -48,12 +47,12 @@ export type TranslationKey =
   // 导航
   | 'nav.home' | 'nav.products' | 'nav.cart' | 'nav.login' | 'nav.register'
   | 'nav.admin' | 'nav.logout' | 'nav.hello' | 'nav.pricing' | 'nav.contact'
-  | 'nav.brands' | 'nav.myPi' | 'nav.myOrders'
+  | 'nav.brands' | 'nav.myOrders'
   // Hero
   | 'hero.title' | 'hero.subtitle' | 'hero.browse' | 'hero.login'
   | 'hero.newProduct' | 'hero.video' | 'hero.videoDesc'
   | 'hero.vaporDesc'
-  | 'hero.previous' | 'hero.next' | 'hero.viewDetails' | 'hero.comingSoon' | 'hero.noVideoSupport' | 'hero.slide'
+  | 'hero.previous' | 'hero.next' | 'hero.viewDetails' | 'hero.comingSoon' | 'hero.noVideoSupport' | 'hero.slide' | 'hero.productVideo'
   // Orders
   | 'orders.title' | 'orders.desc' | 'orders.empty' | 'orders.emptyDesc' | 'orders.browse' | 'orders.loading'
   | 'orders.number' | 'orders.total' | 'orders.status' | 'orders.note'
@@ -73,8 +72,7 @@ export type TranslationKey =
   | 'about.subtitle'
   // 品牌
   | 'brands.desc'
-  // PI
-  | 'pi.applyNew' | 'pi.browseProducts'
+  // PI | 'pi.browseProducts'
   // 联系
   | 'contact.placeholder' | 'contact.wechatDesc' | 'contact.replyHour' | 'contact.shippingText'
   | 'contact.prefix'
@@ -92,7 +90,6 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'nav.pricing': '价格',
     'nav.contact': '联系我们',
     'nav.brands': '品牌',
-    'nav.myPi': '我的PI',
     'nav.myOrders': '我的订单',
     'header.switchToEn': '切换到英文',
     'header.switchToZh': '切换到中文',
@@ -114,6 +111,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'hero.comingSoon': '新品即将上线，敬请期待',
     'hero.noVideoSupport': '您的浏览器不支持视频播放',
     'hero.slide': '第',
+    'hero.productVideo': '产品视频',
     'orders.title': '我的订单',
     'orders.desc': '查看您的采购订单状态',
     'orders.empty': '暂无订单',
@@ -246,14 +244,6 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'cart.browseProducts': '浏览产品',
 
     // PI
-    'pi.title': '我的PI (形式发票)',
-    'pi.empty': '暂无PI',
-    'pi.emptyDesc': '管理员尚未为您创建形式发票',
-    'pi.loading': '加载中...',
-    'pi.loginRequired': '请先登录',
-    'pi.itemsCount': '件产品',
-    'pi.applyNew': '申请新PI',
-    'pi.browseProducts': '浏览产品',
 
     // 注册
     'register.title': '注册账户',
@@ -380,7 +370,6 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'nav.pricing': 'Pricing',
     'nav.contact': 'Contact',
     'nav.brands': 'Brands',
-    'nav.myPi': 'My PI',
     'nav.myOrders': 'My Orders',
     'header.switchToEn': 'Switch to English',
     'header.switchToZh': 'Switch to Chinese',
@@ -402,6 +391,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'hero.comingSoon': 'New arrivals coming soon',
     'hero.noVideoSupport': 'Your browser does not support video',
     'hero.slide': 'Slide',
+    'hero.productVideo': 'Product Video',
     'orders.title': 'My Orders',
     'orders.desc': 'Track your purchase orders',
     'orders.empty': 'No orders yet',
@@ -529,14 +519,6 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'cart.browseProducts': 'Browse Products',
 
     // PI
-    'pi.title': 'My PI (Proforma Invoice)',
-    'pi.empty': 'No PI Yet',
-    'pi.emptyDesc': 'Admin has not created a proforma invoice for you yet',
-    'pi.loading': 'Loading...',
-    'pi.loginRequired': 'Please Login First',
-    'pi.itemsCount': 'product(s)',
-    'pi.applyNew': 'Request New PI',
-    'pi.browseProducts': 'Browse Products',
 
     // 注册
     'register.title': 'Customer Registration',

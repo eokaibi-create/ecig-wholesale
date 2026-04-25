@@ -37,10 +37,6 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [activeImage, setActiveImage] = useState(0)
   const [notFoundState, setNotFoundState] = useState(false)
-  const [selectedFlavor, setSelectedFlavor] = useState('')
-  const [quantity, setQuantity] = useState(500)
-  const [piLoading, setPiLoading] = useState(false)
-  const [piMsg, setPiMsg] = useState('')
 
   const getEnglishDescription = () => {
     if (language !== 'en') return product?.description || ''
@@ -68,10 +64,6 @@ export default function ProductDetailPage() {
         }
         const prod = await prodRes.json()
         setProduct(prod)
-        if (prod.flavor) {
-          const flavors = prod.flavor.split(",").map((f: string) => f.trim()).filter(Boolean)
-          if (flavors.length > 0) setSelectedFlavor(flavors[0])
-        }
         const sets = await setRes.json()
         setSettings(Array.isArray(sets) ? sets : [])
       } catch (err) {
@@ -82,52 +74,6 @@ export default function ProductDetailPage() {
     }
     load()
   }, [slug])
-
-  const createPiFromProduct = async () => {
-    setPiLoading(true)
-    setPiMsg('')
-    try {
-      // 先获取当前客户
-      const meRes = await fetch('/api/auth/customer/me')
-      if (!meRes.ok) {
-        setPiMsg('🔐 ' + t('cart.loginRequired'))
-        setTimeout(() => window.location.href = '/login', 1200)
-        return
-      }
-      const meData = await meRes.json()
-      if (!meData.authenticated) {
-        setPiMsg('🔐 ' + t('cart.loginRequired'))
-        setTimeout(() => window.location.href = '/login', 1200)
-        return
-      }
-      const customerId = meData.customer.id
-
-      const res = await fetch('/api/pi', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerId,
-          orderItems: [{
-            productId: product!.id,
-            productName: product!.name,
-            quantity,
-            unitPrice: product!.price,
-            flavor: selectedFlavor || undefined,
-          }],
-        }),
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setPiMsg('✅ PI #' + data.piNumber + ' ' + t('product.created'))
-        setTimeout(() => window.location.href = '/account/pi', 1200)
-      } else {
-        setPiMsg('❌ ' + (data.error || 'Failed'))
-      }
-    } catch {
-      setPiMsg('❌ ' + t('cart.loading'))
-    }
-    setPiLoading(false)
-  }
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -151,10 +97,6 @@ export default function ProductDetailPage() {
     Array.isArray(settings) ? settings.map((s: any) => [s.key, s.value]) : []
   )
   const whatsappNum = (settingMap.whatsapp || '+13239260829').replace(/[^0-9]/g, '')
-
-  const flavorList: string[] = product.flavor
-    ? product.flavor.split(",").map((f: string) => f.trim()).filter(Boolean)
-    : []
 
   const allImages: string[] = []
   if (product.image) allImages.push(product.image)
@@ -248,65 +190,25 @@ export default function ProductDetailPage() {
               </table>
             </div>
 
-            {/* 直接创建PI的区块 */}
-            <div className="mt-6 p-5 bg-amber-50 border border-amber-200 rounded-xl">
+            {/* 联系客服询价 */}
+            <div className="mt-6 p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl">
               <h3 className="font-semibold text-amber-800 mb-3">
-                📄 {language === 'en' ? 'Request PI (Proforma Invoice)' : '申请PI（形式发票）'}
+                💬 {language === 'en' ? 'Contact Us for Bulk Orders' : '联系我们获取批发报价'}
               </h3>
-
-              {flavorList.length > 0 && (
-                <div className="mb-3">
-                  <label className="block text-sm font-medium text-amber-700 mb-1.5">
-                    🎨 {t('product.chooseFlavor')}
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {flavorList.map(f => (
-                      <button key={f} type="button" onClick={() => setSelectedFlavor(f)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition ${
-                          selectedFlavor === f
-                            ? 'bg-amber-500 text-black border-amber-500'
-                            : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300'
-                        }`}>{f}</button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center gap-3 mb-3">
-                <label className="text-sm font-medium text-amber-700">{t('product.quantity')}</label>
-                <div className="flex items-center border rounded-lg bg-white">
-                  <button onClick={() => setQuantity(q => Math.max(1, q - 100))}
-                    className="px-3 py-1.5 text-gray-500 hover:bg-gray-100 transition">−</button>
-                  <input type="number" value={quantity}
-                    onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-20 text-center border-x py-1.5 text-sm outline-none" min="1" />
-                  <button onClick={() => setQuantity(q => q + 100)}
-                    className="px-3 py-1.5 text-gray-500 hover:bg-gray-100 transition">+</button>
-                </div>
+              <p className="text-sm text-gray-600 mb-4">
+                {t('contact.inquireDesc')}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a href={`https://wa.me/${whatsappNum}?text=Hi!%20I'm%20interested%20in%20${encodeURIComponent(product.name)}`}
+                   target="_blank" rel="noopener noreferrer"
+                   className="flex-1 text-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition">
+                  💬 WhatsApp
+                </a>
+                <Link href="/contact"
+                   className="flex-1 text-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition">
+                  {t('contact.send')}
+                </Link>
               </div>
-
-              <button onClick={createPiFromProduct} disabled={piLoading}
-                className="w-full text-center px-6 py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-black font-semibold rounded-lg transition">
-                {piLoading ? '⏳...' : '📄 ' + (language === 'en' ? 'Create PI' : '创建PI')}
-              </button>
-              {piMsg && (
-                <p className={`mt-2 text-sm text-center ${
-                  piMsg.includes('✅') ? 'text-green-600' :
-                  piMsg.includes('🔐') ? 'text-amber-600' : 'text-red-500'
-                }`}>{piMsg}</p>
-              )}
-            </div>
-
-            <div className="mt-4 flex flex-col sm:flex-row gap-3">
-              <a href={`https://wa.me/${whatsappNum}?text=Hi!%20I'm%20interested%20in%20${encodeURIComponent(product.name)}`}
-                 target="_blank" rel="noopener noreferrer"
-                 className="flex-1 text-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition">
-                💬 WhatsApp
-              </a>
-              <Link href="/contact"
-                 className="flex-1 text-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition">
-                {t('contact.send')}
-              </Link>
             </div>
 
             <div className="mt-4 text-sm text-gray-400 text-center">

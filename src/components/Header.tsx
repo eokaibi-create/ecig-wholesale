@@ -92,13 +92,7 @@ export default function Header() {
                         <p className="text-xs text-gray-500 truncate">{customer.email}</p>
                         {customer.company && <p className="text-xs text-gray-400">{customer.company}</p>}
                       </div>
-                      <Link href="/account/pi" onClick={() => setUserMenu(false)}
-                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition flex items-center space-x-2">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span>{t('nav.myPi')}</span>
-                      </Link>
+
                       <Link href="/orders" onClick={() => setUserMenu(false)}
                         className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition flex items-center space-x-2">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -159,7 +153,7 @@ export default function Header() {
             {customer ? (
               <>
                 <div className="px-4 py-2 text-sm text-gray-400">{customer.name} - {customer.email}</div>
-                <Link href="/account/pi" className="block px-4 py-2 hover:bg-gray-800 rounded" onClick={() => setOpen(false)}>📄 {t('nav.myPi')}</Link>
+
                 <Link href="/orders" className="block px-4 py-2 hover:bg-gray-800 rounded" onClick={() => setOpen(false)}>📋 {t('nav.myOrders')}</Link>
                 <button onClick={() => { handleLogout(); setOpen(false) }}
                   className="block w-full text-left px-4 py-2 text-red-400 hover:bg-gray-800 rounded">{t('nav.logout')}</button>

@@ -60,7 +60,6 @@ model Product {
   flavor         String?
   size           String?
   heroItems      HeroItem[]
-  proformaInvoiceItems ProformaInvoiceItem[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 }
@@ -80,7 +79,6 @@ model Customer {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   inquiries       Inquiry[]
-  proformaInvoices ProformaInvoice[]
   orders          Order[]
 }
 
@@ -145,35 +143,7 @@ model HeroItem {
 }
 
 
-model ProformaInvoice {
-  id         Int                     @id @default(autoincrement())
-  piNumber   String                  @unique
-  customerId Int
-  customer   Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  items      ProformaInvoiceItem[]
-  subtotal   Float                   @default(0)
-  discount   Float                   @default(0)
-  totalAmount Float                  @default(0)
-  status     String                  @default("pending")
-  notes      String?                 @db.Text
-  validUntil DateTime?
-  createdAt  DateTime                @default(now())
-  updatedAt  DateTime                @updatedAt
-}
 
-model ProformaInvoiceItem {
-  id                 Int             @id @default(autoincrement())
-  proformaInvoiceId  Int
-  proformaInvoice    ProformaInvoice @relation(fields: [proformaInvoiceId], references: [id], onDelete: Cascade)
-  productId          Int
-  product            Product         @relation(fields: [productId], references: [id], onDelete: SetNull)
-  productName        String
-  flavor             String?  // 口味选择
-  quantity           Int
-  unitPrice          Float
-  total              Float
-  createdAt          DateTime        @default(now())
-}
 
 model Admin {
   id        Int      @id @default(autoincrement())

@@ -57,7 +57,7 @@ export default function Footer() {
             <div className="space-y-2 text-sm">
               <Link href="/products" className="block text-gray-400 hover:text-amber-400 transition">{t('nav.products')}</Link>
               <Link href="/contact" className="block text-gray-400 hover:text-amber-400 transition">{t('nav.contact')}</Link>
-              <Link href="/account/pi" className="block text-gray-400 hover:text-amber-400 transition">{t('nav.myPi')}</Link>
+
               <Link href="/login" className="block text-gray-400 hover:text-amber-400 transition">{t('nav.login')}</Link>
               <Link href="/register" className="block text-gray-400 hover:text-amber-400 transition">{t('nav.register')}</Link>
             </div>
