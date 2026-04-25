@@ -51,7 +51,7 @@ export default async function ProductsPage({
           <p className="mt-2 text-gray-400 text-lg">
             {currentBrand
               ? `${currentBrand.name} ${lang === 'en' ? 'Wholesale Series' : '系列产品批发'}`
-              : (lang === 'en' ? 'Full range of vape products wholesale' : '全系列电子烟产品批发')}
+              : t('product.desc')}
           </p>
         </div>
       </div>
@@ -104,7 +104,7 @@ export default async function ProductsPage({
           <div className="text-center py-20">
             <div className="text-6xl mb-4">📦</div>
             <h3 className="text-xl font-semibold text-gray-600">{t('product.none')}</h3>
-            <p className="text-gray-400 mt-2">{lang === 'en' ? 'No products in this category yet' : '该分类下暂无产品，请查看其他分类'}</p>
+            <p className="text-gray-400 mt-2">{t('products.emptyDesc')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -120,7 +120,18 @@ export default async function ProductsPage({
                 <div className="p-4">
                   <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded">{product.category?.name}</span>
                   <h3 className="mt-2 font-semibold text-gray-900 group-hover:text-amber-600 transition">{product.name}</h3>
-                  <p className="mt-1 text-sm text-gray-500 line-clamp-1">{product.shortDesc}</p>
+                  <p className="mt-1 text-sm text-gray-500 line-clamp-1">{(() => {
+                    if (lang !== 'en' || !product.shortDesc) return product.shortDesc
+                    const shortMap: Record<string, string> = {
+                      'elfbar-bc5000': serverT('product.shortBc5000'),
+                      'geek-bar-pulse': serverT('product.shortPulse'),
+                      'lost-mary-mo20000-pro': serverT('product.shortLostMary'),
+                      'raz-tn9000': serverT('product.shortRaz'),
+                      'geek-bar-meloso-mini': serverT('product.shortMeloso'),
+                      'elfbar-600': serverT('product.shortElf600'),
+                    }
+                    return shortMap[product.slug] || product.shortDesc
+                  })()}</p>
                   <div className="mt-3 flex items-center justify-between">
                     <span className="text-xl font-bold text-amber-600">${product.price.toFixed(2)}</span>
                     {product.msrp && <span className="text-sm text-gray-400 line-through">${product.msrp.toFixed(2)}</span>}

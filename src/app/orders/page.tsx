@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 interface Order {
   id: number
@@ -15,6 +16,7 @@ interface Order {
 
 export default function OrdersPage() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -35,11 +37,11 @@ export default function OrdersPage() {
   }, [router])
 
   const statusMap: Record<string, { label: string; color: string }> = {
-    pending: { label: '待处理', color: 'bg-yellow-100 text-yellow-700' },
-    processing: { label: '处理中', color: 'bg-blue-100 text-blue-700' },
-    shipped: { label: '已发货', color: 'bg-purple-100 text-purple-700' },
-    completed: { label: '已完成', color: 'bg-green-100 text-green-700' },
-    cancelled: { label: '已取消', color: 'bg-red-100 text-red-700' },
+    pending: { label: t('orders.pending'), color: 'bg-yellow-100 text-yellow-700' },
+    processing: { label: t('orders.processing'), color: 'bg-blue-100 text-blue-700' },
+    shipped: { label: t('orders.shipped'), color: 'bg-purple-100 text-purple-700' },
+    completed: { label: t('orders.completed'), color: 'bg-green-100 text-green-700' },
+    cancelled: { label: t('orders.cancelled'), color: 'bg-red-100 text-red-700' },
   }
 
   if (loading) {
@@ -47,7 +49,7 @@ export default function OrdersPage() {
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-gray-500">加载中...</p>
+          <p className="text-gray-500">{t('orders.loading')}</p>
         </div>
       </div>
     )
@@ -57,8 +59,8 @@ export default function OrdersPage() {
     <div className="bg-gray-50 min-h-screen">
       <div className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold">我的订单</h1>
-          <p className="mt-2 text-gray-400">查看您的采购订单状态</p>
+          <h1 className="text-3xl font-bold">{t('orders.title')}</h1>
+          <p className="mt-2 text-gray-400">{t('orders.desc')}</p>
         </div>
       </div>
 
@@ -66,10 +68,10 @@ export default function OrdersPage() {
         {orders.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border p-12 text-center">
             <div className="text-6xl mb-4">📦</div>
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">暂无订单</h3>
-            <p className="text-gray-400 mb-6">浏览产品目录并提交您的第一个采购订单</p>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">{t('orders.empty')}</h3>
+            <p className="text-gray-400 mb-6">{t('orders.emptyDesc')}</p>
             <Link href="/products" className="inline-block px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition">
-              浏览产品
+              {t('orders.browse')}
             </Link>
           </div>
         ) : (
@@ -78,7 +80,7 @@ export default function OrdersPage() {
               <div key={order.id} className="bg-white rounded-xl shadow-sm border p-6 hover:shadow-md transition">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <span className="text-sm text-gray-500">订单 #</span>
+                    <span className="text-sm text-gray-500">{t('orders.number')}</span>
                     <span className="font-bold text-gray-900">{String(order.id).padStart(6, '0')}</span>
                   </div>
                   <span className={`text-xs px-3 py-1 rounded-full font-medium ${statusMap[order.status]?.color || 'bg-gray-100 text-gray-600'}`}>
@@ -97,13 +99,13 @@ export default function OrdersPage() {
 
                 <div className="border-t pt-4 flex items-center justify-between">
                   <div className="text-sm text-gray-500">
-                    {new Date(order.createdAt).toLocaleDateString('zh-CN', {
+                    {new Date(order.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric', month: 'long', day: 'numeric',
                     })}
-                    {order.note && <p className="mt-1 text-xs text-gray-400">备注: {order.note}</p>}
+                    {order.note && <p className="mt-1 text-xs text-gray-400">{t('orders.note')}: {order.note}</p>}
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-500">合计</p>
+                    <p className="text-sm text-gray-500">{t('orders.total')}</p>
                     <p className="text-xl font-bold text-amber-600">${Number(order.total).toFixed(2)}</p>
                   </div>
                 </div>

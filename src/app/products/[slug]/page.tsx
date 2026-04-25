@@ -31,13 +31,27 @@ interface Product {
 export default function ProductDetailPage() {
   const params = useParams()
   const slug = params.slug as string
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
 
   const [product, setProduct] = useState<Product | null>(null)
   const [settings, setSettings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [activeImage, setActiveImage] = useState(0)
   const [notFoundState, setNotFoundState] = useState(false)
+
+  // 获取产品英文描述
+  const getEnglishDescription = () => {
+    if (language !== 'en') return product?.description || ''
+    const descMap: Record<string, string> = {
+      'elfbar-bc5000': t('product.elfbarBc5000'),
+      'geek-bar-pulse': t('product.geekBarPulse'),
+      'lost-mary-mo20000-pro': t('product.lostMary'),
+      'raz-tn9000': t('product.razTn9000'),
+      'geek-bar-meloso-mini': t('product.geekBarMelosoMini'),
+      'elfbar-600': t('product.elfbar600'),
+    }
+    return descMap[product?.slug || ''] || product?.description || ''
+  }
 
   useEffect(() => {
     async function load() {
@@ -75,8 +89,8 @@ export default function ProductDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">🔍</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">产品未找到</h2>
-          <Link href="/products" className="text-amber-600 hover:underline">← 返回产品中心</Link>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('product.notFound')}</h2>
+          <Link href="/products" className="text-amber-600 hover:underline">{t('product.backToProducts')}</Link>
         </div>
       </div>
     )
@@ -220,7 +234,7 @@ export default function ProductDetailPage() {
         <div className="mt-12 border-t pt-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('product.detail')}</h2>
           <div className="prose max-w-none text-gray-600 whitespace-pre-wrap leading-relaxed">
-            {product.description}
+            {getEnglishDescription()}
           </div>
         </div>
 

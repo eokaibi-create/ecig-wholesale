@@ -10,7 +10,10 @@ export type TranslationKey =
   | 'hero.title' | 'hero.subtitle' | 'hero.browse' | 'hero.login'
   | 'hero.newProduct' | 'hero.video' | 'hero.videoDesc'
   | 'hero.vaporDesc'
-  // 产品
+  | 'hero.previous' | 'hero.next' | 'hero.viewDetails' | 'hero.comingSoon' | 'hero.noVideoSupport' | 'hero.slide'
+  | 'orders.title' | 'orders.desc' | 'orders.empty' | 'orders.emptyDesc' | 'orders.browse' | 'orders.loading'
+  | 'orders.number' | 'orders.total' | 'orders.status' | 'orders.note'
+  | 'orders.pending' | 'orders.processing' | 'orders.shipped' | 'orders.completed' | 'orders.cancelled'  // 产品
   | 'product.title' | 'product.desc' | 'product.all' | 'product.none'
   | 'product.addToCart' | 'product.added' | 'product.quantity' | 'product.chooseFlavor'
   | 'product.params' | 'product.brand' | 'product.nicotine' | 'product.capacity'
@@ -111,6 +114,27 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'hero.videoDesc': '后台 → 新品管理 上传',
     'hero.vaporDesc': '美国电子烟批发供应商',
 
+    'hero.previous': '上一张',
+    'hero.next': '下一张',
+    'hero.viewDetails': '查看详情 →',
+    'hero.comingSoon': '新品即将上线，敬请期待',
+    'hero.noVideoSupport': '您的浏览器不支持视频播放',
+    'hero.slide': '第',
+    'orders.title': '我的订单',
+    'orders.desc': '查看您的采购订单状态',
+    'orders.empty': '暂无订单',
+    'orders.emptyDesc': '浏览产品目录并提交您的第一个采购订单',
+    'orders.browse': '浏览产品',
+    'orders.loading': '加载中...',
+    'orders.number': '订单 #',
+    'orders.total': '合计',
+    'orders.status': '状态',
+    'orders.note': '备注',
+    'orders.pending': '待处理',
+    'orders.processing': '处理中',
+    'orders.shipped': '已发货',
+    'orders.completed': '已完成',
+    'orders.cancelled': '已取消',
     // 产品
     'product.title': '产品中心',
     'product.desc': '全系列产品，满足各类批发需求',
@@ -346,6 +370,27 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'hero.videoDesc': 'Upload via Admin → Hero Management',
     'hero.vaporDesc': 'Premium Vape Wholesale Supplier USA',
 
+    'hero.previous': 'Previous',
+    'hero.next': 'Next',
+    'hero.viewDetails': 'View Details →',
+    'hero.comingSoon': 'New arrivals coming soon',
+    'hero.noVideoSupport': 'Your browser does not support video',
+    'hero.slide': 'Slide',
+    'orders.title': 'My Orders',
+    'orders.desc': 'Track your purchase orders',
+    'orders.empty': 'No orders yet',
+    'orders.emptyDesc': 'Browse our products and place your first order',
+    'orders.browse': 'Browse Products',
+    'orders.loading': 'Loading...',
+    'orders.number': 'Order #',
+    'orders.total': 'Total',
+    'orders.status': 'Status',
+    'orders.note': 'Note',
+    'orders.pending': 'Pending',
+    'orders.processing': 'Processing',
+    'orders.shipped': 'Shipped',
+    'orders.completed': 'Completed',
+    'orders.cancelled': 'Cancelled',
     // 产品
     'product.title': 'Products',
     'product.desc': 'Full range of products for all wholesale needs',
