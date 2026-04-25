@@ -4,18 +4,19 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  // 创建管理员
-  const hashedPassword = await bcrypt.hash('admin123', 12)
-  await prisma.user.upsert({
+  // 创建超级管理员 (Admin 表)
+  const adminHash = await bcrypt.hash('admin123', 12)
+  await prisma.admin.upsert({
     where: { username: 'admin' },
-    update: {},
+    update: { password: adminHash, role: 'admin' },
     create: {
       username: 'admin',
-      password: hashedPassword,
+      email: 'admin@vaporx.com',
+      password: adminHash,
       role: 'admin',
     },
   })
-  console.log('✅ Admin user created (admin / admin123)')
+  console.log('✅ Admin created (admin / admin123)')
 
   // 创建 YONGADMIN 超级管理员
   const yongHash = await bcrypt.hash('yong123', 12)
@@ -44,6 +45,13 @@ async function main() {
     },
   })
   console.log('✅ Product admin created (product / product123)')
+
+  // 清理旧 User 表残留
+  const oldUsers = await prisma.user.findMany()
+  if (oldUsers.length > 0) {
+    await prisma.user.deleteMany()
+    console.log(`✅ Cleaned ${oldUsers.length} old User table records`)
+  }
 
   // 创建设置
   const settings = [
@@ -98,8 +106,9 @@ async function main() {
   console.log('✅ Customers created')
 
   console.log('\n🎉 Seed completed!')
-  console.log('   Admin: admin / admin123')
-  console.log('   Product Admin: product / product123')
+  console.log('   Admin:     admin / admin123')
+  console.log('   YONGADMIN: YONGADMIN / yong123')
+  console.log('   Product:   product / product123')
 }
 
 main()

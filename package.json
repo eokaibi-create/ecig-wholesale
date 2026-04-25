@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "npx prisma db seed",
-    "vercel-build": "prisma generate && next build"
+    "vercel-build": "prisma generate && prisma db push && npx prisma db seed && next build"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
