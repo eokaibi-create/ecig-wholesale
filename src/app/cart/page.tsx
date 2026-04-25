@@ -21,7 +21,7 @@ interface CartItem {
 }
 
 export default function CartPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [items, setItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
