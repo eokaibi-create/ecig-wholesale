@@ -29,6 +29,11 @@ export default function LoginPage() {
         return
       }
 
+      // 保存客户信息到 localStorage（购物车页/PI页据此判断登录状态）
+      const payload = { id: data.customer.id, customerId: data.customer.id, email: data.customer.email, name: data.customer.name }
+      localStorage.setItem('customer_token', btoa(JSON.stringify(payload)))
+      localStorage.setItem('customer_info', JSON.stringify(data.customer))
+
       router.push('/')
       router.refresh()
     } catch {
