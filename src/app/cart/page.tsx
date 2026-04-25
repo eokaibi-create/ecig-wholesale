@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 interface CartItem {
   id: number
@@ -20,6 +21,7 @@ interface CartItem {
 }
 
 export default function CartPage() {
+  const { t } = useLanguage()
   const [items, setItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
@@ -29,7 +31,7 @@ export default function CartPage() {
   const fetchCart = async () => {
     const token = localStorage.getItem('customer_token')
     if (!token) { setLoading(false); return }
-    
+
     try {
       const payload = JSON.parse(atob(token.split('.')[0]))
       const res = await fetch('/api/cart', {
@@ -94,9 +96,9 @@ export default function CartPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center p-8">
           <div className="text-6xl mb-4">🛒</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">请先登录</h1>
-          <p className="text-gray-500 mb-6">登录后查看购物车</p>
-          <Link href="/login" className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl">去登录</Link>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('cart.loginRequired')}</h1>
+          <p className="text-gray-500 mb-6">{t('cart.loginRequiredDesc')}</p>
+          <Link href="/login" className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl">{t('cart.goToLogin')}</Link>
         </div>
       </div>
     )
@@ -108,7 +110,7 @@ export default function CartPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-amber-500">VAPOR-X</Link>
           <div className="flex items-center gap-4">
-            <Link href="/account/pi" className="text-sm text-gray-600 hover:text-amber-500">我的PI</Link>
+            <Link href="/account/pi" className="text-sm text-gray-600 hover:text-amber-500">{t('nav.myPi')}</Link>
             <span className="text-sm text-gray-500">👤 {customer.email || customer.name}</span>
           </div>
         </div>
@@ -116,9 +118,9 @@ export default function CartPage() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">🛒 购物车</h1>
+          <h1 className="text-2xl font-bold text-gray-900">🛒 {t('cart.title')}</h1>
           {items.length > 0 && (
-            <button onClick={clearCart} className="text-sm text-red-500 hover:text-red-600">清空购物车</button>
+            <button onClick={clearCart} className="text-sm text-red-500 hover:text-red-600">{t('cart.clear')}</button>
           )}
         </div>
 
@@ -127,13 +129,13 @@ export default function CartPage() {
         )}
 
         {loading ? (
-          <div className="text-center py-12 text-gray-400">加载中...</div>
+          <div className="text-center py-12 text-gray-400">{t('cart.loading')}</div>
         ) : items.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border p-12 text-center">
             <div className="text-6xl mb-4">🛒</div>
-            <h2 className="text-xl font-bold text-gray-700 mb-2">购物车是空的</h2>
-            <p className="text-gray-400 mb-6">去浏览产品并添加到购物车</p>
-            <Link href="/products" className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl">浏览产品</Link>
+            <h2 className="text-xl font-bold text-gray-700 mb-2">{t('cart.empty')}</h2>
+            <p className="text-gray-400 mb-6">{t('cart.emptyDesc')}</p>
+            <Link href="/products" className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl">{t('cart.browseProducts')}</Link>
           </div>
         ) : (
           <div className="space-y-4">
@@ -148,8 +150,8 @@ export default function CartPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link href={`/products/${item.product.slug}`} className="font-semibold text-gray-900 hover:text-amber-600">{item.product.name}</Link>
-                  {item.flavor && <p className="text-xs text-gray-500">🎨 {item.flavor}</p>}
-                  <p className="text-sm text-amber-600 font-bold">${(item.product.wholesalePrice || item.product.price).toFixed(2)} /件</p>
+                  {item.flavor && <p className="text-xs text-gray-500">🎨 {t('cart.flavor')}: {item.flavor}</p>}
+                  <p className="text-sm text-amber-600 font-bold">${(item.product.wholesalePrice || item.product.price).toFixed(2)}/{lang === 'en' ? 'pc' : '件'}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => updateQty(item.id, (editingQty[item.id] || item.quantity) - 1)}
@@ -163,24 +165,24 @@ export default function CartPage() {
                 </div>
                 <div className="text-right min-w-[100px]">
                   <p className="font-bold text-gray-900">${((editingQty[item.id] ?? item.quantity) * (item.product.wholesalePrice || item.product.price)).toFixed(2)}</p>
-                  <button onClick={() => removeItem(item.id)} className="text-xs text-red-500 hover:text-red-600 mt-1">删除</button>
+                  <button onClick={() => removeItem(item.id)} className="text-xs text-red-500 hover:text-red-600 mt-1">{t('cart.remove')}</button>
                 </div>
               </div>
             ))}
 
             <div className="bg-white rounded-xl shadow-sm border p-6 flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">共 {items.reduce((s, i) => s + i.quantity, 0)} 件商品</p>
+                <p className="text-sm text-gray-500">{items.reduce((s, i) => s + i.quantity, 0)} {t('cart.itemsCount')}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-500">合计</p>
+                <p className="text-sm text-gray-500">{t('cart.total')}</p>
                 <p className="text-2xl font-bold text-amber-600">${total.toFixed(2)}</p>
               </div>
             </div>
 
             <div className="flex justify-end gap-4">
-              <Link href="/products" className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 font-semibold">继续购物</Link>
-              <Link href={`/account/pi`} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl">提交询价</Link>
+              <Link href="/products" className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 font-semibold">{t('cart.continue')}</Link>
+              <Link href={`/account/pi`} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl">{t('cart.submitInquiry')}</Link>
             </div>
           </div>
         )}

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import Link from 'next/link'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, EffectFade } from 'swiper/modules'
@@ -35,8 +36,9 @@ interface HeroSwiperProps {
 export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
   const [activeIndex, setActiveIndex] = useState(0)
   const swiperRef = useRef<SwiperType | null>(null)
+  const { t, lang } = useLanguage()
 
-  const slides = items.filter(i => i.image || i.product?.image)
+  const filteredItems = items.filter(i => i.image || i.product?.image)
   const heroVideo = items.find(i => i.videoUrl)?.videoUrl || null
 
   return (
@@ -46,18 +48,16 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-400/5 rounded-full blur-3xl" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        {/* 顶部品牌名 */}
         <div className="text-center mb-6">
           <p className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight">
             <span className="text-amber-400">VAPOR</span>
             <span className="text-white">-X</span>
           </p>
           <p className="mt-1 text-sm md:text-base text-gray-500 font-light tracking-widest uppercase">
-            美国电子烟批发供应商
+            {t('hero.vaporDesc')}
           </p>
         </div>
 
-        {/* 标题 + 左右箭头 */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className="text-lg">🆕</span>
@@ -66,14 +66,14 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
           <div className="flex gap-2">
             <button onClick={() => swiperRef.current?.slidePrev()}
               className="w-10 h-10 rounded-full bg-gray-800/80 hover:bg-amber-500 border border-gray-700 hover:border-amber-400 flex items-center justify-center transition group"
-              aria-label="上一张">
+              aria-label={lang === 'en' ? 'Previous' : '上一张'}>
               <svg className="w-5 h-5 text-gray-400 group-hover:text-black transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button onClick={() => swiperRef.current?.slideNext()}
               className="w-10 h-10 rounded-full bg-gray-800/80 hover:bg-amber-500 border border-gray-700 hover:border-amber-400 flex items-center justify-center transition group"
-              aria-label="下一张">
+              aria-label={lang === 'en' ? 'Next' : '下一张'}>
               <svg className="w-5 h-5 text-gray-400 group-hover:text-black transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -81,12 +81,10 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
           </div>
         </div>
 
-        {/* 两列：轮播 + 视频 */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* 左：轮播 */}
           <div className="lg:col-span-2">
             <div className="relative rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 shadow-2xl">
-              {slides.length > 0 ? (
+              {filteredItems.length > 0 ? (
                 <>
                   <Swiper
                     modules={[Autoplay, EffectFade]}
@@ -98,14 +96,13 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                     onSlideChange={(s) => setActiveIndex(s.realIndex)}
                     style={{ aspectRatio: '16/9' }}
                   >
-                    {slides.map((item, idx) => {
+                    {filteredItems.map((item, idx) => {
                       const imgSrc = item.image || item.product?.image || ''
                       return (
                         <SwiperSlide key={item.id || idx}>
                           <div className="relative w-full h-full min-h-[300px] md:min-h-[450px] flex items-center justify-center bg-gray-800">
                             {imgSrc ? (
-                              <img src={imgSrc} alt={item.title || item.product?.name || '新品'}
-                                className="w-full h-full object-contain" />
+                              <img src={imgSrc} alt={item.title || item.product?.name || 'New'} className="w-full h-full object-contain" />
                             ) : (
                               <div className="text-6xl text-gray-600">🆕</div>
                             )}
@@ -113,7 +110,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                               <div className="flex items-end justify-between">
                                 <div>
                                   <h3 className="text-lg md:text-xl font-bold text-white drop-shadow-lg">
-                                    {item.title || item.product?.name || '新品热荐'}
+                                    {item.title || item.product?.name || t('hero.newProduct')}
                                   </h3>
                                   {item.product && (
                                     <div className="flex items-center gap-2 mt-1">
@@ -127,7 +124,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                                 {item.product && (
                                   <Link href={`/products/${item.product.slug}`}
                                     className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black text-sm font-bold rounded-lg transition shrink-0">
-                                    查看详情 →
+                                    {lang === 'en' ? 'View Details →' : '查看详情 →'}
                                   </Link>
                                 )}
                               </div>
@@ -138,14 +135,13 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                     })}
                   </Swiper>
 
-                  {/* 分页小圆点 */}
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
-                    {slides.map((_, idx) => (
+                    {filteredItems.map((_, idx) => (
                       <button key={idx} onClick={() => swiperRef.current?.slideTo(idx)}
                         className={`w-2 h-2 rounded-full transition-all duration-300 ${
                           idx === activeIndex ? 'bg-amber-400 w-6' : 'bg-white/40 hover:bg-white/60'
                         }`}
-                        aria-label={`第${idx + 1}张`} />
+                        aria-label={`${lang === 'en' ? 'Slide' : '第'} ${idx + 1}`} />
                     ))}
                   </div>
                 </>
@@ -153,44 +149,42 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                 <div className="min-h-[300px] md:min-h-[400px] flex flex-col items-center justify-center text-gray-500">
                   <div className="text-6xl mb-3">🛒</div>
                   <h2 className="text-xl font-bold text-amber-400 mb-2">{heroTitle}</h2>
-                  <p className="text-gray-400">新品即将上线，敬请期待</p>
+                  <p className="text-gray-400">{lang === 'en' ? 'New arrivals coming soon' : '新品即将上线，敬请期待'}</p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* 右：视频 */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-lg">🎬</span>
-              <h2 className="text-base font-bold text-amber-400">新品视频</h2>
+              <h2 className="text-base font-bold text-amber-400">{t('hero.video')}</h2>
             </div>
             <div className="aspect-[9/16] max-h-[450px] rounded-xl overflow-hidden bg-black border border-gray-700 shadow-xl">
               {heroVideo ? (
                 <video src={heroVideo} controls className="w-full h-full object-contain"
-                  poster={slides[activeIndex]?.image || slides[0]?.image || undefined}>
-                  您的浏览器不支持视频播放
+                  poster={filteredItems[activeIndex]?.image || filteredItems[0]?.image || undefined}>
+                  {lang === 'en' ? 'Your browser does not support video' : '您的浏览器不支持视频播放'}
                 </video>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
                   <div className="text-4xl mb-2">🎥</div>
-                  <p className="text-sm">新品视频</p>
-                  <p className="text-xs text-gray-600 mt-1">后台 → 新品管理 上传</p>
+                  <p className="text-sm">{t('hero.video')}</p>
+                  <p className="text-xs text-gray-600 mt-1">{t('hero.videoDesc')}</p>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* 底部按钮 */}
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link href="/products"
             className="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition shadow-lg shadow-amber-500/25">
-            浏览全部产品 →
+            {t('hero.browse')}
           </Link>
           <Link href="/login"
             className="inline-flex items-center px-6 py-3 border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-black font-semibold rounded-xl transition">
-            客户登录
+            {t('hero.login')}
           </Link>
         </div>
       </div>

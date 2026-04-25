@@ -1,12 +1,17 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import { cookies } from 'next/headers'
+import { getServerLang, serverT, type Lang } from '@/i18n/server'
 
 export default async function BrandsPage() {
+  const cookieStore = await cookies()
+  const lang = (cookieStore.get('vaporx-lang')?.value === 'en' ? 'en' : 'zh') as Lang
+  const t = (key: any) => serverT(key, lang)
+
   const brands = await prisma.brand.findMany({
     orderBy: { sortOrder: 'asc' },
   })
 
-  // 查询每种品牌的产品数
   const brandProducts = await prisma.product.groupBy({
     by: ['brand'],
     _count: { id: true },
@@ -16,21 +21,19 @@ export default async function BrandsPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* 头部 */}
       <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold">合作品牌</h1>
-          <p className="mt-2 text-lg text-gray-300">全球顶级电子烟品牌官方授权合作</p>
+          <h1 className="text-4xl font-bold">{t('brand.title')}</h1>
+          <p className="mt-2 text-lg text-gray-300">{lang === 'en' ? 'Official authorized partnerships with top global vape brands' : '全球顶级电子烟品牌官方授权合作'}</p>
         </div>
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* 品牌展示 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {brands.length === 0 ? (
             <div className="col-span-full text-center py-20">
               <div className="text-6xl mb-4">🏷️</div>
-              <p className="text-gray-400">暂无品牌信息</p>
+              <p className="text-gray-400">{t('brand.noBrands')}</p>
             </div>
           ) : (
             brands.map((brand) => {
@@ -52,7 +55,7 @@ export default async function BrandsPage() {
                     {brand.name}
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">
-                    {count > 0 ? `${count} 款产品在售` : '即将上线'}
+                    {count > 0 ? `${count} ${t('product.productsCount')}` : t('product.comingSoon')}
                   </p>
                 </Link>
               )
@@ -60,15 +63,14 @@ export default async function BrandsPage() {
           )}
         </div>
 
-        {/* CTA */}
         <div className="mt-16 bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-10 text-center">
-          <h2 className="text-2xl font-bold text-gray-900">成为 VAPOR-X 合作伙伴</h2>
-          <p className="mt-2 text-gray-600 max-w-lg mx-auto">我们希望与更多优质品牌合作，为我们的客户提供更多选择。欢迎联系我们洽谈合作。</p>
+          <h2 className="text-2xl font-bold text-gray-900">{t('brand.becomePartner')}</h2>
+          <p className="mt-2 text-gray-600 max-w-lg mx-auto">{t('brand.becomeDesc')}</p>
           <Link
             href="/contact"
             className="mt-6 inline-block px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition"
           >
-            联系我们
+            {t('nav.contact')}
           </Link>
         </div>
       </div>

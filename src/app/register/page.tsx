@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { t, lang } = useLanguage()
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -24,12 +26,12 @@ export default function RegisterPage() {
     setError('')
 
     if (form.password !== form.confirm) {
-      setError('两次输入的密码不一致')
+      setError(t('register.passwordMismatch'))
       return
     }
 
     if (form.password.length < 6) {
-      setError('密码至少 6 位')
+      setError(t('register.passwordTooShort'))
       return
     }
 
@@ -53,11 +55,10 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || '注册失败')
+        setError(data.error || 'Registration failed')
         return
       }
 
-      // 保存客户信息到 localStorage（购物车页/PI页据此判断登录状态）
       const payload = { id: data.customer.id, customerId: data.customer.id, email: data.customer.email, name: data.customer.name }
       localStorage.setItem('customer_token', btoa(JSON.stringify(payload)))
       localStorage.setItem('customer_info', JSON.stringify(data.customer))
@@ -65,7 +66,7 @@ export default function RegisterPage() {
       router.push('/')
       router.refresh()
     } catch {
-      setError('网络错误，请稍后重试')
+      setError('Network error, please try again')
     } finally {
       setLoading(false)
     }
@@ -75,8 +76,8 @@ export default function RegisterPage() {
     <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4">
       <div className="max-w-lg w-full bg-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">注册账户</h1>
-          <p className="text-gray-500 mt-2">注册 VAPOR-X 批发账户</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('register.title')}</h1>
+          <p className="text-gray-500 mt-2">{t('register.desc')}</p>
         </div>
 
         {error && (
@@ -87,15 +88,15 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">姓名 *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.name')} *</label>
             <input type="text" required value={form.name}
               onChange={e => setForm({ ...form, name: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-              placeholder="您的姓名" />
+              placeholder={t('register.name')} />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">邮箱 *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.email')} *</label>
             <input type="email" required value={form.email}
               onChange={e => setForm({ ...form, email: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
@@ -104,31 +105,31 @@ export default function RegisterPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">电话</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.phone')}</label>
               <input type="tel" value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
                 placeholder="+1 (xxx) xxx-xxxx" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">公司名称</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.company')}</label>
               <input type="text" value={form.company}
                 onChange={e => setForm({ ...form, company: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder="公司名称" />
+                placeholder={t('register.company')} />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">公司地址 *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.companyAddress')} *</label>
             <input type="text" value={form.companyAddress}
               onChange={e => setForm({ ...form, companyAddress: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-              placeholder="详细地址（街道、城市、邮编）" required />
+              placeholder="Street, City, Zip" required />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">州/省</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.state')}</label>
             <input type="text" value={form.state}
               onChange={e => setForm({ ...form, state: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
@@ -137,30 +138,30 @@ export default function RegisterPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">密码 *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.password')} *</label>
               <input type="password" required value={form.password}
                 onChange={e => setForm({ ...form, password: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder="至少6位" />
+                placeholder={lang === 'en' ? 'min 6 chars' : '至少6位'} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">确认密码 *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.confirm')} *</label>
               <input type="password" required value={form.confirm}
                 onChange={e => setForm({ ...form, confirm: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder="再次输入" />
+                placeholder={t('register.confirm')} />
             </div>
           </div>
 
           <button type="submit" disabled={loading}
             className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition disabled:opacity-50 mt-2">
-            {loading ? '注册中...' : '注 册'}
+            {loading ? t('register.loading') : t('register.submit')}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          已有账户？{' '}
-          <Link href="/login" className="text-amber-600 hover:text-amber-700 font-medium">立即登录</Link>
+          {t('register.haveAccount')}{' '}
+          <Link href="/login" className="text-amber-600 hover:text-amber-700 font-medium">{t('register.loginNow')}</Link>
         </p>
       </div>
     </div>

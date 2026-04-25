@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,11 +27,10 @@ export default function LoginPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || '登录失败')
+        setError(data.error || 'Login failed')
         return
       }
 
-      // 保存客户信息到 localStorage（购物车页/PI页据此判断登录状态）
       const payload = { id: data.customer.id, customerId: data.customer.id, email: data.customer.email, name: data.customer.name }
       localStorage.setItem('customer_token', btoa(JSON.stringify(payload)))
       localStorage.setItem('customer_info', JSON.stringify(data.customer))
@@ -37,7 +38,7 @@ export default function LoginPage() {
       router.push('/')
       router.refresh()
     } catch {
-      setError('网络错误，请稍后重试')
+      setError('Network error, please try again')
     } finally {
       setLoading(false)
     }
@@ -47,8 +48,8 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">客户登录</h1>
-          <p className="text-gray-500 mt-2">登录您的 VAPOR-X 账户</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('login.title')}</h1>
+          <p className="text-gray-500 mt-2">{t('login.desc')}</p>
         </div>
 
         {error && (
@@ -59,7 +60,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">邮箱</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('login.email')}</label>
             <input
               type="email"
               required
@@ -71,7 +72,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">密码</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('login.password')}</label>
             <input
               type="password"
               required
@@ -87,21 +88,20 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition disabled:opacity-50"
           >
-            {loading ? '登录中...' : '登 录'}
+            {loading ? t('login.loading') : t('login.submit')}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          还没有账户？{' '}
+          {t('login.noAccount')}{' '}
           <Link href="/register" className="text-amber-600 hover:text-amber-700 font-medium">
-            立即注册
+            {t('login.registerNow')}
           </Link>
         </p>
 
-        {/* 管理员登录入口 */}
         <div className="mt-6 pt-6 border-t border-gray-200">
           <div className="text-center">
-            <p className="text-xs text-gray-400 mb-2">管理员入口</p>
+            <p className="text-xs text-gray-400 mb-2">{t('login.adminEntry')}</p>
             <Link
               href="/admin/login"
               className="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-lg transition"
@@ -109,7 +109,7 @@ export default function LoginPage() {
               <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              管理员后台登录
+              {t('login.adminLogin')}
             </Link>
           </div>
         </div>

@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 export default function CustomerPIPage() {
+  const { t, lang } = useLanguage()
   const [pis, setPis] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [customer, setCustomer] = useState<any>(null)
@@ -21,8 +23,11 @@ export default function CustomerPIPage() {
 
   if (!customer) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center p-8"><div className="text-6xl mb-4">📄</div><h1 className="text-2xl font-bold mb-2">请先登录</h1>
-        <Link href="/login" className="px-8 py-3 bg-amber-500 text-black font-bold rounded-xl inline-block mt-4">去登录</Link></div>
+      <div className="text-center p-8">
+        <div className="text-6xl mb-4">📄</div>
+        <h1 className="text-2xl font-bold mb-2">{t('pi.loginRequired')}</h1>
+        <Link href="/login" className="px-8 py-3 bg-amber-500 text-black font-bold rounded-xl inline-block mt-4">{t('cart.goToLogin')}</Link>
+      </div>
     </div>
   }
 
@@ -32,18 +37,18 @@ export default function CustomerPIPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-amber-500">VAPOR-X</Link>
           <div className="flex items-center gap-4">
-            <Link href="/cart" className="text-sm text-gray-600 hover:text-amber-500">🛒 购物车</Link>
+            <Link href="/cart" className="text-sm text-gray-600 hover:text-amber-500">🛒 {t('nav.cart')}</Link>
             <span className="text-sm text-gray-500">👤 {customer.email || customer.name}</span>
           </div>
         </div>
       </header>
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">📄 我的PI (形式发票)</h1>
-        {loading ? <div className="text-center py-12 text-gray-400">加载中...</div> : pis.length === 0 ? (
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">📄 {t('pi.title')}</h1>
+        {loading ? <div className="text-center py-12 text-gray-400">{t('pi.loading')}</div> : pis.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border p-12 text-center">
             <div className="text-6xl mb-4">📄</div>
-            <h2 className="text-xl font-bold text-gray-700 mb-2">暂无PI</h2>
-            <p className="text-gray-400">管理员尚未为您创建形式发票</p>
+            <h2 className="text-xl font-bold text-gray-700 mb-2">{t('pi.empty')}</h2>
+            <p className="text-gray-400">{t('pi.emptyDesc')}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -63,7 +68,7 @@ export default function CustomerPIPage() {
                     }`}>{pi.status}</span>
                   </div>
                 </div>
-                <div className="mt-3 text-sm text-gray-500">{pi.items?.length || 0} 件产品</div>
+                <div className="mt-3 text-sm text-gray-500">{(pi.items?.length || 0)} {t('pi.itemsCount')}</div>
               </div>
             ))}
           </div>
