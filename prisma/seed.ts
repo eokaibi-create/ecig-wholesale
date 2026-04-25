@@ -17,6 +17,20 @@ async function main() {
   })
   console.log('✅ Admin user created (admin / admin123)')
 
+  // 创建产品管理员（仅可上传产品）
+  const prodHash = await bcrypt.hash('product123', 12)
+  await prisma.admin.upsert({
+    where: { username: 'product' },
+    update: {},
+    create: {
+      username: 'product',
+      email: 'product@vaporx.com',
+      password: prodHash,
+      role: 'product_admin',
+    },
+  })
+  console.log('✅ Product admin created (product / product123)')
+
   // 创建分类
   const categories = [
     { name: '一次性电子烟', slug: 'disposable', sortOrder: 1 },
@@ -233,7 +247,7 @@ async function main() {
   }
   console.log('✅ Products created (with wholesale prices)')
 
-  // 创建设置（与数据库一致的真实联系方式）
+  // 创建设置
   const settings = [
     { key: 'site_name', value: 'VAPOR-X' },
     { key: 'site_description', value: '美国电子烟批发首选 - 全美发货 · 批发价直供 · 支持海外直邮' },
@@ -262,6 +276,8 @@ async function main() {
     { name: 'John Smith', email: 'john@vapeshopny.com', phone: '+12125550001', company: 'NYC Vape Shop', state: 'NY', approved: true },
     { name: 'Maria Garcia', email: 'maria@smokechicago.com', phone: '+17735550002', company: 'Chicago Smoke House', state: 'IL', approved: true },
     { name: 'David Chen', email: 'david@ecigla.com', phone: '+12135550003', company: 'LA E-Cig Supply', state: 'CA', approved: true },
+    { name: 'Alice', email: 'alice@test.com', phone: '+12125551001', company: 'Alice Vape NYC', state: 'NY', approved: true, password: '$2a$12$LJ3m4ys3Lk0TSwHnbfOMi.X3D1.xqb5YomKf0JxQJ3dX7cK9qT5zS' },
+    { name: 'Bob', email: 'bob@test.com', phone: '+13105552002', company: 'Bob Smoke LA', state: 'CA', approved: true, password: '$2a$12$LJ3m4ys3Lk0TSwHnbfOMi.X3D1.xqb5YomKf0JxQJ3dX7cK9qT5zS' },
     { name: 'Test User', email: 'test@test.com', phone: '+11111111111', company: 'Test Shop', state: 'CA', approved: true, password: '$2a$12$LJ3m4ys3Lk0TSwHnbfOMi.X3D1.xqb5YomKf0JxQJ3dX7cK9qT5zS' },
   ]
 
@@ -308,6 +324,7 @@ async function main() {
 
   console.log('\n🎉 Seed completed!')
   console.log('   Admin: admin / admin123')
+  console.log('   Product Admin: product / product123')
 }
 
 main()

@@ -23,10 +23,12 @@ export async function POST(request: NextRequest) {
       const valid = await bcrypt.compare(password, user.password)
       if (!valid) return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
       
-      const token = Buffer.from(`user:${user.id}:${user.username}:${Date.now()}`).toString('base64')
+      // Token 格式: user:id:username:role:timestamp
+      const token = Buffer.from(`user:${user.id}:${user.username}:${user.role || 'admin'}:${Date.now()}`).toString('base64')
       
       const response = NextResponse.json({ success: true, token, user: { id: user.id, username: user.username, role: user.role || 'admin' } })
       response.cookies.set('admin_token', token, { httpOnly: true, path: '/', maxAge: 86400, sameSite: 'lax' })
+      response.cookies.set('admin_role', user.role || 'admin', { httpOnly: false, path: '/', maxAge: 86400, sameSite: 'lax' })
       return response
     }
 
@@ -40,10 +42,12 @@ export async function POST(request: NextRequest) {
     const valid = await bcrypt.compare(password, admin.password)
     if (!valid) return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
 
-    const token = Buffer.from(`admin:${admin.id}:${admin.username}:${Date.now()}`).toString('base64')
+    // Token 格式: admin:id:username:role:timestamp
+    const token = Buffer.from(`admin:${admin.id}:${admin.username}:${admin.role}:${Date.now()}`).toString('base64')
 
     const response = NextResponse.json({ success: true, token, user: { id: admin.id, username: admin.username, role: admin.role, email: admin.email } })
     response.cookies.set('admin_token', token, { httpOnly: true, path: '/', maxAge: 86400, sameSite: 'lax' })
+    response.cookies.set('admin_role', admin.role, { httpOnly: false, path: '/', maxAge: 86400, sameSite: 'lax' })
     return response
   } catch (error: any) {
     console.error('Admin login error:', error)

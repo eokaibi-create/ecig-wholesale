@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// 产品管理员允许的路由前缀
+const productAdminAllowed = [
+  '/admin/login',
+  '/admin/dashboard',
+  '/admin/products',
+]
+
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('admin_token')?.value
   const { pathname } = request.nextUrl
 
-  // 公开路径
+  // 登录页公开
   if (pathname === '/admin/login') {
     return NextResponse.next()
   }
@@ -13,18 +20,37 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
-  // 验证 token 格式 (admin:id:username:timestamp or user:id:username:timestamp)
   try {
     const decoded = Buffer.from(token, 'base64').toString('utf-8')
     const parts = decoded.split(':')
-    if (parts.length < 3) {
+    if (parts.length < 5) {
       throw new Error('Invalid token')
     }
+
+    const role = parts[3] // type:id:username:role:timestamp
+
+    // 超级管理员 - 全部放行
+    if (role === 'admin' || role === 'superadmin') {
+      return NextResponse.next()
+    }
+
+    // 产品管理员 - 只能访问产品相关页面
+    if (role === 'product_admin') {
+      const allowed = productAdminAllowed.some(prefix => 
+        pathname === prefix || pathname.startsWith(prefix + '/')
+      )
+      if (allowed) {
+        return NextResponse.next()
+      }
+      // 重定向到产品管理
+      return NextResponse.redirect(new URL('/admin/products', request.url))
+    }
+
+    // 未知角色
+    return NextResponse.redirect(new URL('/admin/login', request.url))
   } catch {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
-
-  return NextResponse.next()
 }
 
 export const config = {
