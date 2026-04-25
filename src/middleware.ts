@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // 产品管理员允许的路由前缀
 const productAdminAllowed = [
+  '/admin',
   '/admin/login',
   '/admin/dashboard',
   '/admin/products',
