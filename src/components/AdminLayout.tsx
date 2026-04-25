@@ -64,11 +64,19 @@ export default function AdminLayout({ children, active }: { children: React.Reac
             </Link>
           ))}
         </nav>
-        <div className="p-3 border-t border-gray-700 mt-2">
-          <Link href="/" className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-500 hover:text-white transition">
+        <div className="p-3 border-t border-gray-700 mt-2 space-y-1">
+          <Link href="/admin/change-password" className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-500 hover:text-white hover:bg-gray-800 rounded-lg transition">
+            <span>🔑</span>
+            <span>修改密码</span>
+          </Link>
+          <Link href="/" className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-500 hover:text-white hover:bg-gray-800 rounded-lg transition">
             <span>←</span>
             <span>返回前台</span>
           </Link>
+          <button onClick={() => { document.cookie = 'admin_token=;path=/;max-age=0'; document.cookie = 'admin_role=;path=/;max-age=0'; window.location.href = '/admin/login'; }} className="flex items-center space-x-2 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-lg transition w-full text-left">
+            <span>🚪</span>
+            <span>退出登录</span>
+          </button>
         </div>
       </aside>
 

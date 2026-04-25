@@ -17,6 +17,20 @@ async function main() {
   })
   console.log('✅ Admin user created (admin / admin123)')
 
+  // 创建 YONGADMIN 超级管理员
+  const yongHash = await bcrypt.hash('yong123', 12)
+  await prisma.admin.upsert({
+    where: { username: 'YONGADMIN' },
+    update: { password: yongHash, role: 'admin' },
+    create: {
+      username: 'YONGADMIN',
+      email: 'EOKAIBI@GMAIL.COM',
+      password: yongHash,
+      role: 'admin',
+    },
+  })
+  console.log('✅ YONGADMIN created (YONGADMIN / yong123)')
+
   // 创建产品管理员（仅可上传产品）
   const prodHash = await bcrypt.hash('product123', 12)
   await prisma.admin.upsert({

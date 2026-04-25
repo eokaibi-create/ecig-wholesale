@@ -29,26 +29,29 @@ export async function middleware(request: NextRequest) {
       throw new Error('Invalid token')
     }
 
-    const role = parts[3] // type:id:username:role:timestamp
+    const role = parts[3]
+
+    // 统一角色名（兼容数据库旧数据）
+    const normalizedRole = role === 'product_admin' ? 'product'
+      : role === 'super_admin' ? 'admin'
+      : role
 
     // 超级管理员 - 全部放行
-    if (role === 'admin' || role === 'superadmin') {
+    if (normalizedRole === 'admin' || normalizedRole === 'superadmin') {
       return NextResponse.next()
     }
 
     // 产品管理员 - 只能访问产品和仪表盘
-    if (role === 'product') {
+    if (normalizedRole === 'product') {
       const allowed = productAdminAllowed.some(prefix => 
         pathname === prefix || pathname.startsWith(prefix + '/')
       )
       if (allowed) {
         return NextResponse.next()
       }
-      // 重定向到产品管理
       return NextResponse.redirect(new URL('/admin/products', request.url))
     }
 
-    // 未知角色
     return NextResponse.redirect(new URL('/admin/login', request.url))
   } catch {
     return NextResponse.redirect(new URL('/admin/login', request.url))

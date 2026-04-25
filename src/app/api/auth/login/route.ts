@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     if (!valid) return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
 
     // 统一角色名（兼容旧数据）
-    const normalizedRole = admin.role === 'product_admin' ? 'product' : admin.role
+    const normalizedRole = admin.role === 'product_admin' ? 'product' : admin.role === 'super_admin' ? 'admin' : admin.role
 
     // Token 格式: admin:id:username:role:timestamp
     const token = Buffer.from(`admin:${admin.id}:${admin.username}:${normalizedRole}:${Date.now()}`).toString('base64')
