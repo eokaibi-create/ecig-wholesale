@@ -27,7 +27,7 @@ export default function LoginPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Login failed')
+        setError(data.error || t('login.error'))
         return
       }
 
@@ -38,7 +38,7 @@ export default function LoginPage() {
       router.push('/')
       router.refresh()
     } catch {
-      setError('Network error, please try again')
+      setError(t('login.networkError'))
     } finally {
       setLoading(false)
     }

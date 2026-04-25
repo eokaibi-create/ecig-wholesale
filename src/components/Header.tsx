@@ -133,7 +133,7 @@ export default function Header() {
         {open && (
           <nav className="md:hidden pb-4 space-y-2">
             <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
-              <span className="text-xs text-gray-400">{lang === 'en' ? 'Language:' : '语言:'}</span>
+              <span className="text-xs text-gray-400">{t('header.langLabel')}</span>
               <button
                 onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')}
                 className="flex items-center space-x-1 px-2 py-1 rounded border border-gray-600 text-xs"

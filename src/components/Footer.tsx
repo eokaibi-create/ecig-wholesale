@@ -71,7 +71,7 @@ export default function Footer() {
               <p>📍 {contact.address}</p>
               <a href={`https://wa.me/${whatsappNum}`} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition">
-                💬 WhatsApp
+                💬 {t('contact.whatsapp')}
               </a>
             </div>
           </div>

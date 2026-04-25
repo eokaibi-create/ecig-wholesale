@@ -57,7 +57,7 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Registration failed')
+        setError(data.error || t('register.error'))
         return
       }
 
@@ -68,15 +68,15 @@ export default function RegisterPage() {
       router.push('/')
       router.refresh()
     } catch {
-      setError('Network error, please try again')
+      setError(t('register.networkError'))
     } finally {
       setLoading(false)
     }
   }
 
   const customerTypes = [
-    { value: 'wholesaler', label: { zh: '批发商', en: 'Wholesaler' } },
-    { value: 'individual', label: { zh: '个人客户', en: 'Individual' } },
+    { value: 'wholesaler', label: { zh: t('register.wholesaler'), en: t('register.wholesaler') } },
+    { value: 'individual', label: { zh: t('register.individual'), en: t('register.individual') } },
   ]
 
   return (
@@ -94,7 +94,7 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* 客户类型 */}
+          {/* Customer Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('register.customerType')} *</label>
             <div className="grid grid-cols-2 gap-3">
@@ -110,7 +110,7 @@ export default function RegisterPage() {
                   }`}
                 >
                   {ct.value === 'wholesaler' ? '🏬 ' : '👤 '}
-                  {lang === 'en' ? ct.label.en : ct.label.zh}
+                  {ct.label.zh}
                 </button>
               ))}
             </div>
@@ -129,7 +129,7 @@ export default function RegisterPage() {
             <input type="email" required value={form.email}
               onChange={e => setForm({ ...form, email: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-              placeholder="your@email.com" />
+              placeholder={t('register.emailPlaceholder')} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -138,7 +138,7 @@ export default function RegisterPage() {
               <input type="tel" value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder="+1 (xxx) xxx-xxxx" />
+                placeholder={t('register.phonePlaceholder')} />
             </div>
             {form.type === 'wholesaler' && (
               <div>
@@ -146,7 +146,7 @@ export default function RegisterPage() {
                 <input type="text" value={form.company}
                   onChange={e => setForm({ ...form, company: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                  placeholder={t('register.company')} />
+                  placeholder={`${t('register.company')} (${t('register.optional')})`} />
               </div>
             )}
           </div>
@@ -156,7 +156,7 @@ export default function RegisterPage() {
             <input type="text" value={form.companyAddress}
               onChange={e => setForm({ ...form, companyAddress: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-              placeholder="Street, City, Zip" required />
+              placeholder={t('register.addressPlaceholder')} required />
           </div>
 
           <div>
@@ -164,7 +164,7 @@ export default function RegisterPage() {
             <input type="text" value={form.state}
               onChange={e => setForm({ ...form, state: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-              placeholder="CA / NY / TX ..." />
+              placeholder={t('register.statePlaceholder')} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -173,7 +173,7 @@ export default function RegisterPage() {
               <input type="password" required value={form.password}
                 onChange={e => setForm({ ...form, password: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder={lang === 'en' ? 'min 6 chars' : '至少6位'} />
+                placeholder={t('register.passwordHint')} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">{t('register.confirm')} *</label>

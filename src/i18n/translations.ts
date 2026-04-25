@@ -39,11 +39,16 @@ export type TranslationKey =
   // 注册
   | 'register.title' | 'register.desc' | 'register.name' | 'register.email'
   | 'register.password' | 'register.company' | 'register.address'
-  | 'register.phone' | 'register.submit' | 'register.success' | 'register.error'
-  | 'register.hasAccount' | 'register.login'
+  | 'register.phone' | 'register.submit' | 'register.success' | 'register.error' | 'register.networkError'
+  | 'register.haveAccount' | 'register.login' | 'register.customerType'
+  | 'register.loading' | 'register.confirm' | 'register.loginNow'
+  | 'register.passwordMismatch' | 'register.passwordTooShort'
+  | 'register.companyAddress' | 'register.state' | 'register.wholesaler' | 'register.individual'
+  | 'register.optional' | 'register.emailPlaceholder' | 'register.passwordHint'
+  | 'register.phonePlaceholder' | 'register.statePlaceholder' | 'register.addressPlaceholder'
   // 登录
   | 'login.title' | 'login.email' | 'login.password' | 'login.submit'
-  | 'login.error' | 'login.noAccount' | 'login.register'
+  | 'login.error' | 'login.noAccount' | 'login.register' | 'login.networkError'
   // 导航
   | 'nav.home' | 'nav.products' | 'nav.cart' | 'nav.login' | 'nav.register'
   | 'nav.admin' | 'nav.logout' | 'nav.hello' | 'nav.pricing' | 'nav.contact'
@@ -258,6 +263,14 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'register.company': '公司名称',
     'register.companyAddress': '公司地址',
     'register.state': '州/省',
+    'register.wholesaler': '批发商',
+    'register.individual': '个人客户',
+    'register.optional': '可选',
+    'register.emailPlaceholder': 'your@email.com',
+    'register.passwordHint': '至少6位',
+    'register.phonePlaceholder': '+1 (xxx) xxx-xxxx',
+    'register.statePlaceholder': 'CA / NY / TX ...',
+    'register.addressPlaceholder': 'Street, City, Zip',
     'register.submit': '注 册',
     'register.loading': '注册中...',
     'register.haveAccount': '已有账户？',
@@ -279,7 +292,6 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
 
     // Footer
     'footer.siteDesc': '美国电子烟批发供应商',
-    'footer.siteDesc': 'Premium Vape Wholesale Supplier USA',
     'footer.powered': 'POWERED BY ALOKAIBI TRADING GROUP',
     'footer.rights': 'All Rights Reserved',
     'footer.age': '18+ 仅限成年批发客户',
@@ -534,6 +546,14 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'register.company': 'Company Name',
     'register.companyAddress': 'Company Address',
     'register.state': 'State',
+    'register.wholesaler': 'Wholesaler',
+    'register.individual': 'Individual',
+    'register.optional': 'Optional',
+    'register.emailPlaceholder': 'your@email.com',
+    'register.passwordHint': 'min 6 characters',
+    'register.phonePlaceholder': '+1 (xxx) xxx-xxxx',
+    'register.statePlaceholder': 'CA / NY / TX ...',
+    'register.addressPlaceholder': 'Street, City, Zip',
     'register.submit': 'Register',
     'register.loading': 'Registering...',
     'register.haveAccount': 'Already have an account?',
@@ -555,7 +575,6 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
 
     // Footer
     'footer.siteDesc': '美国电子烟批发供应商',
-    'footer.siteDesc': 'Premium Vape Wholesale Supplier USA',
     'footer.powered': 'POWERED BY ALOKAIBI TRADING GROUP',
     'footer.rights': 'All Rights Reserved',
     'footer.age': '18+ Adult Wholesale Customers Only',

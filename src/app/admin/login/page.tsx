@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 export default function AdminLoginPage() {
+  const { t } = useLanguage()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -27,10 +29,10 @@ export default function AdminLoginPage() {
       if (res.ok) {
         router.push('/admin/dashboard')
       } else {
-        setError(data.error || '用户名或密码错误')
+        setError(data.error || t('admin.loginError'))
       }
     } catch (err) {
-      setError('网络错误，请稍后重试')
+      setError(t('admin.networkError'))
     }
     setLoading(false)
   }
@@ -41,9 +43,9 @@ export default function AdminLoginPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-3 mb-4">
             <img src="/vaporx-logo.svg" alt="VAPOR-X" className="h-10 w-auto" />
-            <h1 className="text-2xl font-bold text-white">后台管理</h1>
+            <h1 className="text-2xl font-bold text-white">{t('admin.loginTitle')}</h1>
           </div>
-          <p className="text-amber-400/80">VAPOR-X 批发管理平台</p>
+          <p className="text-amber-400/80">{t('admin.loginDesc')}</p>
         </div>
 
         {error && (
@@ -52,26 +54,26 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">用户名 / 邮箱</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">{t('admin.username')}</label>
             <input type="text" value={username} onChange={e => setUsername(e.target.value)}
               className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-white placeholder-gray-400" 
-              placeholder="输入用户名或邮箱" required />
+              placeholder={t('admin.username')} required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">密码</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">{t('admin.password')}</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)}
               className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-white placeholder-gray-400" 
-              placeholder="输入密码" required />
+              placeholder={t('admin.password')} required />
           </div>
           <button type="submit" disabled={loading}
             className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-700 text-black font-bold rounded-lg transition">
-            {loading ? '登录中...' : '登 录'}
+            {loading ? t('admin.loggingIn') : t('admin.loginBtn')}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <a href="/login" className="text-sm text-gray-400 hover:text-amber-400 transition">
-            🔑 客户登录入口
+            🔑 {t('admin.customerLogin')}
           </a>
         </div>
       </div>
