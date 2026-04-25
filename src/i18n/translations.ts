@@ -13,12 +13,15 @@ export type TranslationKey =
   | 'product.productsCount' | 'product.comingSoon' | 'product.hot'
   | 'product.search' | 'product.viewAll'
   | 'product.shortBc5000' | 'product.shortPulse' | 'product.shortLostMary' | 'product.shortRaz' | 'product.shortMeloso' | 'product.shortElf600'
-  | 'product.emptyDesc'
+  | 'product.emptyDesc' | 'product.addInAdmin'
   // 品牌
   | 'brand.title' | 'brand.desc' | 'brand.partner' | 'brand.becomePartner'
-  | 'brand.becomeDesc' | 'brand.noBrands'
+  | 'brand.becomeDesc' | 'brand.noBrands' | 'brand.logo'
   // 平台
-  | 'platform.title' | 'platform.desc'
+  | 'platform.title' | 'platform.desc' | 'platform.fallback1Title' | 'platform.fallback1Desc'
+  | 'platform.fallback2Title' | 'platform.fallback2Desc'
+  | 'platform.fallback3Title' | 'platform.fallback3Desc'
+  | 'platform.fallback4Title' | 'platform.fallback4Desc'
   // 视频
   | 'video.title' | 'video.desc'
   // 联系
@@ -179,6 +182,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'product.elfbar600': 'ELF BAR 600 600口经典一次性电子烟，20mg尼古丁盐，2ml烟油容量，经典入门款，多种畅销口味。',
 
     'product.emptyDesc': '浏览我们的产品目录，发现更多选择',
+    'product.addInAdmin': '去后台添加产品 →',
     'products.emptyDesc': '浏览我们的产品目录，发现更多选择',
     'products.withBrand': '产品',
     'products.brandSeries': '系列产品批发',
@@ -191,11 +195,20 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'brand.becomePartner': '成为 VAPOR-X 合作伙伴',
     'brand.becomeDesc': '我们希望与更多优质品牌合作，为我们的客户提供更多选择。欢迎联系我们洽谈合作。',
     'brand.noBrands': '暂无品牌信息',
+    'brand.logo': '标志',
     'brands.desc': '全球顶级电子烟品牌官方授权合作',
 
     // 平台
     'platform.title': '合作平台',
     'platform.desc': '多平台布局，助力您的电子烟业务全球拓展',
+    'platform.fallback1Title': '厂家直供',
+    'platform.fallback1Desc': '与顶级品牌直接合作，正品保障',
+    'platform.fallback2Title': '全美配送',
+    'platform.fallback2Desc': '覆盖48州，洛杉矶仓直发',
+    'platform.fallback3Title': '批发价格',
+    'platform.fallback3Desc': '最低$500起批，阶梯折扣',
+    'platform.fallback4Title': '专属客服',
+    'platform.fallback4Desc': '7x24小时在线支持',
 
     // 视频
     'video.title': '视频展示',
@@ -489,6 +502,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'product.elfbar600': 'ELF BAR 600 classic 600-puff disposable vape, 20mg nicotine salt, 2ml capacity, entry-level classic with popular flavors.',
 
     'product.emptyDesc': 'Browse our product catalog for more choices',
+    'product.addInAdmin': 'Add products in admin →',
     'products.emptyDesc': 'Browse our product catalog for more choices',
     'products.withBrand': 'Products',
     'products.brandSeries': 'Wholesale Series',
@@ -501,11 +515,20 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'brand.becomePartner': 'Become a VAPOR-X Partner',
     'brand.becomeDesc': 'We look forward to partnering with more quality brands to offer our customers more choices. Contact us to discuss cooperation.',
     'brand.noBrands': 'No brands yet',
+    'brand.logo': 'Logo',
     'brands.desc': 'Official authorized partnerships with top global vape brands',
 
     // 平台
     'platform.title': 'Platforms',
     'platform.desc': 'Multi-platform reach to grow your vape business globally',
+    'platform.fallback1Title': 'Factory Direct',
+    'platform.fallback1Desc': 'Direct partnerships with top brands',
+    'platform.fallback2Title': 'Nationwide Shipping',
+    'platform.fallback2Desc': 'Covers 48 states, shipped from LA',
+    'platform.fallback3Title': 'Wholesale Pricing',
+    'platform.fallback3Desc': 'From $500 min order, tiered discounts',
+    'platform.fallback4Title': '24/7 Support',
+    'platform.fallback4Desc': 'Online support available 7x24',
 
     // 视频
     'video.title': 'Videos',

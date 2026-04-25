@@ -137,7 +137,7 @@ export default async function HomePage() {
               <div className="col-span-full text-center py-12 text-gray-400">
                 <div className="text-4xl mb-3">📦</div>
                 <p>{t('product.none')}</p>
-                <Link href="/admin/products" className="text-amber-600 hover:underline text-sm mt-2 inline-block">{lang === 'en' ? 'Add products in admin →' : '去后台添加产品 →'}</Link>
+                <Link href="/admin/products" className="text-amber-600 hover:underline text-sm mt-2 inline-block">{t('product.addInAdmin')}</Link>
               </div>
             )}
           </div>
@@ -161,7 +161,7 @@ export default async function HomePage() {
                   {brand.logo ? (
                     <img src={brand.logo} alt={brand.name} className="h-14 w-auto object-contain mb-2 grayscale hover:grayscale-0 transition-all" />
                   ) : (
-                    <div className="h-14 w-14 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs mb-2">logo</div>
+                    <div className="h-14 w-14 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs mb-2">{t('brand.logo')}</div>
                   )}
                   <span className="text-xs text-gray-600 font-medium text-center">{brand.name}</span>
                 </div>
@@ -222,10 +222,10 @@ export default async function HomePage() {
             )) : (
               <>
                 {[
-                  { icon: '🏭', title: lang === 'en' ? 'Factory Direct' : '厂家直供', desc: lang === 'en' ? 'Direct partnerships with top brands' : '与顶级品牌直接合作，正品保障' },
-                  { icon: '🚚', title: lang === 'en' ? 'Nationwide Shipping' : '全美配送', desc: lang === 'en' ? 'Covers 48 states, shipped from LA' : '覆盖48州，洛杉矶仓直发' },
-                  { icon: '💰', title: lang === 'en' ? 'Wholesale Pricing' : '批发价格', desc: lang === 'en' ? 'From $500 min order, tiered discounts' : '最低$500起批，阶梯折扣' },
-                  { icon: '💬', title: lang === 'en' ? '24/7 Support' : '专属客服', desc: lang === 'en' ? 'Online support available 7x24' : '7x24小时在线支持' },
+                  { icon: '🏭', title: t('platform.fallback1Title'), desc: t('platform.fallback1Desc') },
+                  { icon: '🚚', title: t('platform.fallback2Title'), desc: t('platform.fallback2Desc') },
+                  { icon: '💰', title: t('platform.fallback3Title'), desc: t('platform.fallback3Desc') },
+                  { icon: '💬', title: t('platform.fallback4Title'), desc: t('platform.fallback4Desc') },
                 ].map((item, i) => (
                   <div key={i} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 bg-white/10 rounded-xl flex items-center justify-center"><span className="text-3xl">{item.icon}</span></div>
