@@ -38,6 +38,43 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function PUT(request: NextRequest) {
+  try {
+    const { id, username, email, password, role } = await request.json()
+    if (!id) return NextResponse.json({ error: '缺少ID' }, { status: 400 })
+
+    // 检查用户名/邮箱是否被其他管理员占用
+    const existing = await prisma.admin.findFirst({
+      where: {
+        OR: [
+          ...(username ? [{ username }] : []),
+          ...(email ? [{ email }] : []),
+        ],
+        NOT: { id: Number(id) },
+      }
+    })
+    if (existing) {
+      const field = existing.username === username ? '用户名' : '邮箱'
+      return NextResponse.json({ error: `${field}已被其他管理员使用` }, { status: 400 })
+    }
+
+    const data: any = {}
+    if (username !== undefined) data.username = username
+    if (email !== undefined) data.email = email
+    if (role !== undefined) data.role = role
+    if (password) data.password = await bcrypt.hash(password, 12)
+
+    const admin = await prisma.admin.update({
+      where: { id: Number(id) },
+      data,
+      select: { id: true, username: true, email: true, role: true, createdAt: true },
+    })
+    return NextResponse.json(admin)
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 })
+  }
+}
+
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
