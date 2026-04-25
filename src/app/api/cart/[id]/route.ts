@@ -3,18 +3,15 @@ import { NextRequest, NextResponse } from 'next/server'
 
 function getCustomerId(request: NextRequest): number | null {
   const token = request.cookies.get('customer_token')?.value
-  if (!token) {
-    const headerId = request.headers.get('x-customer-id')
-    if (headerId) return Number(headerId)
-    return null
+  if (token) {
+    try {
+      const decoded = Buffer.from(token, 'base64').toString('utf-8')
+      const parts = decoded.split(':')
+      if (parts.length >= 2 && parts[0] === 'customer') return Number(parts[1])
+    } catch {}
   }
-  try {
-    const decoded = Buffer.from(token, 'base64').toString('utf-8')
-    const parts = decoded.split(':')
-    if (parts.length >= 2 && parts[0] === 'customer') {
-      return Number(parts[1])
-    }
-  } catch {}
+  const headerId = request.headers.get('x-customer-id')
+  if (headerId) return Number(headerId)
   return null
 }
 

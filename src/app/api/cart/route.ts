@@ -1,22 +1,24 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
-// 从cookie获取客户ID
 function getCustomerId(request: NextRequest): number | null {
+  // 1. 优先从 cookie 取
   const token = request.cookies.get('customer_token')?.value
-  if (!token) return null
-  try {
-    const decoded = Buffer.from(token, 'base64').toString('utf-8')
-    const parts = decoded.split(':')
-    // format: customer:id:email:timestamp
-    if (parts.length >= 2 && parts[0] === 'customer') {
-      return Number(parts[1])
-    }
-  } catch {}
+  if (token) {
+    try {
+      const decoded = Buffer.from(token, 'base64').toString('utf-8')
+      const parts = decoded.split(':')
+      if (parts.length >= 2 && parts[0] === 'customer') return Number(parts[1])
+    } catch {}
+  }
   
-  // 兼容旧格式或header方式
+  // 2. 从 header 取（前端 localStorage 方式）
   const headerId = request.headers.get('x-customer-id')
   if (headerId) return Number(headerId)
+  
+  // 3. 从 query 取（兼容）
+  const queryId = request.nextUrl.searchParams.get('customerId')
+  if (queryId) return Number(queryId)
   
   return null
 }
