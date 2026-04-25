@@ -3,18 +3,20 @@ import { prisma } from '@/lib/prisma'
 import AdminLayout from '@/components/AdminLayout'
 import { cookies } from 'next/headers'
 
-function getRole(): string {
+async function getRole(): Promise<string> {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const roleCookie = cookieStore.get('admin_role')
-    return roleCookie?.value || 'admin'
+    const role = roleCookie?.value || 'admin'
+    // 统一角色名
+    return role === 'product_admin' ? 'product' : role === 'super_admin' ? 'admin' : role
   } catch {
     return 'admin'
   }
 }
 
 export default async function AdminDashboard() {
-  const role = getRole()
+  const role = await getRole()
 
   // 产品管理员 - 专属精简仪表盘
   if (role === 'product') {

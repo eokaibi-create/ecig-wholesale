@@ -28,7 +28,8 @@ export async function POST(request: NextRequest) {
       
       const response = NextResponse.json({ success: true, token, user: { id: user.id, username: user.username, role: user.role || 'admin' } })
       response.cookies.set('admin_token', token, { httpOnly: true, path: '/', maxAge: 86400, sameSite: 'lax' })
-      response.cookies.set('admin_role', user.role || 'admin', { httpOnly: false, path: '/', maxAge: 86400, sameSite: 'lax' })
+          const normalizedOldRole = (user.role || 'admin') === 'product_admin' ? 'product' : (user.role || 'admin') === 'super_admin' ? 'admin' : (user.role || 'admin')
+    response.cookies.set('admin_role', normalizedOldRole, { httpOnly: false, path: '/', maxAge: 86400, sameSite: 'lax' })
       return response
     }
 
