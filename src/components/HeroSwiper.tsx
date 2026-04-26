@@ -65,14 +65,23 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
       .catch(() => {})
   }, [])
 
-  // 自动切换背景视频
+  // 视频播完自动播放下一个
+  const playNext = () => {
+    setCurrentVideoIdx(prev => (prev + 1) % bgVideos.length)
+  }
+  const playPrev = () => {
+    setCurrentVideoIdx(prev => (prev - 1 + bgVideos.length) % bgVideos.length)
+  }
+
+  // 背景视频播放完毕自动播放下一个
   useEffect(() => {
     if (bgVideos.length < 2) return
-    const timer = setInterval(() => {
-      setCurrentVideoIdx(prev => (prev + 1) % bgVideos.length)
-    }, 8000)
-    return () => clearInterval(timer)
-  }, [bgVideos.length])
+    const video = videoRefs.current[currentVideoIdx]
+    if (!video) return
+    const onEnded = () => playNext()
+    video.addEventListener('ended', onEnded)
+    return () => video.removeEventListener('ended', onEnded)
+  }, [currentVideoIdx, bgVideos.length])
 
   // 视频切换时播放新视频
   useEffect(() => {
@@ -110,7 +119,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                 ref={el => { videoRefs.current[idx] = el }}
                 src={v.url}
                 poster={v.poster || undefined}
-                loop
+
                 muted
                 playsInline
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
@@ -152,6 +161,26 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
             )}
           </button>
         )}
+        {/* ⏮️⏭️ 视频切换按钮 */}
+        {bgVideos.length > 1 && (
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 flex justify-between px-4 pointer-events-none">
+            <button onClick={playPrev}
+              className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg pointer-events-auto"
+              aria-label="上一个视频">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button onClick={playNext}
+              className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg pointer-events-auto"
+              aria-label="下一个视频">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        )}
+
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
           <div className="text-center mb-4">
@@ -198,7 +227,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
               ref={el => { videoRefs.current[idx] = el }}
               src={v.url}
               poster={v.poster || undefined}
-              loop
+
               muted
               playsInline
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
@@ -231,6 +260,26 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
           )}
         </button>
       )}
+      {/* ⏮️⏭️ 视频切换按钮 */}
+      {bgVideos.length > 1 && (
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 flex justify-between px-4 pointer-events-none">
+          <button onClick={playPrev}
+            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg pointer-events-auto"
+            aria-label="上一个视频">
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button onClick={playNext}
+            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg pointer-events-auto"
+            aria-label="下一个视频">
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
+
 
       {/* 没有背景视频时的装饰 */}
       {bgVideos.length === 0 && (
