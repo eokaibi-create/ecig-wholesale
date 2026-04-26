@@ -241,7 +241,7 @@ export default function AdminHeroPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4">
               {editing ? '✏️ 编辑' : '➕ 新增'}
-              <span className="text-sm font-normal text-gray-400 ml-2">({items.filter(i => i.image).length}/5 新品)</span>
+              <span className="text-sm font-normal text-gray-400 ml-2">({items.filter(i => i.image || i.videoUrl).length}/5 新品)</span>
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">

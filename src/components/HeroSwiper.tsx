@@ -163,7 +163,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gray-800">
-                            <span className="text-4xl opacity-30">📷</span>
+                            <span className="text-4xl opacity-30">{item.videoUrl ? '🎬' : '📷'}</span>
                           </div>
                         )}
                       </div>
