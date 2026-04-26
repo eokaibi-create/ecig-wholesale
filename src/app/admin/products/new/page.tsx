@@ -154,8 +154,6 @@ export default function NewProductPage() {
     if (extraFilesRef.current) extraFilesRef.current.value = ''
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
   const handleVideoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -171,6 +169,8 @@ export default function NewProductPage() {
     if (videoInputRef.current) videoInputRef.current.value = ''
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     setSaving(true)
     showMsg('')
 

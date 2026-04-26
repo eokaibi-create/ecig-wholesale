@@ -145,7 +145,6 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     if (extraFilesRef.current) extraFilesRef.current.value = ''
   }
 
-  useEffect(() => {
   const handleVideoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -161,6 +160,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     if (videoInputRef.current) videoInputRef.current.value = ''
   }
 
+  useEffect(() => {
     async function init() {
       const { id } = await params
       setId(id)
