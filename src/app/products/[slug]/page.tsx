@@ -26,6 +26,7 @@ interface Product {
   puffs?: string | null
   flavor?: string | null
   size?: string | null
+  videoUrl?: string | null
 }
 
 export default function ProductDetailPage() {
@@ -130,6 +131,7 @@ export default function ProductDetailPage() {
       if (img && !allImages.includes(img)) allImages.push(img)
     })
   }
+  if (product.videoUrl) allImages.push(product.videoUrl)
 
   return (
     <div className="bg-white min-h-screen">
@@ -154,7 +156,7 @@ export default function ProductDetailPage() {
             {allImages.length > 0 ? (
               <>
                 <div className="aspect-square bg-gray-50 rounded-2xl flex items-center justify-center p-8 border">
-                  {allImages[activeImage]?.startsWith('data:video') ? (
+                  {allImages[activeImage]?.match(/\.(mp4|webm|ogg|mov)$/i) || allImages[activeImage]?.includes('video') ? (
                     <video src={allImages[activeImage]} controls className="w-full h-full object-contain rounded-lg" />
                   ) : (
                     <img key={activeImage} src={allImages[activeImage]} alt={product.name}
@@ -168,7 +170,7 @@ export default function ProductDetailPage() {
                         className={`w-16 h-16 rounded-lg border-2 overflow-hidden shrink-0 transition-all ${
                           i === activeImage ? 'border-amber-500 ring-2 ring-amber-200' : 'border-gray-200 hover:border-gray-400 opacity-70 hover:opacity-100'
                         }`}>
-                        {img.startsWith('data:video') ? (
+                        {img.match(/\.(mp4|webm|ogg|mov)$/i) || img.includes('video') ? (
                           <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white text-xl">▶</div>
                         ) : (
                           <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />

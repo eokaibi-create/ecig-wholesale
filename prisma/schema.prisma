@@ -60,6 +60,7 @@ model Product {
   puffs          String?
   flavor         String?
   size           String?
+  videoUrl       String?    @db.Text
   heroItems      HeroItem[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt

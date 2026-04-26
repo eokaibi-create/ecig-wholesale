@@ -33,10 +33,12 @@ export default function NewProductPage() {
   })
   const [image, setImage] = useState<string>('')
   const [extraImages, setExtraImages] = useState<string[]>([])
+  const [videoUrl, setVideoUrl] = useState<string>("")
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const extraFilesRef = useRef<HTMLInputElement>(null)
+  const videoInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     fetch('/api/categories')
@@ -177,6 +179,7 @@ export default function NewProductPage() {
           stock: Number(form.stock),
           image: image || null,
           images: extraImages.length > 0 ? extraImages : null,
+          videoUrl: videoUrl || null,
         }),
       })
 
@@ -245,11 +248,11 @@ export default function NewProductPage() {
                     <div className="py-8">
                       <div className="text-4xl mb-2">📷</div>
                       <p className="text-sm text-gray-500">点击上传主图</p>
-                      <p className="text-xs text-gray-400 mt-1">JPG/PNG/WebP, 最大10MB</p>
+                      <p className="text-xs text-gray-400 mt-1">JPG/PNG/WebP/Video, 支持大文件自动压缩</p>
                     </div>
                   )}
                 </div>
-                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleMainImageChange} />
+                <input ref={fileInputRef} type="file" accept="image/*,video/*" className="hidden" onChange={handleMainImageChange} />
               </div>
 
               {/* 额外图片 */}
@@ -281,6 +284,29 @@ export default function NewProductPage() {
                 </div>
                 <input ref={extraFilesRef} type="file" accept="image/*" multiple className="hidden" onChange={handleExtraImagesChange} />
               </div>
+
+            {/* 产品视频 */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">🎬 产品视频 <span className="text-xs text-gray-400">（可选，展示产品使用/外观，支持视频，最大 100MB）</span></label>
+              <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:border-amber-400 transition cursor-pointer"
+                   onClick={() => videoInputRef.current?.click()}>
+                {videoUrl ? (
+                  <div className="relative">
+                    <video src={videoUrl} controls className="max-h-48 mx-auto rounded-lg" />
+                    <button type="button" onClick={(e) => { e.stopPropagation(); setVideoUrl("") }}
+                      className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full text-sm hover:bg-red-600">×</button>
+                  </div>
+                ) : (
+                  <div className="py-6">
+                    <div className="text-4xl mb-2">🎬</div>
+                    <p className="text-sm text-gray-500">点击上传产品视频</p>
+                    <p className="text-xs text-gray-400 mt-1">自动压缩，支持大文件</p>
+                  </div>
+                )}
+              </div>
+              <input ref={videoInputRef} type="file" accept="video/*" className="hidden" onChange={handleVideoChange} />
+            </div>
+
             </div>
             {uploading && (
               <div className="mt-3 flex items-center gap-2 text-sm text-amber-600">

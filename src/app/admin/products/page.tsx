@@ -42,6 +42,9 @@ export default async function AdminProductsPage() {
                         {p.images && p.images.length > 0 && (
                           <span className="absolute -top-1.5 -right-1.5 bg-amber-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{p.images.length}</span>
                         )}
+                        {p.videoUrl && (
+                          <span className="absolute -bottom-1.5 -right-1.5 bg-blue-500 text-white text-[10px] px-1 rounded-full">🎬</span>
+                        )}
                       </div>
                     ) : (
                       <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-lg">💨</div>
