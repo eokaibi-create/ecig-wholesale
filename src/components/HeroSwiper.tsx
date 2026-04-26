@@ -45,8 +45,10 @@ interface HeroSwiperProps {
 export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
   const swiperRef = useRef<SwiperType | null>(null)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+  const isMutedRef = useRef(true)
   const [bgVideos, setBgVideos] = useState<HeroVideoData[]>([])
   const [currentVideoIdx, setCurrentVideoIdx] = useState(0)
+  const [isMuted, setIsMuted] = useState(true)
   const { t } = useLanguage()
 
   // 获取背景视频
@@ -68,7 +70,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
     if (bgVideos.length < 2) return
     const timer = setInterval(() => {
       setCurrentVideoIdx(prev => (prev + 1) % bgVideos.length)
-    }, 8000) // 每8秒切换一次
+    }, 8000)
     return () => clearInterval(timer)
   }, [bgVideos.length])
 
@@ -77,17 +79,28 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
     if (bgVideos.length === 0) return
     const video = videoRefs.current[currentVideoIdx]
     if (video) {
+      video.muted = isMutedRef.current
       video.currentTime = 0
       video.play().catch(() => {})
     }
   }, [currentVideoIdx, bgVideos.length])
+
+  // 声音开关
+  const toggleSound = () => {
+    const newMuted = !isMutedRef.current
+    isMutedRef.current = newMuted
+    videoRefs.current.forEach(v => {
+      if (v) v.muted = newMuted
+    })
+    setIsMuted(newMuted)
+  }
 
   const filteredItems = items.filter(i => i.image || i.videoUrl || i.product?.image)
 
   // 如果数据库没有产品，显示空状态
   if (filteredItems.length === 0) {
     return (
-      <section className="relative bg-gray-900 text-white overflow-hidden min-h-[700px] md:min-h-screen flex items-center">
+      <section className="relative bg-gray-900 text-white overflow-hidden min-h-[480px] md:min-h-[560px] flex items-center">
         {/* 背景视频 */}
         {bgVideos.length > 0 && (
           <div className="absolute inset-0">
@@ -97,7 +110,6 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                 ref={el => { videoRefs.current[idx] = el }}
                 src={v.url}
                 poster={v.poster || undefined}
-                muted
                 loop
                 playsInline
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
@@ -119,8 +131,28 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
           </>
         )}
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-          <div className="text-center mb-6">
+        {/* 🔊 声音开关 */}
+        {bgVideos.length > 0 && (
+          <button
+            onClick={toggleSound}
+            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg"
+            aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+          >
+            {isMuted ? (
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+            )}
+          </button>
+        )}
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+          <div className="text-center mb-4">
             <p className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight">
               <span className="text-amber-400">VAPOR</span>
               <span className="text-white">-X</span>
@@ -130,13 +162,13 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
             </p>
           </div>
 
-          <div className="text-center py-16">
+          <div className="text-center py-10">
             <div className="text-6xl mb-4">📦</div>
             <h2 className="text-2xl font-bold text-white mb-2">{heroTitle}</h2>
             <p className="text-gray-500">{t('hero.noProducts')}</p>
           </div>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/products"
               className="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition shadow-lg shadow-amber-500/25">
               {t('hero.browse')}
@@ -154,7 +186,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
   const slides = filteredItems
 
   return (
-    <section className="relative bg-gray-900 text-white overflow-hidden min-h-[700px] md:min-h-screen flex items-center">
+    <section className="relative bg-gray-900 text-white overflow-hidden min-h-[480px] md:min-h-[560px] flex items-center">
       {/* 🎬 全屏自动播放背景视频 */}
       {bgVideos.length > 0 && (
         <div className="absolute inset-0">
@@ -164,7 +196,6 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
               ref={el => { videoRefs.current[idx] = el }}
               src={v.url}
               poster={v.poster || undefined}
-              muted
               loop
               playsInline
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
@@ -177,6 +208,26 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
         </div>
       )}
 
+      {/* 🔊 声音开关 */}
+      {bgVideos.length > 0 && (
+        <button
+          onClick={toggleSound}
+          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg"
+          aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+        >
+          {isMuted ? (
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+          )}
+        </button>
+      )}
+
       {/* 没有背景视频时的装饰 */}
       {bgVideos.length === 0 && (
         <>
@@ -186,9 +237,9 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
         </>
       )}
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
         {/* 标题 */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-4">
           <p className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight">
             <span className="text-amber-400">VAPOR</span>
             <span className="text-white">-X</span>
@@ -285,7 +336,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
         </div>
 
         {/* 底部按钮 */}
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link href="/products"
             className="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition shadow-lg shadow-amber-500/25">
             {t('hero.browse')}
