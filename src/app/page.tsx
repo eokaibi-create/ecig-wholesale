@@ -36,7 +36,7 @@ function getDisplayPrice(product, customerType) {
 }
 
 async function getData() {
-  const [categories, brands, products, videos, platforms, settings, heroItems] = await Promise.all([
+  const [categories, brands, products, platforms, settings, heroItems] = await Promise.all([
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }),
     prisma.brand.findMany({ orderBy: { sortOrder: 'asc' } }),
     prisma.product.findMany({
@@ -45,7 +45,6 @@ async function getData() {
       orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }],
       take: 12,
     }),
-    prisma.video.findMany({ orderBy: { sortOrder: 'asc' } }),
     prisma.platform.findMany({ orderBy: { sortOrder: 'asc' } }),
     prisma.setting.findMany(),
     prisma.heroItem.findMany({
@@ -56,7 +55,7 @@ async function getData() {
     }),
   ])
   const settingMap = Object.fromEntries(settings.map(s => [s.key, s.value]))
-  return { categories, brands, products, videos, platforms, settings: settingMap, heroItems }
+  return { categories, brands, products, platforms, settings: settingMap, heroItems }
 }
 
 export default async function HomePage() {
@@ -64,7 +63,7 @@ export default async function HomePage() {
   const t = (key: any) => serverT(key, lang)
 
   const data = await getData()
-  const { categories, brands, products, videos, platforms, settings, heroItems } = data
+  const { categories, brands, products, platforms, settings, heroItems } = data
   const customerType = await getCustomerTypeFromCookie()
 
   const catIcons: Record<string, string> = {
@@ -206,35 +205,6 @@ export default async function HomePage() {
                     <div className="h-14 w-14 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs mb-2">{t('brand.logo')}</div>
                   )}
                   <span className="text-xs text-gray-600 font-medium text-center">{brand.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Videos */}
-      {videos.length > 0 && (
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center space-x-2 mb-4">
-                <span className="text-2xl">🎬</span>
-                <h2 className="text-3xl font-bold text-gray-900">{t('video.title')}</h2>
-              </div>
-              <p className="text-gray-600">{t('video.desc')}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {videos.map(video => (
-                <div key={video.id} className="rounded-xl overflow-hidden bg-gray-900 shadow-lg">
-                  <div className="aspect-video">
-                    {video.url.includes('youtube') || video.url.includes('youtu.be') ? (
-                      <iframe src={video.url} title={video.title} className="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
-                    ) : (
-                      <video src={video.url} controls className="w-full h-full object-cover" />
-                    )}
-                  </div>
-                  {video.title && <div className="p-4"><h3 className="text-white font-semibold">{video.title}</h3></div>}
                 </div>
               ))}
             </div>
