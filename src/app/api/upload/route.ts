@@ -9,36 +9,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '没有上传文件' }, { status: 400 })
     }
 
-    const allowedTypes = [
-      'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif',
-      'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime',
-    ]
-    const isImage = file.type.startsWith('image/')
+    // 直接上传到 Cloudinary（无大小限制，200MB 内视频+图片）
+    const cloudFormData = new FormData()
+    cloudFormData.append('file', file)
+    cloudFormData.append('upload_preset', 'ecig_upload')
+    cloudFormData.append('folder', 'ecig-wholesale')
+
+    const cloudRes = await fetch('https://api.cloudinary.com/v1_1/dlmgdbrte/auto/upload', {
+      method: 'POST',
+      body: cloudFormData,
+    })
+
+    if (!cloudRes.ok) {
+      const err = await cloudRes.text()
+      console.error('Cloudinary error:', err)
+      return NextResponse.json({ error: '上传到云存储失败' }, { status: 500 })
+    }
+
+    const data = await cloudRes.json()
     const isVideo = file.type.startsWith('video/')
-    
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: '不支持的文件类型' }, { status: 400 })
-    }
 
-    const maxSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024 // 视频50MB, 图片10MB
-    if (file.size > maxSize) {
-      return NextResponse.json({ 
-        error: `文件过大，${isVideo ? '视频最大支持 50MB' : '图片最大支持 10MB'}` 
-      }, { status: 400 })
-    }
-
-    // 将文件转为 Base64 Data URL
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-    const base64 = buffer.toString('base64')
-    const dataUrl = `data:${file.type};base64,${base64}`
-
-    return NextResponse.json({ 
-      url: dataUrl, 
+    return NextResponse.json({
+      url: data.secure_url,
+      publicId: data.public_id,
       filename: file.name,
       type: isVideo ? 'video' : 'image',
       size: file.size,
-      success: true 
+      success: true,
     })
   } catch (error: any) {
     console.error('Upload error:', error)

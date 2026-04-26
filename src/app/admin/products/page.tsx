@@ -37,7 +37,12 @@ export default async function AdminProductsPage() {
                 <tr key={p.id} className="hover:bg-gray-50">
                   <td className="px-4 py-2">
                     {p.image ? (
-                      <img src={p.image} alt={p.name} className="w-12 h-12 object-cover rounded-lg" />
+                      <div className="relative">
+                        <img src={p.image} alt={p.name} className="w-12 h-12 object-cover rounded-lg" />
+                        {p.images && p.images.length > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-amber-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{p.images.length}</span>
+                        )}
+                      </div>
                     ) : (
                       <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-lg">💨</div>
                     )}

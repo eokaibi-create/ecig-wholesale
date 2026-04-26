@@ -45,26 +45,28 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   }
 
   const handleUpload = async (file: File): Promise<string | null> => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif']
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif',
+      'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime']
     if (!allowedTypes.includes(file.type)) {
-      showMsg(`不支持的文件类型: ${file.type}，仅支持 JPG/PNG/WebP/GIF/SVG`, 'error')
+      showMsg(`不支持的文件类型: ${file.type}`, 'error')
       return null
     }
-    if (file.size > 10 * 1024 * 1024) {
-      showMsg('文件过大，最大支持 10MB', 'error')
-      return null
-    }
-
-    const formData = new FormData()
-    formData.append('file', file)
+    // 直接上传到 Cloudinary，不走 Vercel 中转，无大小限制
+    const cloudFormData = new FormData()
+    cloudFormData.append('file', file)
+    cloudFormData.append('upload_preset', 'ecig_upload')
+    cloudFormData.append('folder', 'ecig-wholesale')
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const res = await fetch('https://api.cloudinary.com/v1_1/dlmgdbrte/auto/upload', {
+        method: 'POST',
+        body: cloudFormData,
+      })
       if (res.ok) {
         const data = await res.json()
-        return data.url
+        return data.secure_url
       } else {
         const err = await res.json()
-        showMsg(`上传失败: ${err.error || res.statusText}`, 'error')
+        showMsg(`上传失败: ${err.error?.message || res.statusText}`, 'error')
         return null
       }
     } catch (err: any) {
@@ -91,12 +93,22 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const handleExtraImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
+    const remaining = 9 - extraImages.length
+    if (remaining <= 0) {
+      showMsg("❌ 最多只能上传9张副图", "error")
+      if (extraFilesRef.current) extraFilesRef.current.value = ""
+      return
+    }
+    const selectedFiles = Array.from(files).slice(0, remaining)
+    if (selectedFiles.length < files.length) {
+      showMsg(`⚠️ 最多还能上传 ${remaining} 张，已自动截取`, "error")
+    }
     setUploading(true)
     const urls: string[] = []
     let successCount = 0
-    for (let i = 0; i < files.length; i++) {
-      setUploadProgress(`上传中 (${i + 1}/${files.length})...`)
-      const url = await handleUpload(files[i])
+    for (let i = 0; i < selectedFiles.length; i++) {
+      setUploadProgress(`上传中 (${i + 1}/${selectedFiles.length})...`)
+      const url = await handleUpload(selectedFiles[i])
       if (url) { urls.push(url); successCount++ }
     }
     if (successCount > 0) {
@@ -249,7 +261,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
           {/* ===== 图片上传 ===== */}
           <div className="border-b pb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">📸 产品图片</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">📸 产品图片 <span className="text-sm font-normal text-gray-500">（1主图 + 最多9张副图 = 共10张）</span></h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* 主图 */}
               <div>
@@ -275,7 +287,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
               {/* 额外图片 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">额外图片（多选）</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">副图（最多9张，可多选）<span className="text-xs text-gray-400 ml-1">({extraImages.length}/9）</span></label>
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:border-amber-400 transition cursor-pointer"
                      onClick={() => extraFilesRef.current?.click()}>
                   {extraImages.length > 0 ? (
@@ -296,7 +308,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     <div className="py-8">
                       <div className="text-4xl mb-2">🖼️</div>
                       <p className="text-sm text-gray-500">点击上传多张图片</p>
-                      <p className="text-xs text-gray-400 mt-1">可多选，支持批量上传</p>
+                      <p className="text-xs text-gray-400 mt-1">可多选上传，最多9张副图，支持批量上传</p>
                     </div>
                   )}
                 </div>
