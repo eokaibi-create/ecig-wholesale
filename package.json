@@ -3,17 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next dev",
     "start": "next start",
     "lint": "eslint",
     "seed": "npx prisma db seed",
-    "vercel-build": "prisma generate && prisma db push && npx prisma db seed && next build"
+    "vercel-build": "prisma generate && prisma db push && npx prisma db seed && next build",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.19.4",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
@@ -34,6 +39,7 @@
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
     "tsx": "^4.19.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.85.0"
   }
 }
