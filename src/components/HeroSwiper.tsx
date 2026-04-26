@@ -59,21 +59,6 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
             </p>
           </div>
 
-          {/* 装饰区域 */}
-          <div className="relative rounded-2xl overflow-hidden bg-black border border-gray-700 shadow-2xl mb-4" style={{ aspectRatio: '21 / 9' }}>
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative w-full h-full flex items-center justify-center">
-                <div className="absolute inset-0 overflow-hidden">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-amber-500/10 rounded-full blur-[100px] animate-pulse" />
-                </div>
-                <div className="absolute bottom-4 right-6 opacity-20">
-                  <p className="text-4xl md:text-6xl font-black text-white tracking-tight">VAPOR-X</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* 空状态提示 */}
           <div className="text-center py-16">
             <div className="text-6xl mb-4">📦</div>
@@ -98,7 +83,6 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
   }
 
   const slides = filteredItems
-  const firstVideoUrl = slides?.[0]?.videoUrl || null
 
   return (
     <section className="relative bg-gray-900 text-white overflow-hidden min-h-[700px] md:min-h-screen flex items-center">
@@ -116,33 +100,6 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
           <p className="mt-1 text-sm md:text-base text-gray-500 font-light tracking-widest uppercase">
             {t('hero.vaporDesc')}
           </p>
-        </div>
-
-        {/* 装饰区域 - 有视频就播放背景视频 */}
-        <div className="relative rounded-2xl overflow-hidden bg-black border border-gray-700 shadow-2xl mb-4" style={{ aspectRatio: '21 / 9' }}>
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative w-full h-full flex items-center justify-center">
-              <div className="absolute inset-0 overflow-hidden">
-                {firstVideoUrl ? (
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover opacity-30"
-                  >
-                    <source src={firstVideoUrl} type="video/mp4" />
-                  </video>
-                ) : (
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-amber-500/10 rounded-full blur-[100px] animate-pulse" />
-                )}
-              </div>
-              <div className="absolute bottom-4 right-6 opacity-20">
-                <p className="text-4xl md:text-6xl font-black text-white tracking-tight">VAPOR-X</p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* 下方：产品轮播 */}
@@ -188,25 +145,31 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
             {slides.map((item, idx) => {
               const imgSrc = item.image || item.product?.image || ''
               const prod = item.product
-              const name = item.title || prod?.name || t('hero.newProduct')
+              const name = prod?.name || item.title || `Product ${idx + 1}`
+              const href = prod ? `/products/${prod.slug}` : '#'
 
               return (
-                <SwiperSlide key={item.id || idx}>
-                  <Link href={prod ? `/products/${prod.slug}` : '#'}
-                    className="block group">
-                    <div className="rounded-xl overflow-hidden bg-gray-800 border border-gray-700/50 hover:border-amber-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/10">
-                      <div className="aspect-square bg-gray-800 flex items-center justify-center p-4 overflow-hidden">
+                <SwiperSlide key={item.id}>
+                  <Link href={href} className="block group">
+                    <div className="relative rounded-xl overflow-hidden bg-gray-800 border border-gray-700 hover:border-amber-500/50 transition-all duration-300 group">
+                      <div className="relative w-full" style={{ aspectRatio: '3 / 2' }}>
                         {imgSrc ? (
-                          <img src={imgSrc} alt={name}
-                            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                          <img
+                            src={imgSrc}
+                            alt={name}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            loading="lazy"
+                          />
                         ) : (
-                          <div className="text-5xl text-gray-600">🆕</div>
+                          <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                            <span className="text-4xl opacity-30">📷</span>
+                          </div>
                         )}
                       </div>
-                      <div className="p-3 text-center">
-                        <h3 className="text-sm md:text-base font-semibold text-white group-hover:text-amber-400 transition line-clamp-2">
+                      <div className="p-3">
+                        <p className="text-sm font-semibold text-white truncate group-hover:text-amber-400 transition">
                           {name}
-                        </h3>
+                        </p>
                       </div>
                     </div>
                   </Link>
