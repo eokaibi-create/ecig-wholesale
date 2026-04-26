@@ -1,4 +1,5 @@
 'use client'
+import { compressVideoIfNeeded, isVideo, formatSize } from '@/lib/compressVideo'
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
@@ -51,6 +52,15 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       showMsg(`不支持的文件类型: ${file.type}`, 'error')
       return null
     }
+    // 如果是大视频，先压缩
+    let uploadFile = file
+    if (isVideo(file) && file.size > 90 * 1024 * 1024) {
+      setUploadProgress(`🎬 压缩视频中 (${formatSize(file.size)})...`)
+      uploadFile = await compressVideoIfNeeded(file)
+      if (uploadFile.size < file.size) {
+        showMsg(`✅ 视频已压缩: ${formatSize(file.size)} → ${formatSize(uploadFile.size)}`, "success")
+      }
+    }
     // 先获取上传签名
     let sigData
     try {
@@ -63,7 +73,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     }
     // 直接上传到 Cloudinary（经过签名的上传，不走 Vercel 中转）
     const cloudFormData = new FormData()
-    cloudFormData.append('file', file)
+    cloudFormData.append('file', uploadFile)
     cloudFormData.append('upload_preset', sigData.uploadPreset)
     cloudFormData.append('folder', sigData.folder)
     cloudFormData.append('api_key', sigData.apiKey)
