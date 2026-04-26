@@ -41,16 +41,16 @@ export default function ProductDetailPage() {
   const [customerType, setCustomerType] = useState<string | null>(null)
 
   const getDisplayPrice = () => {
-    if (!product) return { price: 0, showMsrp: false, label: 'retail' }
+    if (!product) return { price: 0, showMsrp: false, label: 'retail', className: 'text-amber-600' }
     const hasStorePrice = product.wholesalePrice != null && product.wholesalePrice > 0
     const hasWholesalerPrice = (product as any).wholesalerPrice != null && (product as any).wholesalerPrice > 0
     if (customerType === 'wholesaler' && hasWholesalerPrice) {
-      return { price: (product as any).wholesalerPrice, label: 'wholesaler', showMsrp: !!product.msrp }
+      return { price: (product as any).wholesalerPrice, label: 'wholesaler', showMsrp: !!product.msrp, className: 'text-purple-600' }
     }
     if (customerType === 'store' && hasStorePrice) {
-      return { price: product.wholesalePrice, label: 'store', showMsrp: !!product.msrp }
+      return { price: product.wholesalePrice, label: 'store', showMsrp: !!product.msrp, className: 'text-amber-600' }
     }
-    return { price: product.price, label: 'retail', showMsrp: !!product.msrp }
+    return { price: product.price, label: 'retail', showMsrp: !!product.msrp, className: 'text-amber-600' }
   }
 
   const getEnglishDescription = () => {
@@ -70,8 +70,10 @@ export default function ProductDetailPage() {
     try {
       const infoStr = localStorage.getItem('customer_info')
       if (infoStr) {
-        const info = JSON.parse(infoStr)
-        if (info.type) setCustomerType(info.type)
+        try {
+          const info = JSON.parse(infoStr)
+          if (info.type) setCustomerType(info.type)
+        } catch {}
       }
     } catch {}
 
@@ -195,136 +197,9 @@ export default function ProductDetailPage() {
             <div className="mt-6 flex items-baseline gap-4">
               {(() => {
                 const display = getDisplayPrice()
-                const colorClass = display.label === 'retail' ? 'text-amber-600' : 'text-purple-600'
                 return <>
-                  <span className={"text-4xl font-bold " + colorClass}>{'¥' + Number(display.price).toFixed(2)}</span>
-                  {display.showMsrp && <span className="text-lg text-gray-400 line-through ml-2">{'¥' + Number(product.msrp).toFixed(2)}</span>}
-                </>
-              })()}
-            </div>
-
-            <div className="mt-6 p-4 bg-gray-50 rounded-xl">
-              <h3 className="font-semibold text-gray-900 mb-2">{t('product.params')}</h3>
-              <table className="w-full text-sm">
-                <tbody>
-                  {product.brand && <tr><td className="py-1 text-gray-500 pr-4">{t('product.brand')}</td><td className="font-medium">{product.brand}</td></tr>}
-                  {product.nicotine && <tr><td className="py-1 text-gray-500 pr-4">{t('product.nicotine')}</td><td className="font-medium">{product.nicotine}</td></tr>}
-                  {product.capacity && <tr><td className="py-1 text-gray-500 pr-4">{t('product.capacity')}</td><td className="font-medium">{product.capacity}</td></tr>}
-                  {product.puffs && <tr><td className="py-1 text-gray-500 pr-4">{t('product.puffs')}</td><td className="font-medium">{product.puffs}</td></tr>}
-                  {product.flavor && <tr><td className="py-1 text-gray-500 pr-4">{t('product.flavor')}</td><td className="font-medium">{product.flavor}</td></tr>}
-                  {product.size && <tr><td className="py-1 text-gray-500 pr-4">{t('product.size')}</td><td className="font-medium">{product.size}</td></tr>}
-                  <tr><td className="py-1 text-gray-500 pr-4">{t('product.stock')}</td><td className="font-medium text-green-600">{product.stock}+ {t('product.inStock')}</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            {/* 联系客服询价 */}
-            <div className="mt-6 p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl">
-              <h3 className="font-semibold text-amber-800 mb-3">
-                💬 {language === 'en' ? 'Contact Us for Bulk Orders' : '联系我们获取批发报价'}
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                {t('contact.inquireDesc')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <a href={`https://wa.me/${whatsappNum}?text=Hi!%20I'm%20interested%20in%20${encodeURIComponent(product.name)}`}
-                   target="_blank" rel="noopener noreferrer"
-                   className="flex-1 text-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition">
-                  💬 WhatsApp
-                </a>
-                <Link href="/contact"
-                   className="flex-1 text-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition">
-                  {t('contact.send')}
-                </Link>
-              </div>
-            </div>
-
-            <div className="mt-4 text-sm text-gray-400 text-center">
-              {t('product.minOrder')}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-12 border-t pt-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('product.detail')}</h2>
-          <div className="prose max-w-none text-gray-600 whitespace-pre-wrap leading-relaxed">
-            {getEnglishDescription()}
-          </div>
-        </div>
-
-        <div className="mt-12 bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-8 text-center">
-          <h3 className="text-2xl font-bold text-gray-900">{t('product.inquire')}</h3>
-          <p className="mt-2 text-gray-600">{t('contact.inquireDesc')}</p>
-          <Link href="/contact" className="mt-4 inline-block px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition">
-            {t('contact.send')}
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-}}{display.price.toFixed(2)}</span>
-                  {display.showMsrp && product.msrp && <span className="text-xl text-gray-400 line-through">{'
-
-            <div className="mt-6 p-4 bg-gray-50 rounded-xl">
-              <h3 className="font-semibold text-gray-900 mb-2">{t('product.params')}</h3>
-              <table className="w-full text-sm">
-                <tbody>
-                  {product.brand && <tr><td className="py-1 text-gray-500 pr-4">{t('product.brand')}</td><td className="font-medium">{product.brand}</td></tr>}
-                  {product.nicotine && <tr><td className="py-1 text-gray-500 pr-4">{t('product.nicotine')}</td><td className="font-medium">{product.nicotine}</td></tr>}
-                  {product.capacity && <tr><td className="py-1 text-gray-500 pr-4">{t('product.capacity')}</td><td className="font-medium">{product.capacity}</td></tr>}
-                  {product.puffs && <tr><td className="py-1 text-gray-500 pr-4">{t('product.puffs')}</td><td className="font-medium">{product.puffs}</td></tr>}
-                  {product.flavor && <tr><td className="py-1 text-gray-500 pr-4">{t('product.flavor')}</td><td className="font-medium">{product.flavor}</td></tr>}
-                  {product.size && <tr><td className="py-1 text-gray-500 pr-4">{t('product.size')}</td><td className="font-medium">{product.size}</td></tr>}
-                  <tr><td className="py-1 text-gray-500 pr-4">{t('product.stock')}</td><td className="font-medium text-green-600">{product.stock}+ {t('product.inStock')}</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            {/* 联系客服询价 */}
-            <div className="mt-6 p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl">
-              <h3 className="font-semibold text-amber-800 mb-3">
-                💬 {language === 'en' ? 'Contact Us for Bulk Orders' : '联系我们获取批发报价'}
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                {t('contact.inquireDesc')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <a href={`https://wa.me/${whatsappNum}?text=Hi!%20I'm%20interested%20in%20${encodeURIComponent(product.name)}`}
-                   target="_blank" rel="noopener noreferrer"
-                   className="flex-1 text-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition">
-                  💬 WhatsApp
-                </a>
-                <Link href="/contact"
-                   className="flex-1 text-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition">
-                  {t('contact.send')}
-                </Link>
-              </div>
-            </div>
-
-            <div className="mt-4 text-sm text-gray-400 text-center">
-              {t('product.minOrder')}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-12 border-t pt-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('product.detail')}</h2>
-          <div className="prose max-w-none text-gray-600 whitespace-pre-wrap leading-relaxed">
-            {getEnglishDescription()}
-          </div>
-        </div>
-
-        <div className="mt-12 bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-8 text-center">
-          <h3 className="text-2xl font-bold text-gray-900">{t('product.inquire')}</h3>
-          <p className="mt-2 text-gray-600">{t('contact.inquireDesc')}</p>
-          <Link href="/contact" className="mt-4 inline-block px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition">
-            {t('contact.send')}
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-}}{product.msrp.toFixed(2)}</span>}
+                  <span className={"text-4xl font-bold " + display.className}>{'\u0024' + Number(display.price).toFixed(2)}</span>
+                  {display.showMsrp && <span className="text-xl text-gray-400 line-through ml-2">{'\u0024' + Number(product.msrp).toFixed(2)}</span>}
                 </>
               })()}
             </div>
