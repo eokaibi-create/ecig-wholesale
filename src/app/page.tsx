@@ -26,11 +26,11 @@ async function getCustomerTypeFromCookie() {
 function getDisplayPrice(product, customerType) {
   const hasStorePrice = product.wholesalePrice != null && product.wholesalePrice > 0
   const hasWholesalerPrice = product.wholesalerPrice != null && product.wholesalerPrice > 0
-  if (customerType === 'wholesaler' && hasWholesalerPrice) {
-    return { price: product.wholesalerPrice, label: 'wholesaler' }
+  if (customerType === 'wholesaler' && hasStorePrice) {
+    return { price: product.wholesalePrice, label: 'wholesaler' }
   }
-  if (customerType === 'store' && hasStorePrice) {
-    return { price: product.wholesalePrice, label: 'store' }
+  if (customerType === 'store' && hasWholesalerPrice) {
+    return { price: product.wholesalerPrice, label: 'store' }
   }
   return { price: product.price, label: 'retail' }
 }

@@ -26,11 +26,11 @@ function getDisplayPrice(product: any, customerType: string | null): { price: nu
   const hasStorePrice = product.wholesalePrice != null && product.wholesalePrice > 0
   const hasWholesalerPrice = product.wholesalerPrice != null && product.wholesalerPrice > 0
   
-  if (customerType === 'wholesaler' && hasWholesalerPrice) {
-    return { price: product.wholesalerPrice, label: 'wholesaler', showMsrp: true }
+  if (customerType === 'wholesaler' && hasStorePrice) {
+    return { price: product.wholesalePrice, label: 'wholesaler', showMsrp: true }
   }
-  if (customerType === 'store' && hasStorePrice) {
-    return { price: product.wholesalePrice, label: 'store', showMsrp: true }
+  if (customerType === 'store' && hasWholesalerPrice) {
+    return { price: product.wholesalerPrice, label: 'store', showMsrp: true }
   }
   return { price: product.price, label: 'retail', showMsrp: !!product.msrp }
 }

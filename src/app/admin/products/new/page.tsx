@@ -156,6 +156,21 @@ export default function NewProductPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+  const handleVideoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    setUploadProgress('🎬 上传视频中...')
+    const url = await handleUpload(file)
+    if (url) {
+      setVideoUrl(url)
+      showMsg('✅ 视频上传成功', 'success')
+    }
+    setUploading(false)
+    setUploadProgress('')
+    if (videoInputRef.current) videoInputRef.current.value = ''
+  }
+
     setSaving(true)
     showMsg('')
 

@@ -45,11 +45,11 @@ export default function ProductDetailPage() {
     if (!product) return { price: 0, showMsrp: false, label: 'retail', className: 'text-amber-600' }
     const hasStorePrice = product.wholesalePrice != null && product.wholesalePrice > 0
     const hasWholesalerPrice = (product as any).wholesalerPrice != null && (product as any).wholesalerPrice > 0
-    if (customerType === 'wholesaler' && hasWholesalerPrice) {
-      return { price: (product as any).wholesalerPrice, label: 'wholesaler', showMsrp: !!product.msrp, className: 'text-purple-600' }
+    if (customerType === 'wholesaler' && hasStorePrice) {
+      return { price: product.wholesalePrice, label: 'wholesaler', showMsrp: !!product.msrp, className: 'text-purple-600' }
     }
-    if (customerType === 'store' && hasStorePrice) {
-      return { price: product.wholesalePrice, label: 'store', showMsrp: !!product.msrp, className: 'text-amber-600' }
+    if (customerType === 'store' && hasWholesalerPrice) {
+      return { price: (product as any).wholesalerPrice, label: 'store', showMsrp: !!product.msrp, className: 'text-amber-600' }
     }
     return { price: product.price, label: 'retail', showMsrp: !!product.msrp, className: 'text-amber-600' }
   }
@@ -223,7 +223,7 @@ export default function ProductDetailPage() {
                   {product.nicotine && <tr><td className="py-1 text-gray-500 pr-4">{t('product.nicotine')}</td><td className="font-medium">{product.nicotine}</td></tr>}
                   {product.capacity && <tr><td className="py-1 text-gray-500 pr-4">{t('product.capacity')}</td><td className="font-medium">{product.capacity}</td></tr>}
                   {product.puffs && <tr><td className="py-1 text-gray-500 pr-4">{t('product.puffs')}</td><td className="font-medium">{product.puffs}</td></tr>}
-                  {product.flavor && <tr><td className="py-1 text-gray-500 pr-4">{t('product.flavor')}</td><td className="font-medium">{product.flavor}</td></tr>}
+                  {product.flavor && <tr><td className="py-1 text-gray-500 pr-4 align-top">{t('product.flavor')}</td><td className="font-medium"><div className="flex flex-wrap gap-1.5">{(typeof product.flavor === "string" ? product.flavor.split(",").map((f: string) => f.trim()).filter(Boolean) : []).map((f: string, fi: number) => <span key={fi} className="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full border border-amber-200">{f}</span>)}</div></td></tr>}
                   {product.size && <tr><td className="py-1 text-gray-500 pr-4">{t('product.size')}</td><td className="font-medium">{product.size}</td></tr>}
                   <tr><td className="py-1 text-gray-500 pr-4">{t('product.stock')}</td><td className="font-medium text-green-600">{product.stock}+ {t('product.inStock')}</td></tr>
                 </tbody>
