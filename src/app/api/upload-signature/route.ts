@@ -9,16 +9,14 @@ export async function GET() {
   const timestamp = Math.floor(Date.now() / 1000)
   const folder = 'ecig-wholesale'
 
-  // 签名上传：参数必须按字典序排列，所有非文件参数都参与签名
+  // 签名上传：Cloudinary 要求的签名参数字符串为
+  // 'folder=xxx&timestamp=xxx&upload_preset=xxx'
+  // 不包含 api_key！参数按字母序排列
   const params = [
-    `api_key=${apiKey}`,
     `folder=${folder}`,
     `timestamp=${timestamp}`,
     `upload_preset=${uploadPreset}`,
   ]
-  // 按字典序排序
-  params.sort()
-
   const signature = createHash('sha1')
     .update(params.join('&') + apiSecret)
     .digest('hex')
