@@ -24,6 +24,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
     }
 
+    if (customer.rejected) {
+      return NextResponse.json({ error: 'Account rejected, please contact administrator' }, { status: 403 })
+    }
+
     if (!customer.approved) {
       return NextResponse.json({ error: 'Account pending approval, please try again later' }, { status: 403 })
     }

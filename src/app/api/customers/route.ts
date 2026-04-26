@@ -22,7 +22,10 @@ export async function PUT(request: NextRequest) {
     if (country !== undefined) data.country = country
     if (type !== undefined) data.type = type
     if (notes !== undefined) data.notes = notes
-    if (approved !== undefined) data.approved = approved
+    if (approved !== undefined) {
+      data.approved = approved
+      data.rejected = !approved
+    }
 
     const customer = await prisma.customer.update({
       where: { id: Number(id) },
@@ -36,10 +39,15 @@ export async function PUT(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const { id, approved } = await request.json()
+    const { id, approved, rejected } = await request.json()
+    const data: any = {}
+    if (approved !== undefined) data.approved = approved
+    if (rejected !== undefined) data.rejected = rejected
+    if (approved === true) data.rejected = false
+    if (rejected === true) data.approved = false
     const customer = await prisma.customer.update({
       where: { id: Number(id) },
-      data: { approved },
+      data,
     })
     return NextResponse.json(customer)
   } catch (error: any) {
