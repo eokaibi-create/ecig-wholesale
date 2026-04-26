@@ -8,7 +8,8 @@ export async function GET() {
   const uploadPreset = 'ecig_upload'
   const timestamp = Math.floor(Date.now() / 1000)
 
-  // 构建签名：参数按字母排序 + API Secret
+  // 为 signed upload preset 构建签名
+  // 参数按字典序排列
   const paramsStr = `timestamp=${timestamp}&upload_preset=${uploadPreset}${apiSecret}`
   const signature = createHash('sha1').update(paramsStr).digest('hex')
 
@@ -19,5 +20,6 @@ export async function GET() {
     timestamp,
     signature,
     folder: 'ecig-wholesale',
+    signed: true, // 标记为签名上传
   })
 }
