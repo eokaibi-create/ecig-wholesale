@@ -1,7 +1,20 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendEmail, inquiryNotificationHtml, adminReplyHtml } from '@/lib/email'
 
-// POST - 前台提交询价
+// 从数据库读取邮件设置
+async function getEmailSettings() {
+  const settings = await prisma.setting.findMany({
+    where: { key: { in: ['admin_email', 'email_from'] } }
+  })
+  const map = Object.fromEntries(settings.map(s => [s.key, s.value]))
+  return {
+    adminEmail: process.env.ADMIN_EMAIL || map.admin_email || 'EOKAIBI@GMAIL.COM',
+    fromEmail: process.env.EMAIL_FROM || map.email_from || 'onboarding@resend.dev',
+  }
+}
+
+// POST - 前台提交询价 → 存入数据库 + 邮件通知管理员
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
@@ -25,12 +38,26 @@ export async function POST(request: NextRequest) {
     }
 
     // 创建询价
-    await prisma.inquiry.create({
+    const inquiry = await prisma.inquiry.create({
       data: {
         customerId: customer.id,
         subject: `询价 - ${company || name}`,
         message,
       },
+    })
+
+    // 异步发送邮件通知管理员
+    const { adminEmail, fromEmail } = await getEmailSettings()
+    sendEmail({
+      to: adminEmail,
+      from: fromEmail,
+      subject: `📩 新询价 - ${name}${company ? ` (${company})` : ''}`,
+      html: inquiryNotificationHtml({ name, email, phone, company, message }),
+      replyTo: email,
+    }).then(result => {
+      if (!result.success) {
+        console.warn('[Inquiry] 邮件通知发送失败，但询价已保存:', inquiry.id)
+      }
     })
 
     return NextResponse.redirect(new URL('/contact?success=true', request.url))
@@ -61,11 +88,11 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(inquiries)
 }
 
-// PUT - 更新询价（状态 / 回复 / 备注）
+// PUT - 更新询价（状态 / 回复 / 备注），可选择发送邮件给客户
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, status, adminReply, adminNote } = body
+    const { id, status, adminReply, adminNote, sendEmailToCustomer } = body
 
     if (!id) return NextResponse.json({ error: '缺少ID' }, { status: 400 })
 
@@ -79,6 +106,28 @@ export async function PUT(request: NextRequest) {
       data: updateData,
       include: { customer: true },
     })
+
+    // 如果勾选了"发送邮件给客户"且有回复内容
+    if (sendEmailToCustomer && adminReply && updated.customer?.email) {
+      const { fromEmail, adminEmail } = await getEmailSettings()
+      sendEmail({
+        to: updated.customer.email,
+        from: fromEmail,
+        subject: `回复 - VAPOR-X 关于您的询价`,
+        html: adminReplyHtml({
+          customerName: updated.customer.name,
+          replyMessage: adminReply,
+          originalMessage: updated.message,
+        }),
+        replyTo: adminEmail,
+      }).then(result => {
+        if (result.success) {
+          console.log('[Inquiry] 回复邮件已发送给:', updated.customer?.email)
+        } else {
+          console.warn('[Inquiry] 回复邮件发送失败:', result.error)
+        }
+      })
+    }
 
     return NextResponse.json(updated)
   } catch (error) {

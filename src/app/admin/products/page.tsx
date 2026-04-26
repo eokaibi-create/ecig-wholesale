@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import DeleteProductButton from '@/components/DeleteProductButton'
 import Link from 'next/link'
 import AdminLayout from '@/components/AdminLayout'
 
@@ -67,7 +68,8 @@ export default async function AdminProductsPage() {
                     {p.hot && <span className="ml-1 text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">热卖</span>}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link href={`/admin/products/${p.id}`} className="text-sm text-amber-600 hover:text-amber-700">编辑</Link>
+                    <div className="flex items-center justify-end gap-2"><Link href={`/admin/products/${p.id}`} className="text-sm text-amber-600 hover:text-amber-700">编辑</Link><DeleteProductButton productId={p.id} productName={p.name} /></div>
+                    
                   </td>
                 </tr>
               ))}

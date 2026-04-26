@@ -40,6 +40,7 @@ export default function AdminInquiriesPage() {
   const [editReply, setEditReply] = useState('')
   const [editNote, setEditNote] = useState('')
   const [editStatus, setEditStatus] = useState('')
+  const [sendEmail, setSendEmail] = useState(false)
   const [saving, setSaving] = useState(false)
   const [filter, setFilter] = useState('all')
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null)
@@ -61,6 +62,7 @@ export default function AdminInquiriesPage() {
     setEditReply(inq.adminReply || '')
     setEditNote(inq.adminNote || '')
     setEditStatus(inq.status)
+    setSendEmail(false)
   }
 
   async function saveDetail() {
@@ -69,7 +71,7 @@ export default function AdminInquiriesPage() {
     const res = await fetch('/api/inquiries', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: selected.id, status: editStatus, adminReply: editReply, adminNote: editNote }),
+      body: JSON.stringify({ id: selected.id, status: editStatus, adminReply: editReply, adminNote: editNote, sendEmailToCustomer: sendEmail }),
     })
     if (res.ok) {
       const updated = await res.json()
@@ -221,6 +223,24 @@ export default function AdminInquiriesPage() {
                   placeholder="输入回复内容..."
                 />
               </div>
+
+              {/* 发送邮件给客户 */}
+              {editReply && (
+                <div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={sendEmail}
+                      onChange={e => setSendEmail(e.target.checked)}
+                      className="w-4 h-4 text-amber-500 border-gray-300 rounded focus:ring-amber-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">📧 发送邮件给客户</span>
+                  </label>
+                  {sendEmail && (
+                    <p className="text-xs text-green-600 mt-1 ml-6">保存后将自动发送回复到 {selected?.customer.email}</p>
+                  )}
+                </div>
+              )}
 
               {/* 内部备注 */}
               <div>

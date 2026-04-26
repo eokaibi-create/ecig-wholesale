@@ -5,7 +5,8 @@ const MAX_SIZE = 95 * 1024 * 1024 // 95MB — Cloudinary 免费限制约 100MB�
 const TARGET_SIZE = 80 * 1024 * 1024 // 目标压缩到 80MB
 
 export async function compressVideoIfNeeded(file: File): Promise<File> {
-  if (file.type !== 'video/mp4' && !file.type.startsWith('video/')) return file
+  // 仅对 MP4 视频尝试压缩，.mov/.webm 等直接上传让 Cloudinary 处理
+  if (file.type !== "video/mp4") return file
   if (file.size <= MAX_SIZE) {
     console.log(`✅ 视频 ${(file.size / 1024 / 1024).toFixed(1)}MB，在限制内，无需压缩`)
     return file

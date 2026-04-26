@@ -477,7 +477,6 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'product.stock': 'Stock',
     'product.detail': 'Product Details',
     'product.wholesale': 'Wholesale Pricing',
-    'product.minOrder': 'Min Order: $500 | Free Shipping Continental US',
     'product.inquire': 'Bulk Orders? Get Best Pricing',
     'product.specs': 'Vape Specifications',
     'product.newArrival': 'New Arrival',

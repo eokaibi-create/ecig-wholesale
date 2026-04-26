@@ -41,6 +41,14 @@ const settingGroups = [
       { key: 'min_order', label: '最低起订量($)', default: '500' },
     ],
   },
+  {
+    title: '📧 邮件通知',
+    desc: '当客户提交询价时，系统会自动发送邮件通知到以下地址（需要在 Vercel 环境变量中设置 RESEND_API_KEY）',
+    keys: [
+      { key: 'admin_email', label: '管理员邮箱（接收通知）', default: 'EOKAIBI@GMAIL.COM' },
+      { key: 'email_from', label: '发件人邮箱', default: 'onboarding@resend.dev' },
+    ],
+  },
 ]
 
 export default async function AdminSettingsPage() {

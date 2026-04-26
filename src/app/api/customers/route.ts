@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendEmail, customerApprovedHtml, customerRejectedHtml } from '@/lib/email'
 
 export async function GET() {
   const customers = await prisma.customer.findMany({
@@ -40,15 +41,63 @@ export async function PUT(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const { id, approved, rejected } = await request.json()
+    
+    // 先获取客户信息（发邮件要用）
+    const existing = await prisma.customer.findUnique({
+      where: { id: Number(id) },
+      select: { id: true, name: true, email: true, type: true, approved: true, rejected: true },
+    })
+    if (!existing) {
+      return NextResponse.json({ error: '客户不存在' }, { status: 404 })
+    }
+
     const data: any = {}
     if (approved !== undefined) data.approved = approved
     if (rejected !== undefined) data.rejected = rejected
     if (approved === true) data.rejected = false
     if (rejected === true) data.approved = false
+
     const customer = await prisma.customer.update({
       where: { id: Number(id) },
       data,
     })
+
+    // 审批通过 → 发邮件通知客户
+    if (approved === true && !existing.approved) {
+      sendEmail({
+        to: existing.email,
+        subject: `✅ VAPOR-X - 您的账户已通过审批`,
+        html: customerApprovedHtml({
+          customerName: existing.name,
+          customerEmail: existing.email,
+          type: existing.type || 'wholesaler',
+        }),
+      }).then(result => {
+        if (result.success) {
+          console.log(`[Customers] 审批通过邮件已发送给 ${existing.email}`)
+        } else {
+          console.warn(`[Customers] 审批通过邮件发送失败:`, result.error)
+        }
+      })
+    }
+
+    // 拒绝 → 发邮件通知客户
+    if (rejected === true && !existing.rejected) {
+      sendEmail({
+        to: existing.email,
+        subject: `❌ VAPOR-X - 您的账户未通过审批`,
+        html: customerRejectedHtml({
+          customerName: existing.name,
+        }),
+      }).then(result => {
+        if (result.success) {
+          console.log(`[Customers] 拒绝通知邮件已发送给 ${existing.email}`)
+        } else {
+          console.warn(`[Customers] 拒绝通知邮件发送失败:`, result.error)
+        }
+      })
+    }
+
     return NextResponse.json(customer)
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 })

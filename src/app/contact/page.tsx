@@ -197,7 +197,6 @@ export default function ContactPage() {
                 <div className="mt-8 p-6 bg-amber-50 rounded-xl border border-amber-200">
                   <h3 className="font-bold text-gray-900 mb-2">{t('contact.wholesaleTip')}</h3>
                   <p className="text-sm text-gray-600">
-                    {t('contact.minOrder')}: <strong>${contact.minOrder}</strong><br/>
                     {contact.shippingInfo || t('contact.shippingInfo')}
                   </p>
                 </div>

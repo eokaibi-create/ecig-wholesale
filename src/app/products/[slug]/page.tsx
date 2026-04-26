@@ -251,9 +251,6 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            <div className="mt-4 text-sm text-gray-400 text-center">
-              {t('product.minOrder')}
-            </div>
           </div>
         </div>
 

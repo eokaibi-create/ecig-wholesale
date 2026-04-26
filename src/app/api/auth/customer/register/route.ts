@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendEmail, newRegistrationNotificationHtml } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,6 +50,31 @@ export async function POST(request: NextRequest) {
         approved,
       },
     })
+
+    // 非个人用户（需要审批）→ 发邮件通知管理员
+    if (!isIndividual) {
+      sendEmail({
+        to: process.env.ADMIN_EMAIL || 'EOKAIBI@GMAIL.COM',
+        subject: `🆕 新客户注册待审批 - ${name}${company ? ` (${company})` : ''}`,
+        html: newRegistrationNotificationHtml({
+          name,
+          email,
+          phone: phone || null,
+          company: company || null,
+          companyAddress: companyAddress || null,
+          state: state || null,
+          country: country || null,
+          countryCode: countryCode || null,
+          type: type || 'wholesaler',
+        }),
+      }).then(result => {
+        if (result.success) {
+          console.log('[Register] 审批通知邮件已发送给管理员')
+        } else {
+          console.warn('[Register] 审批通知邮件发送失败:', result.error)
+        }
+      })
+    }
 
     const token = Buffer.from(`customer:${customer.id}:${customer.email}:${Date.now()}`).toString('base64')
 
