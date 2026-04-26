@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import AdminLayout from '@/components/AdminLayout'
-import { compressVideoIfNeeded, isVideo, formatSize } from '@/lib/compressVideo'
+// import { compressVideoIfNeeded, isVideo, formatSize } from '@/lib/compressVideo'
 
 interface HeroVideo {
   id: number
@@ -47,12 +47,8 @@ export default function AdminHeroVideosPage() {
       const sigData = await sigRes.json()
 
       let uploadFile = file
-      if (isVideo(file) && file.size > 95 * 1024 * 1024) {
-        setUploadProgress(`🎬 压缩中 (${formatSize(file.size)})...`)
-        uploadFile = await compressVideoIfNeeded(file)
-      }
 
-      setUploadProgress(isVideo(uploadFile) ? '⏫ 视频上传至云端...' : '⏫ 图片上传中...')
+      setUploadProgress('⏫ 上传至云端 (Cloudinary 自动转码)...')
       const fd = new FormData()
       fd.append('file', uploadFile)
       fd.append('api_key', sigData.apiKey)
@@ -176,7 +172,7 @@ export default function AdminHeroVideosPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">🎬 Hero 视频背景</h1>
-            <p className="text-sm text-gray-500 mt-1">管理首页全屏背景视频，自动轮播播放（支持上传 MP4/WebM，超过95MB自动压缩）</p>
+            <p className="text-sm text-gray-500 mt-1">管理首页全屏背景视频，自动轮播播放（支持 MP4/MOV/WebM，Cloudinary 自动转码）</p>
           </div>
         </div>
 
@@ -216,11 +212,11 @@ export default function AdminHeroVideosPage() {
                     <div className="py-4">
                       <div className="text-3xl mb-1">🎬</div>
                       <p className="text-sm text-gray-500">{uploading ? '⏳ 上传中...' : '点击上传视频'}</p>
-                      <p className="text-xs text-gray-400 mt-1">MP4/WebM（最长2分钟，超过95MB自动压缩）</p>
+                      <p className="text-xs text-gray-400 mt-1">MP4/MOV/WebM 等常见格式，Cloudinary 自动转码</p>
                     </div>
                   )}
                 </div>
-                <input ref={videoInputRef} type="file" accept="video/*" className="hidden"
+                <input ref={videoInputRef} type="file" accept="video/*,.mov" className="hidden"
                   onChange={handleVideoUpload} disabled={uploading} />
               </div>
 

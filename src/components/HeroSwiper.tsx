@@ -111,6 +111,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                 src={v.url}
                 poster={v.poster || undefined}
                 loop
+                muted
                 playsInline
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
                   idx === currentVideoIdx ? 'opacity-100' : 'opacity-0'
@@ -198,6 +199,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
               src={v.url}
               poster={v.poster || undefined}
               loop
+              muted
               playsInline
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
                 idx === currentVideoIdx ? 'opacity-100' : 'opacity-0'
