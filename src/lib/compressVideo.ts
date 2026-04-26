@@ -1,124 +1,126 @@
-// 浏览器端压缩视频（使用 FFmpeg.wasm）
-// 超过 90MB 的视频自动压缩到 ~80MB
+// 浏览器内置视频压缩（使用 MediaRecorder API，无需额外下载）
+// 超过 90MB 的视频自动压缩到 85MB 以下
 
-const MAX_CLOUDINARY_SIZE = 95 * 1024 * 1024  // 留点余量，95MB
-const TARGET_SIZE_MB = 80
-const TARGET_SIZE_BYTES = TARGET_SIZE_MB * 1024 * 1024
+const MAX_SIZE = 85 * 1024 * 1024 // 85MB（留余量）
 
 export async function compressVideoIfNeeded(file: File): Promise<File> {
-  // 未超过限制则不压缩
-  if (file.size <= MAX_CLOUDINARY_SIZE) {
-    console.log(`✅ 视频 ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB) 未超过限制，直接上传`)
-    return file
-  }
+  if (file.type !== 'video/mp4' && !file.type.startsWith('video/')) return file
+  if (file.size <= MAX_SIZE) return file
 
-  console.log(`⚙️ 视频 ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB) 超过限制，准备压缩...`)
+  console.log(`⚙️ 压缩视频: ${(file.size / 1024 / 1024).toFixed(1)}MB → 目标 <85MB`)
 
-  try {
-    const { FFmpeg } = await import('@ffmpeg/ffmpeg')
-    const { fetchFile } = await import('@ffmpeg/util')
+  return new Promise((resolve) => {
+    try {
+      const video = document.createElement('video')
+      video.muted = true
+      video.playsInline = true
+      const url = URL.createObjectURL(file)
+      video.src = url
 
-    const ffmpeg = new FFmpeg()
-    
-    // 显示进度
-    ffmpeg.on('progress', ({ progress, time }) => {
-      const pct = Math.round(progress * 100)
-      console.log(`⏳ 压缩进度: ${pct}%`)
-    })
+      let done = false
+      const finish = (f: File) => {
+        if (!done) { done = true; resolve(f) }
+      }
 
-    await ffmpeg.load()
+      video.onloadedmetadata = () => {
+        const duration = video.duration
+        if (!duration || duration <= 0 || !isFinite(duration)) return finish(file)
 
-    // 写输入文件
-    const inputName = 'input' + getExtension(file.name)
-    await ffmpeg.writeFile(inputName, await fetchFile(file))
+        // 计算目标码率
+        const targetBits = 75 * 1024 * 1024 * 8
+        const videoBitrate = Math.floor((targetBits / duration) * 0.85)
 
-    // 计算需要的压缩比
-    const ratio = TARGET_SIZE_BYTES / file.size
-    // bitrate 调整：用原始大小 * 比例 / 时长
-    // 先用较低码率试试
-    const crf = getCRF(ratio)
+        try {
+          video.currentTime = 0.1
+        } catch {}
 
-    console.log(`📊 压缩参数: 原大小=${(file.size / 1024 / 1024).toFixed(1)}MB, 目标=${TARGET_SIZE_MB}MB, CRF=${crf}`)
+        video.onseeked = () => {
+          try {
+            const stream = (video as any).captureStream?.()
+            if (!stream || !stream.getVideoTracks || stream.getVideoTracks().length === 0) {
+              return finish(file)
+            }
 
-    // 获取视频时长用于精确控制
-    await ffmpeg.exec(['-i', inputName, '-f', 'null', '-c', 'copy', '-map', '0:v:0', '-'])
-    
-    // 执行压缩 - 用 CRF + 最大码率控制
-    const outputName = 'output.mp4'
-    await ffmpeg.exec([
-      '-i', inputName,
-      '-c:v', 'libx264',
-      '-preset', 'medium',          // 平衡压缩率和速度
-      '-crf', String(crf),          // 质量参数（越高越小）
-      '-c:a', 'aac',
-      '-b:a', '128k',               // 音频码率
-      '-movflags', '+faststart',    // 流式优化
-      '-y',
-      outputName
-    ])
+            // 检测支持的 MIME 类型
+            const types = [
+              'video/webm;codecs=vp9,opus',
+              'video/webm;codecs=vp8,opus',
+              'video/webm',
+            ]
+            let mimeType = 'video/webm'
+            for (const t of types) {
+              if (MediaRecorder.isTypeSupported(t)) {
+                mimeType = t
+                break
+              }
+            }
 
-    // 读取压缩后的文件
-    const data = await ffmpeg.readFile(outputName)
-    const compressedBlob = new Blob([data], { type: 'video/mp4' })
+            const chunks: Blob[] = []
+            let chunksSize = 0
 
-    // 如果压缩后还是太大，再压缩一轮
-    if (compressedBlob.size > MAX_CLOUDINARY_SIZE) {
-      console.log(`⚠️ 第一次压缩后 ${(compressedBlob.size / 1024 / 1024).toFixed(1)}MB 仍然超过限制，二次压缩...`)
-      
-      const secondCrf = Math.min(crf + 6, 51)
-      await ffmpeg.exec([
-        '-i', outputName,
-        '-c:v', 'libx264',
-        '-preset', 'medium',
-        '-crf', String(secondCrf),
-        '-c:a', 'aac',
-        '-b:a', '96k',
-        '-movflags', '+faststart',
-        '-y',
-        'output2.mp4'
-      ])
+            const recorder = new MediaRecorder(stream, {
+              mimeType,
+              videoBitsPerSecond: Math.max(videoBitrate, 500000),
+            })
 
-      const data2 = await ffmpeg.readFile('output2.mp4')
-      const compressedBlob2 = new Blob([data2], { type: 'video/mp4' })
-      
-      const compressedFile = new File([compressedBlob2], file.name.replace(/\.[^.]+$/, '.mp4'), {
-        type: 'video/mp4',
-      })
-      
-      console.log(`✅ 二次压缩完成: ${(compressedBlob2.size / 1024 / 1024).toFixed(1)}MB`)
-      return compressedFile
+            recorder.ondataavailable = (e) => {
+              if (e.data.size > 0) {
+                chunks.push(e.data)
+                chunksSize += e.data.size
+              }
+            }
+
+            recorder.onstop = () => {
+              const blob = new Blob(chunks, { type: 'video/mp4' })
+              URL.revokeObjectURL(url)
+              try { stream.getTracks().forEach((t: MediaStreamTrack) => t.stop()) } catch {}
+              try { video.remove() } catch {}
+
+              if (blob.size > 0 && blob.size < file.size) {
+                const newFile = new File([blob], file.name.replace(/\.[^.]+$/, '.mp4'), { type: 'video/mp4' })
+                console.log(`✅ 压缩完成: ${(file.size / 1024 / 1024).toFixed(1)}MB → ${(blob.size / 1024 / 1024).toFixed(1)}MB`)
+                finish(newFile)
+              } else {
+                console.log('⚠️ 压缩未变小，返回原文件')
+                finish(file)
+              }
+            }
+
+            recorder.onerror = () => finish(file)
+
+            recorder.start(1000)
+
+            // 播放并录制
+            video.play().then(() => {
+              video.onended = () => {
+                if (recorder.state === 'recording') recorder.stop()
+              }
+            }).catch(() => finish(file))
+
+            // 超时保护
+            setTimeout(() => {
+              if (recorder.state === 'recording') {
+                try { video.pause() } catch {}
+                recorder.stop()
+              }
+            }, duration * 1000 + 10000)
+
+          } catch {
+            finish(file)
+          }
+        }
+
+        // 后备
+        setTimeout(() => {
+          if (!done) finish(file)
+        }, 5000)
+      }
+
+      video.onerror = () => finish(file)
+    } catch {
+      resolve(file)
     }
-
-    const compressedFile = new File([compressedBlob], file.name.replace(/\.[^.]+$/, '.mp4'), {
-      type: 'video/mp4',
-    })
-
-    console.log(`✅ 压缩完成: ${(compressedBlob.size / 1024 / 1024).toFixed(1)}MB`)
-    return compressedFile
-
-  } catch (err: any) {
-    console.error('❌ 压缩失败，返回原始文件:', err.message)
-    return file
-  }
-}
-
-function getExtension(filename: string): string {
-  const ext = filename.split('.').pop()?.toLowerCase()
-  if (ext === 'mp4') return '.mp4'
-  if (ext === 'webm') return '.webm'
-  if (ext === 'mov') return '.mov'
-  if (ext === 'ogg') return '.ogg'
-  return '.mp4'
-}
-
-function getCRF(ratio: number): number {
-  // ratio: 目标大小 / 原始大小
-  if (ratio >= 0.8) return 23  // 轻微压缩
-  if (ratio >= 0.6) return 26
-  if (ratio >= 0.4) return 28
-  if (ratio >= 0.25) return 30
-  if (ratio >= 0.15) return 33
-  return 35  // 重度压缩
+  })
 }
 
 export function isVideo(file: File): boolean {
