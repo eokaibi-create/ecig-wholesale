@@ -39,7 +39,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
 
   const filteredItems = items.filter(i => i.image || i.product?.image)
 
-  // 如果数据库没有产品，显示空状态提示，而不是硬编码默认产品
+  // 如果数据库没有产品，显示空状态提示
   if (filteredItems.length === 0) {
     return (
       <section className="relative bg-gray-900 text-white overflow-hidden min-h-[700px] md:min-h-screen flex items-center">
@@ -59,7 +59,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
             </p>
           </div>
 
-          {/* 视频区域 */}
+          {/* 装饰区域 */}
           <div className="relative rounded-2xl overflow-hidden bg-black border border-gray-700 shadow-2xl mb-4" style={{ aspectRatio: '21 / 9' }}>
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black" />
             <div className="absolute inset-0 flex items-center justify-center">
@@ -67,24 +67,8 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                 <div className="absolute inset-0 overflow-hidden">
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-amber-500/10 rounded-full blur-[100px] animate-pulse" />
                 </div>
-                <div className="relative z-10 flex flex-col items-center gap-3">
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-amber-500/20 border-2 border-amber-400/50 flex items-center justify-center animate-pulse shadow-lg shadow-amber-500/20">
-                    <svg className="w-7 h-7 md:w-9 md:h-9 text-amber-400 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                  <p className="text-amber-400 text-sm md:text-base font-bold tracking-widest uppercase animate-pulse">
-                    Product Video
-                  </p>
-                  <p className="text-gray-600 text-xs">
-                    {t('hero.productVideo')}
-                  </p>
-                </div>
                 <div className="absolute bottom-4 right-6 opacity-20">
                   <p className="text-4xl md:text-6xl font-black text-white tracking-tight">VAPOR-X</p>
-                </div>
-                <div className="absolute top-4 left-4 z-20">
-                  <span className="px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-bold rounded border border-amber-500/30">DEMO</span>
                 </div>
               </div>
             </div>
@@ -133,7 +117,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
           </p>
         </div>
 
-        {/* 上方：视频区域 */}
+        {/* 装饰区域 */}
         <div className="relative rounded-2xl overflow-hidden bg-black border border-gray-700 shadow-2xl mb-4" style={{ aspectRatio: '21 / 9' }}>
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black" />
           <div className="absolute inset-0 flex items-center justify-center">
@@ -141,24 +125,8 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
               <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-amber-500/10 rounded-full blur-[100px] animate-pulse" />
               </div>
-              <div className="relative z-10 flex flex-col items-center gap-3">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-amber-500/20 border-2 border-amber-400/50 flex items-center justify-center animate-pulse shadow-lg shadow-amber-500/20">
-                  <svg className="w-7 h-7 md:w-9 md:h-9 text-amber-400 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-                <p className="text-amber-400 text-sm md:text-base font-bold tracking-widest uppercase animate-pulse">
-                  Product Video
-                </p>
-                <p className="text-gray-600 text-xs">
-                  {t('hero.productVideo')}
-                </p>
-              </div>
               <div className="absolute bottom-4 right-6 opacity-20">
                 <p className="text-4xl md:text-6xl font-black text-white tracking-tight">VAPOR-X</p>
-              </div>
-              <div className="absolute top-4 left-4 z-20">
-                <span className="px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-bold rounded border border-amber-500/30">DEMO</span>
               </div>
             </div>
           </div>
