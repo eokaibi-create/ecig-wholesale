@@ -1,13 +1,17 @@
 // 浏览器内置视频压缩（使用 MediaRecorder API，无需额外下载）
-// 仅为超大文件提供压缩保底（500MB 以上才触发）
+// Cloudinary 免费版上传限制 ≈ 100MB，超过此大小的视频自动压缩
 
-const MAX_SIZE = 500 * 1024 * 1024 // 500MB，基本不会触发
+const MAX_SIZE = 95 * 1024 * 1024 // 95MB — Cloudinary 免费限制约 100MB，留余量
+const TARGET_SIZE = 80 * 1024 * 1024 // 目标压缩到 80MB
 
 export async function compressVideoIfNeeded(file: File): Promise<File> {
   if (file.type !== 'video/mp4' && !file.type.startsWith('video/')) return file
-  if (file.size <= MAX_SIZE) return file
+  if (file.size <= MAX_SIZE) {
+    console.log(`✅ 视频 ${(file.size / 1024 / 1024).toFixed(1)}MB，在限制内，无需压缩`)
+    return file
+  }
 
-  console.log(`⚙️ 超大视频压缩: ${(file.size / 1024 / 1024).toFixed(1)}MB`)
+  console.log(`⚙️ 视频超过限制: ${(file.size / 1024 / 1024).toFixed(1)}MB > 95MB，开始压缩`)
 
   return new Promise((resolve) => {
     try {
@@ -26,8 +30,8 @@ export async function compressVideoIfNeeded(file: File): Promise<File> {
         const duration = video.duration
         if (!duration || duration <= 0 || !isFinite(duration)) return finish(file)
 
-        // 目标大小 400MB
-        const targetBits = 400 * 1024 * 1024 * 8
+        // 目标大小 80MB，根据视频时长计算码率
+        const targetBits = TARGET_SIZE * 8
         const videoBitrate = Math.floor((targetBits / duration) * 0.85)
 
         try { video.currentTime = 0.1 } catch {}
