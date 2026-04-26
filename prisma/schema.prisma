@@ -74,6 +74,8 @@ model Customer {
   company         String?
   companyAddress  String?   @db.Text
   state           String?
+  country         String?
+  countryCode     String?
   type            String?   @default("wholesaler")
   notes           String?
   approved        Boolean   @default(false)

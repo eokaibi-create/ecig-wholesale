@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, phone, company, companyAddress, state, type, password } = await request.json()
+    const { name, email, phone, company, companyAddress, state, country, countryCode, type, password } = await request.json()
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: '姓名、邮箱和密码为必填项' }, { status: 400 })
@@ -14,12 +14,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '密码至少6位' }, { status: 400 })
     }
 
+    // 店铺/批发商必须有公司名、地址、国家、电话区号
+    if (type !== 'individual') {
+      if (!company) return NextResponse.json({ error: '店铺/批发商必须填写公司名称' }, { status: 400 })
+      if (!companyAddress) return NextResponse.json({ error: '必须填写地址' }, { status: 400 })
+      if (!country) return NextResponse.json({ error: '必须选择国家' }, { status: 400 })
+      if (!countryCode) return NextResponse.json({ error: '必须选择国家区号' }, { status: 400 })
+      if (!phone) return NextResponse.json({ error: '必须填写手机号' }, { status: 400 })
+    }
+
     const existing = await prisma.customer.findUnique({ where: { email } })
     if (existing) {
       return NextResponse.json({ error: '该邮箱已被注册' }, { status: 409 })
     }
 
     const hashedPassword = await bcrypt.hash(password, 12)
+
+    // 个人买家直接通过，店铺/批发商需要审核
+    const isIndividual = type === 'individual'
+    const approved = isIndividual
 
     const customer = await prisma.customer.create({
       data: {
@@ -29,9 +42,11 @@ export async function POST(request: NextRequest) {
         company: company || null,
         companyAddress: companyAddress || null,
         state: state || null,
+        country: country || null,
+        countryCode: countryCode || null,
         type: type || 'wholesaler',
         password: hashedPassword,
-        approved: true,
+        approved,
       },
     })
 
@@ -45,6 +60,7 @@ export async function POST(request: NextRequest) {
         email: customer.email,
         company: customer.company,
         type: customer.type,
+        approved: customer.approved,
       }
     })
 

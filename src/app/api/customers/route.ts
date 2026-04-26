@@ -11,13 +11,15 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const { id, name, phone, company, companyAddress, state, type, notes, approved } = await request.json()
+    const { id, name, phone, countryCode, company, companyAddress, state, country, type, notes, approved } = await request.json()
     const data: any = {}
     if (name !== undefined) data.name = name
     if (phone !== undefined) data.phone = phone
+    if (countryCode !== undefined) data.countryCode = countryCode
     if (company !== undefined) data.company = company
     if (companyAddress !== undefined) data.companyAddress = companyAddress
     if (state !== undefined) data.state = state
+    if (country !== undefined) data.country = country
     if (type !== undefined) data.type = type
     if (notes !== undefined) data.notes = notes
     if (approved !== undefined) data.approved = approved
