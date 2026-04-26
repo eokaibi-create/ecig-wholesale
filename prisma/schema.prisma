@@ -37,33 +37,33 @@ model Brand {
 }
 
 model Product {
-  id             Int        @id @default(autoincrement())
-  name           String
-  slug           String     @unique
-  description    String     @db.Text
-  shortDesc      String?
-  categoryId     Int
-  category       Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  brand          String?
-  price          Float
-  wholesalePrice Float?
-  wholesalerPrice Float?
-  msrp           Float?
-  image          String?    @db.Text
-  images         String[]   @default([])
-  stock          Int        @default(0)
-  featured       Boolean    @default(false)
-  published      Boolean    @default(false)
-  hot            Boolean    @default(false)
-  nicotine       String?
-  capacity       String?
-  puffs          String?
-  flavor         String?
-  size           String?
-  videoUrl       String?    @db.Text
-  heroItems      HeroItem[]
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  id               Int        @id @default(autoincrement())
+  name             String
+  slug             String     @unique
+  description      String     @db.Text
+  shortDesc        String?
+  categoryId       Int
+  category         Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  brand            String?
+  price            Float
+  wholesalePrice   Float?
+  wholesalerPrice  Float?
+  msrp             Float?
+  image            String?    @db.Text
+  images           String[]   @default([])
+  stock            Int        @default(0)
+  featured         Boolean    @default(false)
+  published        Boolean    @default(false)
+  hot              Boolean    @default(false)
+  nicotine         String?
+  capacity         String?
+  puffs            String?
+  flavor           String?
+  size             String?
+  videoUrl         String?    @db.Text
+  heroItems        HeroItem[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 }
 
 model Customer {
@@ -91,7 +91,10 @@ model Inquiry {
   subject    String?
   message    String   @db.Text
   status     String   @default("new")
+  adminReply String?  @db.Text
+  adminNote  String?  @db.Text
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
 }
 
 model Order {
@@ -143,9 +146,6 @@ model HeroItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-
-
 
 model Admin {
   id        Int      @id @default(autoincrement())
