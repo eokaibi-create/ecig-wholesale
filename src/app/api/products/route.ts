@@ -26,12 +26,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json()
-    const { images, price, wholesalePrice, msrp, stock, ...rest } = data
+    const { images, price, wholesalePrice, msrp, wholesalerPrice, stock, ...rest } = data
 
     const createData: any = {
       ...rest,
       price: price ? Number(price) : 0,
       wholesalePrice: wholesalePrice ? Number(wholesalePrice) : null,
+      wholesalerPrice: wholesalerPrice ? Number(wholesalerPrice) : null,
       msrp: msrp ? Number(msrp) : null,
       stock: stock ? Number(stock) : 0,
       categoryId: rest.categoryId ? Number(rest.categoryId) : undefined,

@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const id = parseInt(parts[1])
     const customer = await prisma.customer.findUnique({
       where: { id },
-      select: { id: true, name: true, email: true, company: true, phone: true, companyAddress: true, approved: true },
+      select: { id: true, name: true, email: true, company: true, phone: true, companyAddress: true, approved: true, type: true },
     })
 
     if (!customer) {

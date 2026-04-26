@@ -2,6 +2,38 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import HeroSwiper from '@/components/HeroSwiper'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
+import { cookies } from 'next/headers'
+
+async function getCustomerTypeFromCookie() {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('customer_token')?.value
+  if (!token) return null
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('utf-8')
+    const parts = decoded.split(':')
+    if (parts.length < 3) return null
+    const id = parseInt(parts[1])
+    const customer = await prisma.customer.findUnique({
+      where: { id },
+      select: { type: true },
+    })
+    return customer?.type || null
+  } catch {
+    return null
+  }
+}
+
+function getDisplayPrice(product, customerType) {
+  const hasStorePrice = product.wholesalePrice != null && product.wholesalePrice > 0
+  const hasWholesalerPrice = product.wholesalerPrice != null && product.wholesalerPrice > 0
+  if (customerType === 'wholesaler' && hasWholesalerPrice) {
+    return { price: product.wholesalerPrice, label: 'wholesaler' }
+  }
+  if (customerType === 'store' && hasStorePrice) {
+    return { price: product.wholesalePrice, label: 'store' }
+  }
+  return { price: product.price, label: 'retail' }
+}
 
 async function getData() {
   const [categories, brands, products, videos, platforms, settings, heroItems] = await Promise.all([
@@ -33,6 +65,7 @@ export default async function HomePage() {
 
   const data = await getData()
   const { categories, brands, products, videos, platforms, settings, heroItems } = data
+  const customerType = await getCustomerTypeFromCookie()
 
   const catIcons: Record<string, string> = {
     disposable: '💨', 'pod-system': '⚡', 'e-liquid': '🧪', accessories: '🔧', 'nicotine-pouches': '🟤',
@@ -122,8 +155,11 @@ export default async function HomePage() {
                     </div>
                   )}
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-lg font-bold text-amber-600">${product.price.toFixed(2)}</span>
-                    {product.wholesalePrice && <span className="text-sm text-gray-400 line-through">${product.wholesalePrice.toFixed(2)}</span>}
+                    {(() => {
+                      const display = getDisplayPrice(product, customerType)
+                      const colorClass = display.label === 'retail' ? 'text-amber-600' : 'text-purple-600'
+                      return <span className={"text-lg font-bold " + colorClass}>${display.price.toFixed(2)}</span>
+                    })()}
                   </div>
                   {(() => {
                     if (lang !== 'en' || !product.shortDesc) return <p className="text-xs text-gray-500 mt-1 line-clamp-2">{product.shortDesc}</p>

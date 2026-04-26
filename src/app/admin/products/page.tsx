@@ -25,6 +25,7 @@ export default async function AdminProductsPage() {
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-600">分类</th>
                 <th className="text-left px-4 py-3 text-sm font-semibold text-gray-600">品牌</th>
                 <th className="text-right px-4 py-3 text-sm font-semibold text-gray-600">批发价</th>
+                <th className="text-right px-4 py-3 text-sm font-semibold text-gray-600">批发商价</th>
                 <th className="text-right px-4 py-3 text-sm font-semibold text-gray-600">零售价</th>
                 <th className="text-right px-4 py-3 text-sm font-semibold text-gray-600">库存</th>
                 <th className="text-center px-4 py-3 text-sm font-semibold text-gray-600">状态</th>
@@ -48,6 +49,7 @@ export default async function AdminProductsPage() {
                   <td className="px-4 py-3 text-sm text-gray-600">{p.category.name}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{p.brand || '-'}</td>
                   <td className="px-4 py-3 text-sm text-right font-medium text-amber-600">${p.wholesalePrice?.toFixed(2) || '-'}</td>
+                  <td className="px-4 py-3 text-sm text-right font-medium text-purple-600">${p.wholesalerPrice?.toFixed(2) || '-'}</td>
                   <td className="px-4 py-3 text-sm text-right">${p.price.toFixed(2)}</td>
                   <td className="px-4 py-3 text-sm text-right">{p.stock}</td>
                   <td className="px-4 py-3 text-center">

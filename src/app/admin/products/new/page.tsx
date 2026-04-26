@@ -19,6 +19,7 @@ export default function NewProductPage() {
     brand: '',
     price: '',
     wholesalePrice: '',
+    wholesalerPrice: '',
     msrp: '',
     stock: '0',
     nicotine: '',
@@ -136,6 +137,7 @@ export default function NewProductPage() {
           categoryId: Number(form.categoryId),
           price: Number(form.price),
           wholesalePrice: form.wholesalePrice ? Number(form.wholesalePrice) : null,
+          wholesalerPrice: form.wholesalerPrice ? Number(form.wholesalerPrice) : null,
           msrp: form.msrp ? Number(form.msrp) : null,
           stock: Number(form.stock),
           image: image || null,
@@ -288,7 +290,7 @@ export default function NewProductPage() {
           </div>
 
           {/* 价格和库存 */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">零售价 (USD) *</label>
               <input type="number" step="0.01" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })}
@@ -301,6 +303,14 @@ export default function NewProductPage() {
               <input type="number" step="0.01" value={form.wholesalePrice} onChange={e => setForm({ ...form, wholesalePrice: e.target.value })}
                 className="w-full px-4 py-2.5 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none"
                 placeholder="批发客户价" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <span className="text-purple-600">🔮 批发商价 (USD)</span>
+              </label>
+              <input type="number" step="0.01" value={form.wholesalerPrice} onChange={e => setForm({ ...form, wholesalerPrice: e.target.value })}
+                className="w-full px-4 py-2.5 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+                placeholder="批发商专享价" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">建议零售价 (MSRP)</label>

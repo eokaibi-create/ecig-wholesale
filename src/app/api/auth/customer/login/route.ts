@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
       customer: {
         id: customer.id,
         name: customer.name,
+        type: customer.type,
         email: customer.email,
         company: customer.company,
       }

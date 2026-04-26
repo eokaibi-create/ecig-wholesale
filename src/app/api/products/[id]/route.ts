@@ -24,12 +24,13 @@ export async function PUT(
     const { id } = await params
     const data = await request.json()
 
-    const { images, price, wholesalePrice, msrp, stock, ...rest } = data
+    const { images, price, wholesalePrice, msrp, wholesalerPrice, stock, ...rest } = data
 
     const updateData: any = {
       ...rest,
       price: price !== undefined ? Number(price) : undefined,
       wholesalePrice: wholesalePrice !== undefined ? Number(wholesalePrice) : null,
+      wholesalerPrice: wholesalerPrice !== undefined ? Number(wholesalerPrice) : null,
       msrp: msrp !== undefined ? Number(msrp) : null,
       stock: stock !== undefined ? Number(stock) : undefined,
       categoryId: rest.categoryId ? Number(rest.categoryId) : undefined,

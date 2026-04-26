@@ -11,7 +11,7 @@ export type TranslationKey =
   | 'product.inquire' | 'product.specs' | 'product.newArrival'
   | 'product.notFound' | 'product.backToProducts' | 'product.filterByBrand'
   | 'product.productsCount' | 'product.comingSoon' | 'product.hot'
-  | 'product.search' | 'product.viewAll'
+  | 'product.search' | 'product.viewAll' | 'product.wholesalerPrice' | 'product.storePrice'
   | 'product.shortBc5000' | 'product.shortPulse' | 'product.shortLostMary' | 'product.shortRaz' | 'product.shortMeloso' | 'product.shortElf600'
   | 'product.emptyDesc' | 'product.addInAdmin'
   // 品牌
@@ -46,7 +46,7 @@ export type TranslationKey =
   | 'register.haveAccount' | 'register.login' | 'register.customerType'
   | 'register.loading' | 'register.confirm' | 'register.loginNow'
   | 'register.passwordMismatch' | 'register.passwordTooShort'
-  | 'register.companyAddress' | 'register.state' | 'register.wholesaler' | 'register.individual'
+  | 'register.companyAddress' | 'register.state' | 'register.wholesaler' | 'register.individual' | 'register.store'
   | 'register.optional' | 'register.emailPlaceholder' | 'register.passwordHint'
   | 'register.phonePlaceholder' | 'register.statePlaceholder' | 'register.addressPlaceholder'
   // 登录
@@ -278,6 +278,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'register.state': '州/省',
     'register.wholesaler': '批发商',
     'register.individual': '个人客户',
+    'register.store': '店铺',
     'register.optional': '可选',
     'register.emailPlaceholder': 'your@email.com',
     'register.passwordHint': '至少6位',
@@ -593,6 +594,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'register.state': 'State',
     'register.wholesaler': 'Wholesaler',
     'register.individual': 'Individual',
+    'register.store': 'Store',
     'register.optional': 'Optional',
     'register.emailPlaceholder': 'your@email.com',
     'register.passwordHint': 'min 6 characters',

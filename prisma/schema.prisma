@@ -47,6 +47,7 @@ model Product {
   brand          String?
   price          Float
   wholesalePrice Float?
+  wholesalerPrice Float?
   msrp           Float?
   image          String?    @db.Text
   images         String[]   @default([])

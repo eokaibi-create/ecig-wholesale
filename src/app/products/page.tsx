@@ -1,6 +1,39 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
+import { cookies } from 'next/headers'
+
+async function getCustomerTypeFromCookie(): Promise<string | null> {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('customer_token')?.value
+  if (!token) return null
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('utf-8')
+    const parts = decoded.split(':')
+    if (parts.length < 3) return null
+    const id = parseInt(parts[1])
+    const customer = await prisma.customer.findUnique({
+      where: { id },
+      select: { type: true },
+    })
+    return customer?.type || null
+  } catch {
+    return null
+  }
+}
+
+function getDisplayPrice(product: any, customerType: string | null): { price: number; label: string; showMsrp: boolean } {
+  const hasStorePrice = product.wholesalePrice != null && product.wholesalePrice > 0
+  const hasWholesalerPrice = product.wholesalerPrice != null && product.wholesalerPrice > 0
+  
+  if (customerType === 'wholesaler' && hasWholesalerPrice) {
+    return { price: product.wholesalerPrice, label: 'wholesaler', showMsrp: true }
+  }
+  if (customerType === 'store' && hasStorePrice) {
+    return { price: product.wholesalePrice, label: 'store', showMsrp: true }
+  }
+  return { price: product.price, label: 'retail', showMsrp: !!product.msrp }
+}
 
 export default async function ProductsPage({
   searchParams,
@@ -38,6 +71,7 @@ export default async function ProductsPage({
   })
 
   const currentBrand = params.brand ? brands.find(b => b.slug === params.brand) : null
+  const customerType = await getCustomerTypeFromCookie()
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -131,8 +165,15 @@ export default async function ProductsPage({
                     return shortMap[product.slug] || product.shortDesc
                   })()}</p>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-xl font-bold text-amber-600">${product.price.toFixed(2)}</span>
-                    {product.msrp && <span className="text-sm text-gray-400 line-through">${product.msrp.toFixed(2)}</span>}
+                    {(() => {
+                      const display = getDisplayPrice(product, customerType)
+                      return <>
+                        <span className={"text-xl font-bold " + (display.label === 'retail' ? 'text-amber-600' : display.label === 'store' ? 'text-amber-600' : 'text-purple-600')}>
+                          ${display.price.toFixed(2)}
+                        </span>
+                        {display.showMsrp && product.msrp && <span className="text-sm text-gray-400 line-through">${product.msrp.toFixed(2)}</span>}
+                      </>
+                    })()}
                   </div>
                 </div>
               </Link>
