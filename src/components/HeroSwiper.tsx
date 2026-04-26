@@ -111,22 +111,18 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
     return (
       <section className="relative bg-gray-900 text-white overflow-hidden min-h-[480px] md:min-h-[560px] flex items-center">
         {/* 背景视频 */}
-        {bgVideos.length > 0 && (
+        {bgVideos.length > 0 && bgVideos[currentVideoIdx] && (
           <div className="absolute inset-0">
-            {bgVideos.map((v, idx) => (
-              <video
-                key={v.id}
-                ref={el => { videoRefs.current[idx] = el }}
-                src={v.url}
-                poster={v.poster || undefined}
-
-                muted
-                playsInline
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                  idx === currentVideoIdx ? 'opacity-100' : 'opacity-0'
-                }`}
-              />
-            ))}
+            <video
+              key={bgVideos[currentVideoIdx].id}
+              ref={el => { videoRefs.current[currentVideoIdx] = el }}
+              src={bgVideos[currentVideoIdx].url}
+              poster={bgVideos[currentVideoIdx].poster || undefined}
+              muted
+              autoPlay
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+            />
             {/* 视频遮罩 */}
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-gray-900/70 to-gray-900/85" />
             <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-transparent to-transparent" />
@@ -219,22 +215,18 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
   return (
     <section className="relative bg-gray-900 text-white overflow-hidden min-h-[480px] md:min-h-[560px] flex items-center">
       {/* 🎬 全屏自动播放背景视频 */}
-      {bgVideos.length > 0 && (
+      {bgVideos.length > 0 && bgVideos[currentVideoIdx] && (
         <div className="absolute inset-0">
-          {bgVideos.map((v, idx) => (
-            <video
-              key={v.id}
-              ref={el => { videoRefs.current[idx] = el }}
-              src={v.url}
-              poster={v.poster || undefined}
-
-              muted
-              playsInline
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                idx === currentVideoIdx ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
-          ))}
+          <video
+            key={bgVideos[currentVideoIdx].id}
+            ref={el => { videoRefs.current[currentVideoIdx] = el }}
+            src={bgVideos[currentVideoIdx].url}
+            poster={bgVideos[currentVideoIdx].poster || undefined}
+            muted
+            autoPlay
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
           {/* 视频遮罩 */}
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-gray-900/70 to-gray-900/85" />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-transparent to-transparent" />
