@@ -37,7 +37,8 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
   const swiperRef = useRef<SwiperType | null>(null)
   const { t } = useLanguage()
 
-  const filteredItems = items.filter(i => i.image || i.product?.image)
+  // 🔧 修复：加上 videoUrl 条件，只上传视频没有图片的新品也能显示
+  const filteredItems = items.filter(i => i.image || i.videoUrl || i.product?.image)
 
   // 如果数据库没有产品，显示空状态提示
   if (filteredItems.length === 0) {
