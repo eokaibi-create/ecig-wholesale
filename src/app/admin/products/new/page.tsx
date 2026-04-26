@@ -56,13 +56,26 @@ export default function NewProductPage() {
       showMsg(`不支持的文件类型: ${file.type}`, 'error')
       return null
     }
-    // 直接上传到 Cloudinary，不走 Vercel 中转，无大小限制
+    // 先获取上传签名
+    let sigData
+    try {
+      const sigRes = await fetch('/api/upload-signature')
+      if (!sigRes.ok) throw new Error('获取签名失败')
+      sigData = await sigRes.json()
+    } catch (err: any) {
+      showMsg(`获取上传签名失败: ${err.message}`, 'error')
+      return null
+    }
+    // 直接上传到 Cloudinary（经过签名的上传，不走 Vercel 中转）
     const cloudFormData = new FormData()
     cloudFormData.append('file', file)
-    cloudFormData.append('upload_preset', 'ecig_upload')
-    cloudFormData.append('folder', 'ecig-wholesale')
+    cloudFormData.append('upload_preset', sigData.uploadPreset)
+    cloudFormData.append('folder', sigData.folder)
+    cloudFormData.append('api_key', sigData.apiKey)
+    cloudFormData.append('timestamp', String(sigData.timestamp))
+    cloudFormData.append('signature', sigData.signature)
     try {
-      const res = await fetch('https://api.cloudinary.com/v1_1/dlmgdbrte/auto/upload', {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`, {
         method: 'POST',
         body: cloudFormData,
       })
