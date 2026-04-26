@@ -98,6 +98,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
   }
 
   const slides = filteredItems
+  const firstVideoUrl = slides?.[0]?.videoUrl || null
 
   return (
     <section className="relative bg-gray-900 text-white overflow-hidden min-h-[700px] md:min-h-screen flex items-center">
@@ -117,13 +118,25 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
           </p>
         </div>
 
-        {/* 装饰区域 */}
+        {/* 装饰区域 - 有视频就播放背景视频 */}
         <div className="relative rounded-2xl overflow-hidden bg-black border border-gray-700 shadow-2xl mb-4" style={{ aspectRatio: '21 / 9' }}>
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative w-full h-full flex items-center justify-center">
               <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-amber-500/10 rounded-full blur-[100px] animate-pulse" />
+                {firstVideoUrl ? (
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover opacity-30"
+                  >
+                    <source src={firstVideoUrl} type="video/mp4" />
+                  </video>
+                ) : (
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-amber-500/10 rounded-full blur-[100px] animate-pulse" />
+                )}
               </div>
               <div className="absolute bottom-4 right-6 opacity-20">
                 <p className="text-4xl md:text-6xl font-black text-white tracking-tight">VAPOR-X</p>
