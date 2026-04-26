@@ -118,7 +118,8 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
               />
             ))}
             {/* 视频遮罩 */}
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-900/80" />
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-gray-900/70 to-gray-900/85" />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-transparent to-transparent" />
           </div>
         )}
 
@@ -153,7 +154,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
           <div className="text-center mb-4">
-            <p className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight">
+            <p className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight drop-shadow-[0_2px_15px_rgba(0,0,0,0.9)]">
               <span className="text-amber-400">VAPOR</span>
               <span className="text-white">-X</span>
             </p>
@@ -204,7 +205,8 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
             />
           ))}
           {/* 视频遮罩 */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/70 via-gray-900/50 to-gray-900/70" />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-gray-900/70 to-gray-900/85" />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-transparent to-transparent" />
         </div>
       )}
 
@@ -307,7 +309,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
               return (
                 <SwiperSlide key={item.id}>
                   <Link href={href} className="block group">
-                    <div className="relative rounded-xl overflow-hidden bg-gray-800/80 backdrop-blur-sm border border-gray-700 hover:border-amber-500/50 transition-all duration-300 group">
+                    <div className="relative rounded-xl overflow-hidden bg-gray-800/95 backdrop-blur-md shadow-lg shadow-black/30 border border-gray-700 hover:border-amber-500/50 transition-all duration-300 group">
                       <div className="relative w-full" style={{ aspectRatio: '3 / 2' }}>
                         {imgSrc ? (
                           <img
