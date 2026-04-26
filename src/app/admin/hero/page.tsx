@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import AdminLayout from '@/components/AdminLayout'
-import Link from 'next/link'
+import { compressVideoIfNeeded, isVideo, formatSize } from '@/lib/compressVideo'
 
 interface Product {
   id: number
@@ -30,7 +30,7 @@ export default function AdminHeroPage() {
   const [form, setForm] = useState({ image: '', videoUrl: '', title: '', productId: '' })
   const [message, setMessage] = useState('')
   const [uploading, setUploading] = useState(false)
-  const [uploadType, setUploadType] = useState<'image' | 'video'>('image')
+  const [uploadProgress, setUploadProgress] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
 
@@ -56,34 +56,91 @@ export default function AdminHeroPage() {
     setTimeout(() => setMessage(''), 4000)
   }
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video') => {
+  // 直接上传到 Cloudinary（签名直传，绕过 Vercel 4.5MB 限制）
+  const uploadToCloudinary = async (file: File): Promise<string | null> => {
+    try {
+      // 获取签名
+      const sigRes = await fetch('/api/upload-signature')
+      if (!sigRes.ok) {
+        showMsg('❌ 获取上传签名失败', 'error')
+        return null
+      }
+      const sigData = await sigRes.json()
+
+      // 超大文件（500MB+）才压缩保底
+      let uploadFile = file
+      if (isVideo(file) && file.size > 500 * 1024 * 1024) {
+        setUploadProgress(`🎬 超大视频压缩中 (${formatSize(file.size)})...`)
+        uploadFile = await compressVideoIfNeeded(file)
+        if (uploadFile.size < file.size) {
+          showMsg(`✅ 视频已压缩: ${formatSize(file.size)} → ${formatSize(uploadFile.size)}`, 'success')
+        }
+      }
+
+      // 直接上传到 Cloudinary（不经过 Vercel 服务器）
+      setUploadProgress(isVideo(uploadFile) ? '⏫ 视频上传中...' : '⏫ 图片上传中...')
+      const cloudFormData = new FormData()
+      cloudFormData.append('file', uploadFile)
+      cloudFormData.append('api_key', sigData.apiKey)
+      cloudFormData.append('timestamp', String(sigData.timestamp))
+      cloudFormData.append('upload_preset', sigData.uploadPreset)
+      cloudFormData.append('folder', sigData.folder)
+      cloudFormData.append('signature', sigData.signature)
+
+      const cloudRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`,
+        { method: 'POST', body: cloudFormData }
+      )
+
+      if (!cloudRes.ok) {
+        const errText = await cloudRes.text()
+        console.error('Cloudinary upload error:', errText)
+        showMsg('❌ 上传到云存储失败', 'error')
+        return null
+      }
+
+      const cloudData = await cloudRes.json()
+      return cloudData.secure_url
+    } catch (err) {
+      console.error('Upload error:', err)
+      showMsg('❌ 上传出错', 'error')
+      return null
+    }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    
+
     setUploading(true)
-    setUploadType(type)
-    const formData = new FormData()
-    formData.append('file', file)
-    
-    try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      if (res.ok) {
-        const data = await res.json()
-        if (type === 'image') {
-          setForm(prev => ({ ...prev, image: data.url }))
-        } else {
-          setForm(prev => ({ ...prev, videoUrl: data.url }))
-        }
-        showMsg(`✅ ${type === 'image' ? '图片' : '视频'}上传成功`, 'success')
-      } else {
-        const err = await res.json()
-        showMsg(`❌ 上传失败: ${err.error}`, 'error')
-      }
-    } catch (err) {
-      showMsg('❌ 上传出错', 'error')
+    setUploadProgress('⏫ 图片上传中...')
+
+    const url = await uploadToCloudinary(file)
+    if (url) {
+      setForm(prev => ({ ...prev, image: url }))
+      showMsg('✅ 图片上传成功', 'success')
     }
+
     setUploading(false)
+    setUploadProgress('')
     if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    setUploadProgress('⏫ 准备上传视频...')
+
+    const url = await uploadToCloudinary(file)
+    if (url) {
+      setForm(prev => ({ ...prev, videoUrl: url }))
+      showMsg('✅ 视频上传成功', 'success')
+    }
+
+    setUploading(false)
+    setUploadProgress('')
     if (videoInputRef.current) videoInputRef.current.value = ''
   }
 
@@ -161,7 +218,7 @@ export default function AdminHeroPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">🆕 Hero 新品管理</h1>
-            <p className="text-sm text-gray-500 mt-1">管理首页 Hero 新品banner + 15秒短视频（最多5个新品 + 1个视频）</p>
+            <p className="text-sm text-gray-500 mt-1">管理首页 Hero 新品展示（新品图片 / 最长2分钟视频）</p>
           </div>
         </div>
 
@@ -180,42 +237,41 @@ export default function AdminHeroPage() {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* 图片上传 */}
+              {/* 图片上传 - 直传 Cloudinary */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">新品图片（Banner）</label>
                 <div 
                   className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:border-amber-400 transition cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => !uploading && fileInputRef.current?.click()}
                 >
                   {form.image ? (
                     <div className="relative">
                       <img src={form.image} alt="预览" className="max-h-36 mx-auto rounded-lg" />
-                      <button type="button" onClick={(e) => { e.stopPropagation(); setForm({...form, image: ''}) }}
+                      <button type="button" disabled={uploading} onClick={(e) => { e.stopPropagation(); setForm({...form, image: ''}) }}
                         className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full text-xs hover:bg-red-600">×</button>
                     </div>
                   ) : (
                     <div className="py-6">
                       <div className="text-3xl mb-1">📸</div>
-                      <p className="text-sm text-gray-500">点击上传新品图片</p>
-                      <p className="text-xs text-gray-400 mt-1">JPG/PNG/WebP, 最大10MB</p>
+                      <p className="text-sm text-gray-500">{uploading ? '⏳ 上传中...' : '点击上传新品图片'}</p>
+                      <p className="text-xs text-gray-400 mt-1">JPG/PNG/WebP</p>
                     </div>
                   )}
                 </div>
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" 
-                  onChange={(e) => handleFileUpload(e, 'image')} />
-                {uploading && uploadType === 'image' && <p className="text-xs text-amber-600 mt-1">⏳ 上传中...</p>}
+                  onChange={handleImageUpload} disabled={uploading} />
               </div>
 
-              {/* 视频上传 */}
+              {/* 视频上传 - 直传 Cloudinary */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">15秒短视频（可选，仅第一个新品展示）</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">新品视频（最长2分钟）</label>
                 <div 
                   className="border-2 border-dashed border-blue-300 rounded-xl p-4 text-center hover:border-blue-400 transition cursor-pointer"
-                  onClick={() => videoInputRef.current?.click()}
+                  onClick={() => !uploading && videoInputRef.current?.click()}
                 >
                   {form.videoUrl ? (
                     <div className="relative">
-                      {form.videoUrl.startsWith('data:video') || form.videoUrl.includes('.mp4') ? (
+                      {form.videoUrl.includes('.mp4') || form.videoUrl.includes('/video/') || form.videoUrl.includes('cloudinary') ? (
                         <video src={form.videoUrl} className="max-h-28 mx-auto rounded-lg" controls />
                       ) : (
                         <div className="py-4">
@@ -223,20 +279,22 @@ export default function AdminHeroPage() {
                           <p className="text-sm text-blue-600 truncate">视频已上传</p>
                         </div>
                       )}
-                      <button type="button" onClick={(e) => { e.stopPropagation(); setForm({...form, videoUrl: ''}) }}
+                      <button type="button" disabled={uploading} onClick={(e) => { e.stopPropagation(); setForm({...form, videoUrl: ''}) }}
                         className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full text-xs hover:bg-red-600">×</button>
                     </div>
                   ) : (
                     <div className="py-6">
                       <div className="text-3xl mb-1">🎬</div>
-                      <p className="text-sm text-gray-500">点击上传15秒短视频</p>
-                      <p className="text-xs text-gray-400 mt-1">MP4/WebM, 最大50MB</p>
+                      <p className="text-sm text-gray-500">{uploading ? '⏳ 上传中...' : '点击上传视频'}</p>
+                      <p className="text-xs text-gray-400 mt-1">MP4/WebM（无大小限制，不压缩）</p>
                     </div>
                   )}
                 </div>
                 <input ref={videoInputRef} type="file" accept="video/mp4,video/webm,video/quicktime" className="hidden" 
-                  onChange={(e) => handleFileUpload(e, 'video')} />
-                {uploading && uploadType === 'video' && <p className="text-xs text-blue-600 mt-1">⏳ 视频上传中...</p>}
+                  onChange={handleVideoUpload} disabled={uploading} />
+                {uploading && uploadProgress && (
+                  <p className={`text-xs mt-1 ${uploadProgress.includes('视频') ? 'text-blue-600' : 'text-amber-600'}`}>{uploadProgress}</p>
+                )}
                 <div className="mt-2">
                   <label className="block text-xs text-gray-400 mb-1">或输入视频URL</label>
                   <input type="text" value={form.videoUrl} onChange={e => setForm({...form, videoUrl: e.target.value})}
@@ -264,9 +322,9 @@ export default function AdminHeroPage() {
               </div>
 
               <div className="flex gap-2">
-                <button type="submit"
-                  className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition">
-                  {editing ? '💾 更新' : '➕ 添加'}
+                <button type="submit" disabled={uploading}
+                  className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition disabled:opacity-50">
+                  {uploading ? '⏳ 上传中...' : editing ? '💾 更新' : '➕ 添加'}
                 </button>
                 {editing && (
                   <button type="button" onClick={() => { setEditing(null); setForm({image: '', videoUrl: '', title: '', productId: ''}) }}
@@ -298,7 +356,7 @@ export default function AdminHeroPage() {
                     <div className="text-4xl mb-2">🆕</div>
                     <p>暂无新品，点击左侧添加</p>
                   </td></tr>
-                ) : items.map((item, index) => (
+                ) : items.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       {item.videoUrl ? (
