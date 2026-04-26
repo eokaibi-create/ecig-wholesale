@@ -197,7 +197,11 @@ export default function ProductDetailPage() {
                 const display = getDisplayPrice()
                 const colorClass = display.label === 'retail' ? 'text-amber-600' : 'text-purple-600'
                 return <>
-                  <span className={"text-4xl font-bold " + colorClass}>{'
+                  <span className={"text-4xl font-bold " + colorClass}>{'¥' + Number(display.price).toFixed(2)}</span>
+                  {display.showMsrp && <span className="text-lg text-gray-400 line-through ml-2">{'¥' + Number(product.msrp).toFixed(2)}</span>}
+                </>
+              })()}
+            </div>
 
             <div className="mt-6 p-4 bg-gray-50 rounded-xl">
               <h3 className="font-semibold text-gray-900 mb-2">{t('product.params')}</h3>
