@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/i18n/LanguageProvider'
 
@@ -28,6 +28,15 @@ interface HeroItemData {
   product?: HeroProduct | null
 }
 
+interface HeroVideoData {
+  id: number
+  url: string
+  poster: string | null
+  title: string | null
+  sortOrder: number
+  published: boolean
+}
+
 interface HeroSwiperProps {
   items: HeroItemData[]
   heroTitle: string
@@ -35,39 +44,98 @@ interface HeroSwiperProps {
 
 export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
   const swiperRef = useRef<SwiperType | null>(null)
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+  const [bgVideos, setBgVideos] = useState<HeroVideoData[]>([])
+  const [currentVideoIdx, setCurrentVideoIdx] = useState(0)
   const { t } = useLanguage()
 
-  // 🔧 修复：加上 videoUrl 条件，只上传视频没有图片的新品也能显示
+  // 获取背景视频
+  useEffect(() => {
+    fetch('/api/hero-videos')
+      .then(r => r.json())
+      .then((data: HeroVideoData[]) => {
+        const published = data.filter(v => v.published)
+        setBgVideos(published)
+        if (published.length > 0) {
+          videoRefs.current = new Array(published.length).fill(null)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  // 自动切换背景视频
+  useEffect(() => {
+    if (bgVideos.length < 2) return
+    const timer = setInterval(() => {
+      setCurrentVideoIdx(prev => (prev + 1) % bgVideos.length)
+    }, 8000) // 每8秒切换一次
+    return () => clearInterval(timer)
+  }, [bgVideos.length])
+
+  // 视频切换时播放新视频
+  useEffect(() => {
+    if (bgVideos.length === 0) return
+    const video = videoRefs.current[currentVideoIdx]
+    if (video) {
+      video.currentTime = 0
+      video.play().catch(() => {})
+    }
+  }, [currentVideoIdx, bgVideos.length])
+
   const filteredItems = items.filter(i => i.image || i.videoUrl || i.product?.image)
 
-  // 如果数据库没有产品，显示空状态提示
+  // 如果数据库没有产品，显示空状态
   if (filteredItems.length === 0) {
     return (
       <section className="relative bg-gray-900 text-white overflow-hidden min-h-[700px] md:min-h-screen flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
-        <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-amber-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-400/5 rounded-full blur-3xl" />
+        {/* 背景视频 */}
+        {bgVideos.length > 0 && (
+          <div className="absolute inset-0">
+            {bgVideos.map((v, idx) => (
+              <video
+                key={v.id}
+                ref={el => { videoRefs.current[idx] = el }}
+                src={v.url}
+                poster={v.poster || undefined}
+                muted
+                loop
+                playsInline
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                  idx === currentVideoIdx ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            ))}
+            {/* 视频遮罩 */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-900/80" />
+          </div>
+        )}
+
+        {/* 无视频时的装饰 */}
+        {bgVideos.length === 0 && (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
+            <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-amber-500/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-400/5 rounded-full blur-3xl" />
+          </>
+        )}
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-          {/* 标题 */}
           <div className="text-center mb-6">
             <p className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight">
               <span className="text-amber-400">VAPOR</span>
               <span className="text-white">-X</span>
             </p>
-            <p className="mt-1 text-sm md:text-base text-gray-500 font-light tracking-widest uppercase">
+            <p className="mt-1 text-sm md:text-base text-gray-400 font-light tracking-widest uppercase">
               {t('hero.vaporDesc')}
             </p>
           </div>
 
-          {/* 空状态提示 */}
           <div className="text-center py-16">
             <div className="text-6xl mb-4">📦</div>
             <h2 className="text-2xl font-bold text-white mb-2">{heroTitle}</h2>
             <p className="text-gray-500">{t('hero.noProducts')}</p>
           </div>
 
-          {/* 底部按钮 */}
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link href="/products"
               className="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition shadow-lg shadow-amber-500/25">
@@ -87,9 +155,36 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
 
   return (
     <section className="relative bg-gray-900 text-white overflow-hidden min-h-[700px] md:min-h-screen flex items-center">
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
-      <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-amber-500/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-400/5 rounded-full blur-3xl" />
+      {/* 🎬 全屏自动播放背景视频 */}
+      {bgVideos.length > 0 && (
+        <div className="absolute inset-0">
+          {bgVideos.map((v, idx) => (
+            <video
+              key={v.id}
+              ref={el => { videoRefs.current[idx] = el }}
+              src={v.url}
+              poster={v.poster || undefined}
+              muted
+              loop
+              playsInline
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                idx === currentVideoIdx ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          ))}
+          {/* 视频遮罩 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/70 via-gray-900/50 to-gray-900/70" />
+        </div>
+      )}
+
+      {/* 没有背景视频时的装饰 */}
+      {bgVideos.length === 0 && (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
+          <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-amber-500/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-400/5 rounded-full blur-3xl" />
+        </>
+      )}
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {/* 标题 */}
@@ -98,12 +193,21 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
             <span className="text-amber-400">VAPOR</span>
             <span className="text-white">-X</span>
           </p>
-          <p className="mt-1 text-sm md:text-base text-gray-500 font-light tracking-widest uppercase">
+          <p className="mt-1 text-sm md:text-base text-gray-400 font-light tracking-widest uppercase">
             {t('hero.vaporDesc')}
           </p>
         </div>
 
-        {/* 下方：产品轮播 */}
+        {/* 背景视频标题浮层 */}
+        {bgVideos[currentVideoIdx]?.title && (
+          <div className="text-center mb-2">
+            <span className="inline-block px-4 py-1 bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 rounded-full text-xs text-amber-300 tracking-wider uppercase">
+              {bgVideos[currentVideoIdx].title}
+            </span>
+          </div>
+        )}
+
+        {/* 新品轮播 */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="text-lg">🆕</span>
@@ -152,7 +256,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
               return (
                 <SwiperSlide key={item.id}>
                   <Link href={href} className="block group">
-                    <div className="relative rounded-xl overflow-hidden bg-gray-800 border border-gray-700 hover:border-amber-500/50 transition-all duration-300 group">
+                    <div className="relative rounded-xl overflow-hidden bg-gray-800/80 backdrop-blur-sm border border-gray-700 hover:border-amber-500/50 transition-all duration-300 group">
                       <div className="relative w-full" style={{ aspectRatio: '3 / 2' }}>
                         {imgSrc ? (
                           <img
