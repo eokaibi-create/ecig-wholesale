@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { 
+  sendEmail, 
+  newRegistrationNotificationHtml,
+  customerApprovedHtml,
+  customerRejectedHtml,
+  inquiryNotificationHtml,
+  adminReplyHtml
+} from '@/lib/email';
 
 export async function GET() {
   const results: Record<string, any> = {};
@@ -12,36 +19,91 @@ export async function GET() {
       ADMIN_EMAIL: process.env.ADMIN_EMAIL || '不存在',
     };
 
-    // 2. 测试 Resend 连接
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
-      to: process.env.ADMIN_EMAIL || 'EOKAIBI@GMAIL.COM',
-      subject: '🔬 VAPOR-X 生产环境邮件测试',
-      html: `
-        <div style="font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5;">
-          <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
-            <h1 style="color: #dc2626;">🔬 邮件测试</h1>
-            <p>这封邮件是从 <strong>Vercel 生产环境</strong> 直接发送的。</p>
-            <hr style="border: 1px solid #eee; margin: 20px 0;">
-            <p><strong>发件人:</strong> ${process.env.EMAIL_FROM || 'onboarding@resend.dev'}</p>
-            <p><strong>收件人:</strong> ${process.env.ADMIN_EMAIL || 'EOKAIBI@GMAIL.COM'}</p>
-            <p><strong>时间:</strong> ${new Date().toISOString()}</p>
-            <hr style="border: 1px solid #eee; margin: 20px 0;">
-            <p style="color: #666;">如果您收到这封邮件，说明生产环境的邮件系统完全正常！</p>
-          </div>
-        </div>
-      `,
+    const adminEmail = process.env.ADMIN_EMAIL || 'EOKAIBI@GMAIL.COM';
+    const testCustomer = {
+      name: '测试客户',
+      email: adminEmail,
+      phone: '+1234567890',
+      company: '测试公司',
+      type: 'wholesaler',
+    };
+
+    // 2. 测试 sendEmail 函数（和注册 API 使用完全相同的函数）
+    results.test_sendEmail_direct = await sendEmail({
+      to: adminEmail,
+      subject: '🔬 测试1: sendEmail 函数',
+      html: '<p>测试 sendEmail 函数是否正常工作</p>',
     });
 
-    if (error) {
-      results.sendResult = { success: false, error };
-    } else {
-      results.sendResult = { success: true, data };
-    }
+    // 3. 测试注册通知（和注册 API 使用完全相同的模板）
+    const regHtml = newRegistrationNotificationHtml({
+      name: testCustomer.name,
+      email: testCustomer.email,
+      phone: testCustomer.phone,
+      company: testCustomer.company,
+      companyAddress: '123 Test St',
+      state: 'CA',
+      country: 'US',
+      countryCode: '+1',
+      type: testCustomer.type,
+    });
+    results.test_registration_notification = await sendEmail({
+      to: adminEmail,
+      subject: `🔬 测试2: 注册通知模板 - ${testCustomer.name}`,
+      html: regHtml,
+    });
+
+    // 4. 测试审批通过通知
+    const approvedHtml = customerApprovedHtml({
+      customerName: testCustomer.name,
+      customerEmail: testCustomer.email,
+      type: testCustomer.type,
+    });
+    results.test_approval_notification = await sendEmail({
+      to: testCustomer.email,
+      subject: '🔬 测试3: 审批通过通知模板',
+      html: approvedHtml,
+    });
+
+    // 5. 测试审批拒绝通知
+    const rejectedHtml = customerRejectedHtml({
+      customerName: testCustomer.name,
+    });
+    results.test_rejection_notification = await sendEmail({
+      to: testCustomer.email,
+      subject: '🔬 测试4: 审批拒绝通知模板',
+      html: rejectedHtml,
+    });
+
+    // 6. 测试询价通知
+    const inquiryHtml = inquiryNotificationHtml({
+      name: testCustomer.name,
+      email: testCustomer.email,
+      phone: testCustomer.phone,
+      company: testCustomer.company,
+      message: '这是一个测试询价消息',
+    });
+    results.test_inquiry_notification = await sendEmail({
+      to: adminEmail,
+      subject: `🔬 测试5: 询价通知模板 - ${testCustomer.name}`,
+      html: inquiryHtml,
+    });
+
+    // 7. 测试管理员回复模板
+    const replyHtml = adminReplyHtml({
+      customerName: testCustomer.name,
+      replyMessage: '感谢您的询价，我们会在24小时内回复。',
+      originalMessage: '这是一个测试消息',
+    });
+    results.test_reply_notification = await sendEmail({
+      to: testCustomer.email,
+      subject: '🔬 测试6: 管理员回复模板',
+      html: replyHtml,
+    });
+
   } catch (err: any) {
-    results.error = err.message || String(err);
+    results.critical_error = err.message || String(err);
+    results.critical_stack = err.stack;
   }
 
   return NextResponse.json(results);
