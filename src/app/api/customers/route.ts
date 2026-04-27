@@ -42,13 +42,13 @@ export async function PATCH(request: NextRequest) {
   try {
     const { id, approved, rejected } = await request.json()
     
-    // 先获取客户信息（发邮件要用）
+    // Fetch customer info (needed for email)
     const existing = await prisma.customer.findUnique({
       where: { id: Number(id) },
       select: { id: true, name: true, email: true, type: true, approved: true, rejected: true },
     })
     if (!existing) {
-      return NextResponse.json({ error: '客户不存在' }, { status: 404 })
+      return NextResponse.json({ error: 'Customer not found' }, { status: 404 })
     }
 
     const data: any = {}
@@ -62,11 +62,11 @@ export async function PATCH(request: NextRequest) {
       data,
     })
 
-    // 审批通过 → 发邮件通知客户
+    // Approved -> send email to customer
     if (approved === true && !existing.approved) {
       sendEmail({
         to: existing.email,
-        subject: `✅ VAPOR-X - 您的账户已通过审批`,
+        subject: `Your VAPOR-X Account Has Been Approved`,
         html: customerApprovedHtml({
           customerName: existing.name,
           customerEmail: existing.email,
@@ -74,26 +74,26 @@ export async function PATCH(request: NextRequest) {
         }),
       }).then(result => {
         if (result.success) {
-          console.log(`[Customers] 审批通过邮件已发送给 ${existing.email}`)
+          console.log(`[Customers] Approval email sent to ${existing.email}`)
         } else {
-          console.warn(`[Customers] 审批通过邮件发送失败:`, result.error)
+          console.warn(`[Customers] Approval email failed to send:`, result.error)
         }
       })
     }
 
-    // 拒绝 → 发邮件通知客户
+    // Rejected -> send email to customer
     if (rejected === true && !existing.rejected) {
       sendEmail({
         to: existing.email,
-        subject: `❌ VAPOR-X - 您的账户未通过审批`,
+        subject: `Your VAPOR-X Account Has Not Been Approved`,
         html: customerRejectedHtml({
           customerName: existing.name,
         }),
       }).then(result => {
         if (result.success) {
-          console.log(`[Customers] 拒绝通知邮件已发送给 ${existing.email}`)
+          console.log(`[Customers] Rejection email sent to ${existing.email}`)
         } else {
-          console.warn(`[Customers] 拒绝通知邮件发送失败:`, result.error)
+          console.warn(`[Customers] Rejection email failed to send:`, result.error)
         }
       })
     }

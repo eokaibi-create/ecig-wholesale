@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 import { sendEmail, inquiryNotificationHtml, adminReplyHtml } from '@/lib/email'
 
-// 从数据库读取邮件设置
+// Read email settings from database
 async function getEmailSettings() {
   const settings = await prisma.setting.findMany({
     where: { key: { in: ['admin_email', 'email_from'] } }
@@ -14,7 +14,7 @@ async function getEmailSettings() {
   }
 }
 
-// POST - 前台提交询价 → 存入数据库 + 邮件通知管理员
+// POST - Submit inquiry from frontend => save to DB + email admin
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     const company = formData.get('company') as string || null
     const message = formData.get('message') as string
 
-    // 查找或创建客户
+    // Find or create customer
     let customer = await prisma.customer.findUnique({ where: { email } })
     if (customer) {
       customer = await prisma.customer.update({
@@ -37,26 +37,26 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // 创建询价
+    // Create inquiry
     const inquiry = await prisma.inquiry.create({
       data: {
         customerId: customer.id,
-        subject: `询价 - ${company || name}`,
+        subject: `Inquiry - ${company || name}`,
         message,
       },
     })
 
-    // 异步发送邮件通知管理员
+    // Send email to admin (async)
     const { adminEmail, fromEmail } = await getEmailSettings()
     sendEmail({
       to: adminEmail,
       from: fromEmail,
-      subject: `📩 新询价 - ${name}${company ? ` (${company})` : ''}`,
+      subject: `New Inquiry - ${name}${company ? ` (${company})` : ''}`,
       html: inquiryNotificationHtml({ name, email, phone, company, message }),
       replyTo: email,
     }).then(result => {
       if (!result.success) {
-        console.warn('[Inquiry] 邮件通知发送失败，但询价已保存:', inquiry.id)
+        console.warn('[Inquiry] Email notification failed, but inquiry saved:', inquiry.id)
       }
     })
 
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET - 获取询价列表（支持筛选单条）
+// GET - List inquiries (support single inquiry filter)
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
       where: { id: parseInt(id) },
       include: { customer: true },
     })
-    if (!inquiry) return NextResponse.json({ error: '未找到' }, { status: 404 })
+    if (!inquiry) return NextResponse.json({ error: 'Not found' }, { status: 404 })
     return NextResponse.json(inquiry)
   }
 
@@ -88,13 +88,13 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(inquiries)
 }
 
-// PUT - 更新询价（状态 / 回复 / 备注），可选择发送邮件给客户
+// PUT - Update inquiry (status / reply / notes), optionally send email to customer
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
     const { id, status, adminReply, adminNote, sendEmailToCustomer } = body
 
-    if (!id) return NextResponse.json({ error: '缺少ID' }, { status: 400 })
+    if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 })
 
     const updateData: any = { updatedAt: new Date() }
     if (status !== undefined) updateData.status = status
@@ -107,13 +107,13 @@ export async function PUT(request: NextRequest) {
       include: { customer: true },
     })
 
-    // 如果勾选了"发送邮件给客户"且有回复内容
+    // If "send email to customer" is checked and reply content exists
     if (sendEmailToCustomer && adminReply && updated.customer?.email) {
       const { fromEmail, adminEmail } = await getEmailSettings()
       sendEmail({
         to: updated.customer.email,
         from: fromEmail,
-        subject: `回复 - VAPOR-X 关于您的询价`,
+        subject: `Reply - VAPOR-X Regarding Your Inquiry`,
         html: adminReplyHtml({
           customerName: updated.customer.name,
           replyMessage: adminReply,
@@ -122,9 +122,9 @@ export async function PUT(request: NextRequest) {
         replyTo: adminEmail,
       }).then(result => {
         if (result.success) {
-          console.log('[Inquiry] 回复邮件已发送给:', updated.customer?.email)
+          console.log('[Inquiry] Reply email sent to:', updated.customer?.email)
         } else {
-          console.warn('[Inquiry] 回复邮件发送失败:', result.error)
+          console.warn('[Inquiry] Reply email failed:', result.error)
         }
       })
     }
@@ -132,21 +132,21 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(updated)
   } catch (error) {
     console.error('Update inquiry error:', error)
-    return NextResponse.json({ error: '更新失败' }, { status: 500 })
+    return NextResponse.json({ error: 'Update failed' }, { status: 500 })
   }
 }
 
-// DELETE - 删除询价
+// DELETE - Delete inquiry
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
-    if (!id) return NextResponse.json({ error: '缺少ID' }, { status: 400 })
+    if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 })
 
     await prisma.inquiry.delete({ where: { id: parseInt(id) } })
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Delete inquiry error:', error)
-    return NextResponse.json({ error: '删除失败' }, { status: 500 })
+    return NextResponse.json({ error: 'Delete failed' }, { status: 500 })
   }
 }

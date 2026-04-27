@@ -8,30 +8,30 @@ export async function POST(request: NextRequest) {
     const { name, email, phone, company, companyAddress, state, country, countryCode, type, password } = await request.json()
 
     if (!name || !email || !password) {
-      return NextResponse.json({ error: '姓名、邮箱和密码为必填项' }, { status: 400 })
+      return NextResponse.json({ error: 'Name, email and password are required' }, { status: 400 })
     }
 
     if (password.length < 6) {
-      return NextResponse.json({ error: '密码至少6位' }, { status: 400 })
+      return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 })
     }
 
-    // 店铺/批发商必须有公司名、地址、国家、电话区号
+    // Stores/Wholesalers must provide company name, address, country and phone code
     if (type !== 'individual') {
-      if (!company) return NextResponse.json({ error: '店铺/批发商必须填写公司名称' }, { status: 400 })
-      if (!companyAddress) return NextResponse.json({ error: '必须填写地址' }, { status: 400 })
-      if (!country) return NextResponse.json({ error: '必须选择国家' }, { status: 400 })
-      if (!countryCode) return NextResponse.json({ error: '必须选择国家区号' }, { status: 400 })
-      if (!phone) return NextResponse.json({ error: '必须填写手机号' }, { status: 400 })
+      if (!company) return NextResponse.json({ error: 'Stores/Wholesalers must provide a company name' }, { status: 400 })
+      if (!companyAddress) return NextResponse.json({ error: 'Address is required' }, { status: 400 })
+      if (!country) return NextResponse.json({ error: 'Country is required' }, { status: 400 })
+      if (!countryCode) return NextResponse.json({ error: 'Country code is required' }, { status: 400 })
+      if (!phone) return NextResponse.json({ error: 'Phone number is required' }, { status: 400 })
     }
 
     const existing = await prisma.customer.findUnique({ where: { email } })
     if (existing) {
-      return NextResponse.json({ error: '该邮箱已被注册' }, { status: 409 })
+      return NextResponse.json({ error: 'This email is already registered' }, { status: 409 })
     }
 
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // 个人买家直接通过，店铺/批发商需要审核
+    // Individual accounts auto-approved, stores/wholesalers require review
     const isIndividual = type === 'individual'
     const approved = isIndividual
 
@@ -51,11 +51,11 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // 非个人用户（需要审批）→ 发邮件通知管理员
+    // Non-individual users (require approval) -> send email to admin
     if (!isIndividual) {
       sendEmail({
         to: process.env.ADMIN_EMAIL || 'EOKAIBI@GMAIL.COM',
-        subject: `🆕 新客户注册待审批 - ${name}${company ? ` (${company})` : ''}`,
+        subject: `New Registration Pending - ${name}${company ? ` (${company})` : ''}`,
         html: newRegistrationNotificationHtml({
           name,
           email,
@@ -69,9 +69,9 @@ export async function POST(request: NextRequest) {
         }),
       }).then(result => {
         if (result.success) {
-          console.log('[Register] 审批通知邮件已发送给管理员')
+          console.log('[Register] Approval notification email sent to admin')
         } else {
-          console.warn('[Register] 审批通知邮件发送失败:', result.error)
+          console.warn('[Register] Approval notification email failed to send:', result.error)
         }
       })
     }
@@ -100,6 +100,6 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error('Customer register error:', error)
-    return NextResponse.json({ error: '服务器错误' }, { status: 500 })
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
