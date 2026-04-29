@@ -626,7 +626,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'login.adminLogin': 'Admin Login',
 
     // Footer
-    'footer.siteDesc': '美国电子烟批发供应商',
+    'footer.siteDesc': 'Premium Vape Wholesale Supplier USA',
     'footer.powered': 'POWERED BY ALOKAIBI TRADING GROUP',
     'footer.rights': 'All Rights Reserved',
     'footer.age': '18+ Adult Wholesale Customers Only',

@@ -1,17 +1,29 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import { getServerLang, serverT, type Lang } from '@/i18n/server'
 
 export default async function CustomersPage() {
+  const lang = await getServerLang()
+  const t = (key: any) => serverT(key, lang)
+
   const settings = await prisma.setting.findMany()
   const settingMap = Object.fromEntries(settings.map(s => [s.key, s.value]))
+
+  const isEn = lang === 'en'
 
   return (
     <div className="bg-white min-h-screen">
       {/* Hero */}
       <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold">客户服务</h1>
-          <p className="mt-2 text-lg text-gray-300">为您提供全方位的采购支持与售后服务</p>
+          <h1 className="text-4xl font-bold">
+            {isEn ? 'Customer Service' : '客户服务'}
+          </h1>
+          <p className="mt-2 text-lg text-gray-300">
+            {isEn
+              ? 'Comprehensive procurement support and after-sales service'
+              : '为您提供全方位的采购支持与售后服务'}
+          </p>
         </div>
       </section>
 
@@ -19,16 +31,54 @@ export default async function CustomersPage() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">批发合作优势</h2>
+            <h2 className="text-3xl font-bold text-gray-900">
+              {isEn ? 'Wholesale Advantages' : '批发合作优势'}
+            </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { icon: '💰', title: '有竞争力的价格', desc: '与一线品牌工厂直接合作，去掉中间环节，提供最具竞争力的批发价格' },
-              { icon: '📋', title: '简化采购流程', desc: '在线选品、快速报价、一键下单，从询价到发货全程跟踪' },
-              { icon: '🎁', title: '阶梯折扣', desc: '采购量越大折扣越高，长期合作客户享受专属优惠价格' },
-              { icon: '🚚', title: '物流配送', desc: '全美48州覆盖，支持UPS/FedEx快递，3-5个工作日送达' },
-              { icon: '🛡️', title: '正品保障', desc: '所有产品均为品牌正品，提供质量保证，假一赔十' },
-              { icon: '💁', title: '专属客服', desc: '一对一客户经理服务，中英文双语支持，快速响应您的需求' },
+              {
+                icon: '💰',
+                title: isEn ? 'Competitive Pricing' : '有竞争力的价格',
+                desc: isEn
+                  ? 'Direct partnership with top brands, cutting out middlemen for the best wholesale prices'
+                  : '与一线品牌工厂直接合作，去掉中间环节，提供最具竞争力的批发价格',
+              },
+              {
+                icon: '📋',
+                title: isEn ? 'Simplified Process' : '简化采购流程',
+                desc: isEn
+                  ? 'Online selection, quick quotes, one-click ordering — full tracking from inquiry to delivery'
+                  : '在线选品、快速报价、一键下单，从询价到发货全程跟踪',
+              },
+              {
+                icon: '🎁',
+                title: isEn ? 'Tiered Discounts' : '阶梯折扣',
+                desc: isEn
+                  ? 'Higher volume = higher discounts. Long-term partners enjoy exclusive pricing'
+                  : '采购量越大折扣越高，长期合作客户享受专属优惠价格',
+              },
+              {
+                icon: '🚚',
+                title: isEn ? 'Fast Shipping' : '物流配送',
+                desc: isEn
+                  ? 'Coverage across 48 US states via UPS/FedEx, delivery in 3-5 business days'
+                  : '全美48州覆盖，支持UPS/FedEx快递，3-5个工作日送达',
+              },
+              {
+                icon: '🛡️',
+                title: isEn ? 'Authenticity Guaranteed' : '正品保障',
+                desc: isEn
+                  ? 'All products are genuine with quality assurance. 10x refund for counterfeits'
+                  : '所有产品均为品牌正品，提供质量保证，假一赔十',
+              },
+              {
+                icon: '💁',
+                title: isEn ? 'Dedicated Support' : '专属客服',
+                desc: isEn
+                  ? 'One-on-one account manager, bilingual support (EN/ZH), quick response to your needs'
+                  : '一对一客户经理服务，中英文双语支持，快速响应您的需求',
+              },
             ].map((item, i) => (
               <div key={i} className="p-6 border border-gray-100 rounded-xl hover:shadow-md hover:border-amber-200 transition">
                 <div className="text-4xl mb-3">{item.icon}</div>
@@ -44,15 +94,19 @@ export default async function CustomersPage() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">采购流程</h2>
-            <p className="mt-2 text-gray-600">简单四步，轻松采购</p>
+            <h2 className="text-3xl font-bold text-gray-900">
+              {isEn ? 'How It Works' : '采购流程'}
+            </h2>
+            <p className="mt-2 text-gray-600">
+              {isEn ? 'Four simple steps to start ordering' : '简单四步，轻松采购'}
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[
-              { step: '01', title: '浏览选品', desc: '浏览产品目录，选择需要的商品' },
-              { step: '02', title: '提交询价', desc: '填写询价单或直接联系客服获取报价' },
-              { step: '03', title: '确认订单', desc: '确认价格与库存，支付定金' },
-              { step: '04', title: '安排发货', desc: '支付尾款，安排物流配送' },
+              { step: '01', title: isEn ? 'Browse Products' : '浏览选品', desc: isEn ? 'Browse our product catalog and select items' : '浏览产品目录，选择需要的商品' },
+              { step: '02', title: isEn ? 'Submit Inquiry' : '提交询价', desc: isEn ? 'Submit an inquiry or contact us for a quote' : '填写询价单或直接联系客服获取报价' },
+              { step: '03', title: isEn ? 'Confirm Order' : '确认订单', desc: isEn ? 'Confirm pricing & stock, pay deposit' : '确认价格与库存，支付定金' },
+              { step: '04', title: isEn ? 'Shipping' : '安排发货', desc: isEn ? 'Pay balance, arrange logistics & shipping' : '支付尾款，安排物流配送' },
             ].map((item, i) => (
               <div key={i} className="text-center">
                 <div className="w-16 h-16 bg-amber-500 text-black text-2xl font-bold rounded-full flex items-center justify-center mx-auto mb-4">{item.step}</div>
@@ -68,15 +122,42 @@ export default async function CustomersPage() {
       <section className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">常见问题</h2>
+            <h2 className="text-3xl font-bold text-gray-900">
+              {isEn ? 'Frequently Asked Questions' : '常见问题'}
+            </h2>
           </div>
           <div className="space-y-4">
             {[
-              { q: '最低起订量是多少？', a: '最低起订量为$500，首次合作客户建议订单$1000以上以享受更优价格。' },
-              { q: '支持哪些支付方式？', a: '支持银行转账（Wire Transfer）、Zelle、PayPal（企业账户）、信用卡（+3%手续费）。' },
-              { q: '发货后多久能收到？', a: '美国本土订单使用UPS/FedEx Ground，通常3-5个工作日送达。可加急至隔日达。' },
-              { q: '是否支持样品？', a: '支持样品采购，请联系客服获取样品清单和价格。' },
-              { q: '是否支持退货？', a: '产品质量问题支持退换货，请在收货后7天内联系客服处理。' },
+              {
+                q: isEn ? 'What is the minimum order quantity?' : '最低起订量是多少？',
+                a: isEn
+                  ? 'Minimum order is $500. We recommend a first order of $1000+ for better pricing.'
+                  : '最低起订量为$500，首次合作客户建议订单$1000以上以享受更优价格。',
+              },
+              {
+                q: isEn ? 'What payment methods do you accept?' : '支持哪些支付方式？',
+                a: isEn
+                  ? 'We accept Wire Transfer, Zelle, PayPal (business), and credit card (+3% fee).'
+                  : '支持银行转账（Wire Transfer）、Zelle、PayPal（企业账户）、信用卡（+3%手续费）。',
+              },
+              {
+                q: isEn ? 'How long does shipping take?' : '发货后多久能收到？',
+                a: isEn
+                  ? 'US domestic orders via UPS/FedEx Ground arrive in 3-5 business days. Overnight available.'
+                  : '美国本土订单使用UPS/FedEx Ground，通常3-5个工作日送达。可加急至隔日达。',
+              },
+              {
+                q: isEn ? 'Do you offer samples?' : '是否支持样品？',
+                a: isEn
+                  ? 'Yes, sample orders are available. Contact us for the sample catalog and pricing.'
+                  : '支持样品采购，请联系客服获取样品清单和价格。',
+              },
+              {
+                q: isEn ? 'What is your return policy?' : '是否支持退货？',
+                a: isEn
+                  ? 'Quality issues are covered. Contact us within 7 days of receipt for returns/exchanges.'
+                  : '产品质量问题支持退换货，请在收货后7天内联系客服处理。',
+              },
             ].map((item, i) => (
               <details key={i} className="group border border-gray-200 rounded-xl overflow-hidden">
                 <summary className="px-6 py-4 text-gray-900 font-semibold cursor-pointer hover:bg-gray-50 flex items-center justify-between">
@@ -95,7 +176,9 @@ export default async function CustomersPage() {
       {/* 联系方式 */}
       <section className="py-16 bg-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-8">联系我们</h2>
+          <h2 className="text-3xl font-bold mb-8">
+            {isEn ? 'Contact Us' : '联系我们'}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 bg-gray-800 rounded-xl">
               <div className="text-3xl mb-3">💬</div>
@@ -106,7 +189,7 @@ export default async function CustomersPage() {
             </div>
             <div className="p-6 bg-gray-800 rounded-xl">
               <div className="text-3xl mb-3">💚</div>
-              <h3 className="font-bold mb-2">微信</h3>
+              <h3 className="font-bold mb-2">WeChat</h3>
               <p className="text-amber-400">{settingMap.wechat || 'vaporx_us'}</p>
             </div>
             <div className="p-6 bg-gray-800 rounded-xl">

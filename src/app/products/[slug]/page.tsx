@@ -32,7 +32,7 @@ interface Product {
 export default function ProductDetailPage() {
   const params = useParams()
   const slug = params.slug as string
-  const { t, language } = useLanguage()
+  const { t, lang } = useLanguage()
 
   const [product, setProduct] = useState<Product | null>(null)
   const [settings, setSettings] = useState<any[]>([])
@@ -55,7 +55,7 @@ export default function ProductDetailPage() {
   }
 
   const getEnglishDescription = () => {
-    if (language !== 'en') return product?.description || ''
+    if (lang !== 'en') return product?.description || ''
     const descMap: Record<string, string> = {
       'elfbar-bc5000': t('product.elfbarBc5000'),
       'geek-bar-pulse': t('product.geekBarPulse'),
@@ -233,7 +233,7 @@ export default function ProductDetailPage() {
             {/* 联系客服询价 */}
             <div className="mt-6 p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl">
               <h3 className="font-semibold text-amber-800 mb-3">
-                💬 {language === 'en' ? 'Contact Us for Bulk Orders' : '联系我们获取批发报价'}
+                💬 {lang === 'en' ? 'Contact Us for Bulk Orders' : '联系我们获取批发报价'}
               </h3>
               <p className="text-sm text-gray-600 mb-4">
                 {t('contact.inquireDesc')}

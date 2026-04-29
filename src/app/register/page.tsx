@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 const COUNTRY_CODES = [
   { code: '+1', country: 'US', name: '🇺🇸 US +1' },
@@ -120,6 +121,7 @@ const COUNTRIES = [
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { t, lang } = useLanguage()
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -143,12 +145,12 @@ export default function RegisterPage() {
     setSuccessMsg('')
 
     if (form.password !== form.confirm) {
-      setError('Passwords do not match')
+      setError(t('register.passwordMismatch'))
       return
     }
 
     if (form.password.length < 6) {
-      setError('Password must be at least 6 characters')
+      setError(t('register.passwordTooShort'))
       return
     }
 
@@ -175,7 +177,7 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Registration failed')
+        setError(data.error || t('register.error'))
         return
       }
 
@@ -186,7 +188,9 @@ export default function RegisterPage() {
         router.push('/')
         router.refresh()
       } else {
-        setSuccessMsg('Registration submitted! Your account is pending review. We will notify you once approved.')
+        setSuccessMsg(lang === 'zh'
+          ? '注册已提交！您的账户正在审核中，审核通过后我们将通知您。'
+          : 'Registration submitted! Your account is pending review. We will notify you once approved.')
         setForm({
           name: '', email: '', phone: '', countryCode: '+1',
           company: '', companyAddress: '', state: '', country: '',
@@ -194,16 +198,16 @@ export default function RegisterPage() {
         })
       }
     } catch {
-      setError('Network error, please try again')
+      setError(t('register.networkError'))
     } finally {
       setLoading(false)
     }
   }
 
   const customerTypes = [
-    { value: 'wholesaler', label: '🏬 Wholesaler', desc: 'Bulk purchasing & wholesale pricing' },
-    { value: 'store', label: '🏪 Store', desc: 'Retail store owner' },
-    { value: 'individual', label: '👤 Individual', desc: 'Personal use only' },
+    { value: 'wholesaler', label: lang === 'zh' ? '🏬 批发商' : '🏬 Wholesaler', desc: lang === 'zh' ? '批量采购 & 批发价格' : 'Bulk purchasing & wholesale pricing' },
+    { value: 'store', label: lang === 'zh' ? '🏪 店铺' : '🏪 Store', desc: lang === 'zh' ? '零售店店主' : 'Retail store owner' },
+    { value: 'individual', label: lang === 'zh' ? '👤 个人客户' : '👤 Individual', desc: lang === 'zh' ? '仅限个人使用' : 'Personal use only' },
   ]
 
   const isBusiness = form.type !== 'individual'
@@ -212,8 +216,10 @@ export default function RegisterPage() {
     <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4">
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
-          <p className="text-gray-500 mt-2">Join VAPOR-X and start your wholesale journey</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('register.title')}</h1>
+          <p className="text-gray-500 mt-2">
+            {lang === 'zh' ? '加入 VAPOR-X，开启您的批发之旅' : 'Join VAPOR-X and start your wholesale journey'}
+          </p>
         </div>
 
         {error && (
@@ -222,7 +228,7 @@ export default function RegisterPage() {
 
         {successMsg && (
           <div className="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
-            <p className="font-medium mb-1">✅ Registration Submitted</p>
+            <p className="font-medium mb-1">✅ {lang === 'zh' ? '注册已提交' : 'Registration Submitted'}</p>
             <p>{successMsg}</p>
           </div>
         )}
@@ -230,7 +236,9 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Account Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Account Type *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {lang === 'zh' ? '账户类型 *' : 'Account Type *'}
+            </label>
             <div className="grid grid-cols-3 gap-3">
               {customerTypes.map(ct => (
                 <button
@@ -253,18 +261,22 @@ export default function RegisterPage() {
           {/* Basic Info */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('register.name')} *
+              </label>
               <input type="text" required value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder="Your full name" />
+                placeholder={lang === 'zh' ? '您的姓名' : 'Your full name'} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('register.email')} *
+              </label>
               <input type="email" required value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder="your@email.com" />
+                placeholder={t('register.emailPlaceholder')} />
             </div>
           </div>
 
@@ -272,48 +284,60 @@ export default function RegisterPage() {
           {isBusiness && (
             <>
               <div className="border-t border-gray-200 pt-4">
-                <p className="text-sm font-semibold text-gray-700 mb-3">🏢 Company Information (Required)</p>
+                <p className="text-sm font-semibold text-gray-700 mb-3">
+                  🏢 {lang === 'zh' ? '公司信息（必填）' : 'Company Information (Required)'}
+                </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Company Name *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('register.company')} *
+                </label>
                 <input type="text" required value={form.company}
                   onChange={e => setForm({ ...form, company: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                  placeholder="Your company name" />
+                  placeholder={lang === 'zh' ? '您的公司名称' : 'Your company name'} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Company Address *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('register.companyAddress')} *
+                </label>
                 <input type="text" required value={form.companyAddress}
                   onChange={e => setForm({ ...form, companyAddress: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                  placeholder="Street, city, zip code" />
+                  placeholder={lang === 'zh' ? '街道、城市、邮编' : 'Street, city, zip code'} />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Country *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {lang === 'zh' ? '国家 *' : 'Country *'}
+                  </label>
                   <select required value={form.country}
                     onChange={e => setForm({ ...form, country: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none bg-white">
-                    <option value="">Select country</option>
+                    <option value="">{lang === 'zh' ? '选择国家' : 'Select country'}</option>
                     {COUNTRIES.map(c => (
                       <option key={c.code} value={c.code}>{c.name}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">State / Province</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('register.state')}
+                  </label>
                   <input type="text" value={form.state}
                     onChange={e => setForm({ ...form, state: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                    placeholder="State (optional)" />
+                    placeholder={t('register.statePlaceholder')} />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('register.phone')} *
+                </label>
                 <div className="flex gap-2">
                   <select value={form.countryCode}
                     onChange={e => setForm({ ...form, countryCode: e.target.value })}
@@ -325,7 +349,7 @@ export default function RegisterPage() {
                   <input type="tel" required value={form.phone}
                     onChange={e => setForm({ ...form, phone: e.target.value })}
                     className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                    placeholder="Phone number" />
+                    placeholder={t('register.phonePlaceholder')} />
                 </div>
               </div>
             </>
@@ -334,45 +358,59 @@ export default function RegisterPage() {
           {/* Individual: Phone optional */}
           {!isBusiness && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone (optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('register.phone')} ({t('register.optional')})
+              </label>
               <input type="tel" value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder="Optional" />
+                placeholder={lang === 'zh' ? '选填' : 'Optional'} />
             </div>
           )}
 
           {/* Password */}
           <div className="border-t border-gray-200 pt-4">
-            <p className="text-sm font-semibold text-gray-700 mb-3">🔐 Login Information</p>
+            <p className="text-sm font-semibold text-gray-700 mb-3">
+              🔐 {lang === 'zh' ? '登录信息' : 'Login Information'}
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('register.password')} *
+              </label>
               <input type="password" required value={form.password}
                 onChange={e => setForm({ ...form, password: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder="Min. 6 characters" />
+                placeholder={t('register.passwordHint')} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('register.confirm')} *
+              </label>
               <input type="password" required value={form.confirm}
                 onChange={e => setForm({ ...form, confirm: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder="Re-enter password" />
+                placeholder={lang === 'zh' ? '再次输入密码' : 'Re-enter password'} />
             </div>
           </div>
 
           <button type="submit" disabled={loading}
             className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition disabled:opacity-50 mt-2">
-            {loading ? 'Processing...' : form.type === 'individual' ? 'Register & Login' : 'Submit Registration'}
+            {loading
+              ? t('register.loading')
+              : form.type === 'individual'
+                ? (lang === 'zh' ? '注册并登录' : 'Register & Login')
+                : t('register.submit')}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          Already have an account?{' '}
-          <Link href="/login" className="text-amber-600 hover:text-amber-700 font-medium">Login now</Link>
+          {t('register.haveAccount')}{' '}
+          <Link href="/login" className="text-amber-600 hover:text-amber-700 font-medium">
+            {t('register.loginNow')}
+          </Link>
         </p>
       </div>
     </div>
