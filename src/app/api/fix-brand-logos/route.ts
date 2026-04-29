@@ -1,11 +1,12 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createHash } from 'crypto'
+import { requireAdmin } from '@/lib/auth'
 
-const CLOUD_NAME = 'dlmgdbrte'
-const API_KEY = '439615235726973'
-const API_SECRET = 'gJPjgj7n9Fkf1zlfeXCDIZeb1jY'
-const UPLOAD_PRESET = 'ecig_upload'
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dlmgdbrte'
+const API_KEY = process.env.CLOUDINARY_API_KEY || '439615235726973'
+const API_SECRET = process.env.CLOUDINARY_API_SECRET || 'gJPjgj7n9Fkf1zlfeXCDIZeb1jY'
+const UPLOAD_PRESET = process.env.CLOUDINARY_UPLOAD_PRESET || 'ecig_upload'
 const FOLDER = 'ecig-wholesale/brands'
 
 async function uploadBase64ToCloudinary(base64Data: string, filename: string): Promise<string | null> {
@@ -49,7 +50,12 @@ async function uploadBase64ToCloudinary(base64Data: string, filename: string): P
   }
 }
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   const results: { name: string; status: string; url?: string }[] = []
   let fixedCount = 0
 

@@ -1,8 +1,14 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 import { sendEmail, customerApprovedHtml, customerRejectedHtml } from '@/lib/email'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   const customers = await prisma.customer.findMany({
     include: { _count: { select: { inquiries: true, orders: true } } },
     orderBy: { createdAt: 'desc' },
@@ -11,6 +17,11 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const { id, name, phone, countryCode, company, companyAddress, state, country, type, notes, approved } = await request.json()
     const data: any = {}
@@ -39,10 +50,14 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const { id, approved, rejected } = await request.json()
     
-    // Fetch customer info (needed for email)
     const existing = await prisma.customer.findUnique({
       where: { id: Number(id) },
       select: { id: true, name: true, email: true, type: true, approved: true, rejected: true },
@@ -62,7 +77,6 @@ export async function PATCH(request: NextRequest) {
       data,
     })
 
-    // Approved -> send email to customer
     if (approved === true && !existing.approved) {
       sendEmail({
         to: existing.email,
@@ -81,7 +95,6 @@ export async function PATCH(request: NextRequest) {
       })
     }
 
-    // Rejected -> send email to customer
     if (rejected === true && !existing.rejected) {
       sendEmail({
         to: existing.email,
@@ -105,6 +118,11 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')

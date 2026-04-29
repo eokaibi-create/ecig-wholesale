@@ -1,9 +1,15 @@
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 
-// 一次性 API：将 BOSS 密码重置为 yong123
-export async function GET() {
+// 一次性 API：仅超级管理员可重置 BOSS 密码
+export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request, ['superadmin'])
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const boss = await prisma.admin.findFirst({
       where: { OR: [{ username: 'BOSS' }, { email: 'EOKAIBI@GMAIL.COM' }] }
