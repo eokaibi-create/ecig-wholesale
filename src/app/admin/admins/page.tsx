@@ -11,6 +11,10 @@ export default function AdminAdminsPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editForm, setEditForm] = useState({ username: '', email: '', password: '', role: '' })
+  const [currentRole, setCurrentRole] = useState<string>('')
+  const [resetModal, setResetModal] = useState<{ id: number; username: string } | null>(null)
+  const [resetPassword, setResetPassword] = useState('')
+  const [resetConfirm, setResetConfirm] = useState('')
 
   const fetchAdmins = async () => {
     try {
@@ -20,7 +24,22 @@ export default function AdminAdminsPage() {
     setLoading(false)
   }
 
-  useEffect(() => { fetchAdmins() }, [])
+  const fetchCurrentUser = async () => {
+    try {
+      const res = await fetch('/api/admin/me')
+      if (res.ok) {
+        const data = await res.json()
+        setCurrentRole(data.role || '')
+      }
+    } catch(e) {}
+  }
+
+  useEffect(() => {
+    fetchAdmins()
+    fetchCurrentUser()
+  }, [])
+
+  const isSuperAdmin = currentRole === 'superadmin'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,7 +62,6 @@ export default function AdminAdminsPage() {
 
   const startEdit = (a: any) => {
     setEditingId(a.id)
-    // 兼容旧角色名
     const normalizedRole = a.role === 'product' ? 'brand' : a.role === 'editor' || a.role === 'viewer' ? 'admin' : a.role
     setEditForm({ username: a.username, email: a.email, password: '', role: normalizedRole })
   }
@@ -71,7 +89,36 @@ export default function AdminAdminsPage() {
     fetchAdmins()
   }
 
-  // 角色显示名和标签样式
+  const handleResetPassword = async () => {
+    if (!resetModal) return
+    if (resetPassword.length < 6) {
+      setMessage('❌ 密码至少 6 位')
+      setTimeout(() => setMessage(''), 3000)
+      return
+    }
+    if (resetPassword !== resetConfirm) {
+      setMessage('❌ 两次输入的密码不一致')
+      setTimeout(() => setMessage(''), 3000)
+      return
+    }
+
+    const res = await fetch('/api/admin/manage/reset-password', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: resetModal.id, password: resetPassword }),
+    })
+    if (res.ok) {
+      setMessage(`✅ 已为 ${resetModal.username} 重置密码`)
+      setResetModal(null)
+      setResetPassword('')
+      setResetConfirm('')
+    } else {
+      const err = await res.json()
+      setMessage(`❌ ${err.error}`)
+    }
+    setTimeout(() => setMessage(''), 3000)
+  }
+
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'superadmin': return { label: '超级管理员', class: 'bg-red-100 text-red-700' }
@@ -136,7 +183,6 @@ export default function AdminAdminsPage() {
                 <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400">暂无管理员</td></tr>
               ) : (
                 admins.map(a => {
-                  // 兼容旧角色名显示
                   const displayRole = a.role === 'product' ? 'brand' : a.role === 'editor' || a.role === 'viewer' ? 'admin' : a.role
                   const badge = getRoleBadge(displayRole)
                   return (
@@ -179,6 +225,10 @@ export default function AdminAdminsPage() {
                           <td className="px-4 py-3 text-sm text-gray-400">{new Date(a.createdAt).toLocaleDateString()}</td>
                           <td className="px-4 py-3 text-right space-x-3">
                             <button onClick={() => startEdit(a)} className="text-sm text-amber-600 hover:text-amber-700 font-medium">编辑</button>
+                            {isSuperAdmin && (
+                              <button onClick={() => setResetModal({ id: a.id, username: a.username })}
+                                className="text-sm text-blue-600 hover:text-blue-700 font-medium">🔑 重置密码</button>
+                            )}
                             <button onClick={() => handleDelete(a.id)} className="text-sm text-red-500 hover:text-red-600">删除</button>
                           </td>
                         </>
@@ -191,6 +241,28 @@ export default function AdminAdminsPage() {
           </table>
         </div>
       </div>
+
+      {/* 重置密码弹窗 */}
+      {resetModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => { setResetModal(null); setResetPassword(''); setResetConfirm('') }}>
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4" onClick={e => e.stopPropagation()}>
+            <h3 className="font-bold text-gray-900 mb-2">🔑 重置 <span className="text-amber-600">{resetModal.username}</span> 的密码</h3>
+            <p className="text-sm text-gray-500 mb-4">重置后将直接生效，请告知对方新密码</p>
+            <div className="space-y-3">
+              <input type="password" value={resetPassword} onChange={e => setResetPassword(e.target.value)}
+                placeholder="新密码（至少 6 位）" className="w-full px-4 py-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500" />
+              <input type="password" value={resetConfirm} onChange={e => setResetConfirm(e.target.value)}
+                placeholder="确认新密码" className="w-full px-4 py-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500" />
+              <div className="flex gap-3 pt-2">
+                <button onClick={handleResetPassword}
+                  className="flex-1 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg">确认重置</button>
+                <button onClick={() => { setResetModal(null); setResetPassword(''); setResetConfirm('') }}
+                  className="px-4 py-2.5 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50">取消</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   )
 }

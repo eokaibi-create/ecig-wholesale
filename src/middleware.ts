@@ -1,20 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// 品牌方（原产品管理员）允许的路由前缀
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://okaibiglobal.com'
+
+// Public routes that don't require authentication
+const publicRoutes = [
+  '/admin/login',
+  '/admin/forgot-password',
+  '/admin/reset-password',
+]
+
+// 品牌方允许的路由前缀
 const brandAllowedRoutes = [
   '/admin/login',
   '/admin/dashboard',
   '/admin/home',
   '/admin/products',
   '/admin/brands',
+  '/admin/change-password',
 ]
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('admin_token')?.value
   const { pathname } = request.nextUrl
 
-  // 登录页公开
-  if (pathname === '/admin/login') {
+  // 公开页面放行
+  if (publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))) {
     return NextResponse.next()
   }
 

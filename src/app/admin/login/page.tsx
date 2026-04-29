@@ -65,6 +65,11 @@ export default function AdminLoginPage() {
               className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-white placeholder-gray-400" 
               placeholder={t('admin.password')} required />
           </div>
+          <div className="text-right">
+            <a href="/admin/forgot-password" className="text-sm text-gray-400 hover:text-amber-400 transition">
+              忘记密码？
+            </a>
+          </div>
           <button type="submit" disabled={loading}
             className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-700 text-black font-bold rounded-lg transition">
             {loading ? t('admin.loggingIn') : t('admin.loginBtn')}

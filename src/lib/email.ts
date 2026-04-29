@@ -276,7 +276,7 @@ export function customerRejectedHtml({
   })
 }
 
-// ========== Password Reset ==========
+// ========== Customer Password Reset ==========
 
 /**
  * Password reset email => Sent to customer
@@ -293,6 +293,38 @@ export function passwordResetHtml({
     body: `
       <p>Hello <strong>${customerName}</strong>,</p>
       <p>We received a request to reset the password for your VAPOR-X account.</p>
+      <p>Click the button below to set a new password. This link is valid for <strong>1 hour</strong>.</p>
+      <p style="text-align:center;margin:24px 0;">
+        <a href="${resetLink}" 
+           style="display:inline-block;background:#f59e0b;color:#000;padding:14px 32px;border-radius:6px;text-decoration:none;font-weight:700;font-size:16px;">
+          Reset Password →
+        </a>
+      </p>
+      <p>If you did not request a password reset, please ignore this email. Your password will remain unchanged.</p>
+      <p style="color:#999;font-size:13px;margin-top:16px;">If the button above doesn't work, copy and paste this link into your browser:</p>
+      <p style="color:#999;font-size:13px;word-break:break-all;">${resetLink}</p>
+    `,
+    footer: 'This email was sent automatically by VAPOR-X. If you did not request this, please ignore it.',
+  })
+}
+
+// ========== Admin Password Reset ==========
+
+/**
+ * Password reset email => Sent to admin/brand/superadmin
+ */
+export function adminPasswordResetHtml({
+  adminName,
+  resetLink,
+}: {
+  adminName: string
+  resetLink: string
+}) {
+  return buildEmailHtml({
+    title: 'Reset Your Admin Password',
+    body: `
+      <p>Hello <strong>${adminName}</strong>,</p>
+      <p>We received a request to reset the password for your VAPOR-X admin account.</p>
       <p>Click the button below to set a new password. This link is valid for <strong>1 hour</strong>.</p>
       <p style="text-align:center;margin:24px 0;">
         <a href="${resetLink}" 
