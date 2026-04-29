@@ -34,23 +34,43 @@ export default function AdminBrandsPage() {
     setTimeout(() => setMessage(''), 3000)
   }
 
+  // Cloudinary 签名直传（不经过 Vercel 服务器）
+  const uploadToCloudinary = async (file: File): Promise<string | null> => {
+    try {
+      const sigRes = await fetch('/api/upload-signature')
+      if (!sigRes.ok) { showMsg('❌ 获取上传签名失败', 'error'); return null }
+      const sigData = await sigRes.json()
+
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('api_key', sigData.apiKey)
+      fd.append('timestamp', String(sigData.timestamp))
+      fd.append('upload_preset', sigData.uploadPreset)
+      fd.append('folder', sigData.folder)
+      fd.append('signature', sigData.signature)
+
+      const cloudRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`,
+        { method: 'POST', body: fd }
+      )
+      if (!cloudRes.ok) { showMsg('❌ 上传失败', 'error'); return null }
+      const cloudData = await cloudRes.json()
+      return cloudData.secure_url
+    } catch (err) {
+      console.error(err)
+      showMsg('❌ 上传出错', 'error')
+      return null
+    }
+  }
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setUploading(true)
-    const formData = new FormData()
-    formData.append('file', file)
-    try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      if (res.ok) {
-        const data = await res.json()
-        setForm(prev => ({ ...prev, logo: data.url }))
-        showMsg('✅ Logo上传成功', 'success')
-      } else {
-        showMsg('❌ 上传失败', 'error')
-      }
-    } catch (err) {
-      showMsg('❌ 上传出错', 'error')
+    const url = await uploadToCloudinary(file)
+    if (url) {
+      setForm(prev => ({ ...prev, logo: url }))
+      showMsg('✅ Logo上传成功', 'success')
     }
     setUploading(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
@@ -113,7 +133,7 @@ export default function AdminBrandsPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">品牌Logo</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-3 text-center hover:border-amber-400 transition cursor-pointer mb-2"
-                     onClick={() => fileInputRef.current?.click()}>
+                     onClick={() => !uploading && fileInputRef.current?.click()}>
                   {form.logo ? (
                     <div className="relative inline-block">
                       <img src={form.logo} alt="" className="h-12 w-auto mx-auto" />
@@ -123,11 +143,11 @@ export default function AdminBrandsPage() {
                   ) : (
                     <div>
                       <span className="text-2xl">📷</span>
-                      <p className="text-xs text-gray-500 mt-1">点击上传Logo</p>
+                      <p className="text-xs text-gray-500 mt-1">{uploading ? '⏳ 上传中...' : '点击上传Logo'}</p>
                     </div>
                   )}
                 </div>
-                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={uploading} />
                 {uploading && <p className="text-xs text-amber-600">⏳ 上传中...</p>}
                 <input type="text" value={form.logo} onChange={e => setForm({...form, logo: e.target.value})}
                   placeholder="或输入Logo URL"
@@ -139,8 +159,8 @@ export default function AdminBrandsPage() {
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none" />
               </div>
               <div className="flex gap-2">
-                <button type="submit" className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg">
-                  {editing ? '💾 更新' : '➕ 新增'}
+                <button type="submit" disabled={uploading} className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 text-black font-semibold rounded-lg">
+                  {uploading ? '⏳ 上传中...' : editing ? '💾 更新' : '➕ 新增'}
                 </button>
                 {editing && (
                   <button type="button" onClick={() => { setEditing(null); setForm({ name: '', slug: '', logo: '', sortOrder: 0 }) }}
