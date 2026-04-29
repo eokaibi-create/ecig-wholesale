@@ -205,10 +205,10 @@ export default function ProductDetailPage() {
                 </>
               })()}
             </div>
-            {customerType === 'wholesaler' && product.wholesalerPrice && (
+            {customerType === 'wholesaler' && product.wholesalePrice && (
               <p className="mt-1 text-sm text-purple-500 font-medium">{t('product.wholesalerPrice')}</p>
             )}
-            {customerType === 'store' && product.wholesalePrice && (
+            {customerType === 'store' && product.wholesalerPrice && (
               <p className="mt-1 text-sm text-amber-500 font-medium">{t('product.storePrice')}</p>
             )}
             {!customerType && (
