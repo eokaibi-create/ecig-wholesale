@@ -36,7 +36,7 @@ function getDisplayPrice(product, customerType) {
 }
 
 async function getData() {
-  const [categories, brands, products, platforms, settings, heroItems] = await Promise.all([
+  const [categories, brands, products, platforms, settings, heroItems, videos] = await Promise.all([
     prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }),
     prisma.brand.findMany({ orderBy: { sortOrder: 'asc' } }),
     prisma.product.findMany({
@@ -53,9 +53,10 @@ async function getData() {
       orderBy: { sortOrder: 'asc' },
       take: 5,
     }),
+    prisma.video.findMany({ orderBy: { sortOrder: "asc" } }),
   ])
   const settingMap = Object.fromEntries(settings.map(s => [s.key, s.value]))
-  return { categories, brands, products, platforms, settings: settingMap, heroItems }
+  return { categories, brands, products, platforms, settings: settingMap, heroItems, videos }
 }
 
 export default async function HomePage() {
@@ -63,7 +64,7 @@ export default async function HomePage() {
   const t = (key: any) => serverT(key, lang)
 
   const data = await getData()
-  const { categories, brands, products, platforms, settings, heroItems } = data
+  const { categories, brands, products, platforms, settings, heroItems, videos } = data
   const customerType = await getCustomerTypeFromCookie()
 
   const catIcons: Record<string, string> = {
@@ -184,6 +185,34 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Videos */}
+      {videos.length > 0 && videos.some(v => v.url) && (
+        <section className="py-20 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center space-x-2 mb-4">
+                <span className="text-2xl">📺</span>
+                <h2 className="text-3xl font-bold text-gray-900">{t("video.title")}</h2>
+              </div>
+              <p className="text-gray-600">{t("video.desc")}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {videos.filter(v => v.url).map(video => (
+                <div key={video.id} className="aspect-video rounded-xl overflow-hidden shadow-lg bg-black">
+                  <iframe
+                    src={video.url}
+                    title={video.title}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Brands */}
       {brands.length > 0 && (
