@@ -279,27 +279,57 @@ export default async function HomePage() {
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-xl border border-gray-100 p-8">
             <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <span className="text-2xl">💬</span>
-                <div>
-                  <p className="font-semibold text-gray-900">{serverT('contact.whatsapp' as any, lang)}</p>
-                  <p className="text-sm text-gray-500">{serverT('contact.prefix' as any, lang)}</p>
+              {/* WhatsApp - only show if visible or logged in */}
+              {(customerType !== null || settings.show_whatsapp !== 'false') && (
+                <a href={'https://wa.me/' + (settings.whatsapp || '+13239260829').replace(/[^0-9]/g, '')} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-green-50 transition-colors">
+                  <span className="text-2xl">💬</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">{serverT('contact.whatsapp' as any, lang)}</p>
+                    <p className="text-sm text-gray-500">{settings.whatsapp || '+1 (323) 926-0829'}</p>
+                  </div>
+                </a>
+              )}
+              {/* Email - only show if visible or logged in */}
+              {(customerType !== null || settings.show_email !== 'false') && (
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                  <span className="text-2xl">📧</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">{serverT('contact.email' as any, lang)}</p>
+                    <p className="text-sm text-gray-500">{settings.email || 'sales@vapor-x.com'}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <span className="text-2xl">📧</span>
-                <div>
-                  <p className="font-semibold text-gray-900">{serverT('contact.email' as any, lang)}</p>
-                  <p className="text-sm text-gray-500">sales@vapor-x.com</p>
+              )}
+              {/* Phone - only show if visible or logged in */}
+              {(customerType !== null || settings.show_phone !== 'false') && (
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                  <span className="text-2xl">📞</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">{serverT('contact.phone' as any, lang)}</p>
+                    <p className="text-sm text-gray-500">{settings.phone || '+1 (323) 926-0829'}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <span className="text-2xl">📍</span>
-                <div>
-                  <p className="font-semibold text-gray-900">{serverT('contact.address' as any, lang)}</p>
-                  <p className="text-sm text-gray-500">Los Angeles, CA</p>
+              )}
+              {/* Address - only show if visible or logged in */}
+              {(customerType !== null || settings.show_address !== 'false') && (
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                  <span className="text-2xl">📍</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">{serverT('contact.address' as any, lang)}</p>
+                    <p className="text-sm text-gray-500">{settings.address || 'Los Angeles, CA'}</p>
+                  </div>
                 </div>
-              </div>
+              )}
+              {/* WeChat - only show if visible or logged in */}
+              {(customerType !== null || settings.show_wechat !== 'false') && settings.wechat && (
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                  <span className="text-2xl">💚</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">{serverT('contact.wechat' as any, lang)}</p>
+                    <p className="text-sm text-gray-500">{settings.wechat}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
