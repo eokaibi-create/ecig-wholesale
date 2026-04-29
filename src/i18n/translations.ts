@@ -38,7 +38,6 @@ export type TranslationKey =
   | 'cart.remove' | 'cart.flavor' | 'cart.continue' | 'cart.clear'
   | 'cart.itemsCount' | 'cart.submitInquiry' | 'cart.loading'
   | 'cart.loginRequired' | 'cart.loginRequiredDesc' | 'cart.goToLogin' | 'cart.browseProducts'
-  // PI | 'pi.empty' | 'pi.emptyDesc' | 'pi.loading' | 'pi.loginRequired' | 'pi.itemsCount'
   // 注册
   | 'register.title' | 'register.desc' | 'register.name' | 'register.email'
   | 'register.password' | 'register.company' | 'register.address'
@@ -61,8 +60,18 @@ export type TranslationKey =
   | 'register.confirmPlaceholder'
   | 'register.placeholderOptional'
   // 登录
-  | 'login.title' | 'login.email' | 'login.password' | 'login.submit'
+  | 'login.title' | 'login.desc' | 'login.email' | 'login.password' | 'login.submit'
   | 'login.error' | 'login.noAccount' | 'login.register' | 'login.networkError'
+  | 'login.loading' | 'login.registerNow' | 'login.adminEntry' | 'login.adminLogin'
+  | 'login.forgotPassword'
+  // 忘记密码
+  | 'forgot.title' | 'forgot.desc' | 'forgot.email' | 'forgot.submit'
+  | 'forgot.loading' | 'forgot.sentTitle' | 'forgot.sentDesc' | 'forgot.sentSpam'
+  | 'forgot.backToLogin'
+  // 重置密码
+  | 'reset.title' | 'reset.desc' | 'reset.newPassword' | 'reset.confirmPassword'
+  | 'reset.confirmPlaceholder' | 'reset.submit' | 'reset.loading'
+  | 'reset.successTitle' | 'reset.successDesc' | 'reset.goToLogin'
   // 导航
   | 'nav.home' | 'nav.products' | 'nav.cart' | 'nav.login' | 'nav.register'
   | 'nav.admin' | 'nav.logout' | 'nav.hello' | 'nav.pricing' | 'nav.contact'
@@ -92,7 +101,6 @@ export type TranslationKey =
   | 'about.subtitle'
   // 品牌
   | 'brands.desc'
-  // PI | 'pi.browseProducts'
   // 联系
   | 'contact.placeholder' | 'contact.wechatDesc' | 'contact.replyHour' | 'contact.shippingText'
   | 'contact.prefix'
@@ -278,8 +286,6 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'cart.goToLogin': '去登录',
     'cart.browseProducts': '浏览产品',
 
-    // PI
-
     // 注册
     'register.title': '注册账户',
     'register.desc': '注册 VAPOR-X 批发账户',
@@ -334,6 +340,30 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'login.registerNow': '立即注册',
     'login.adminEntry': '管理员入口',
     'login.adminLogin': '管理员后台登录',
+    'login.forgotPassword': '忘记密码？',
+
+    // 忘记密码
+    'forgot.title': '忘记密码',
+    'forgot.desc': '输入您的邮箱，我们将发送重置链接',
+    'forgot.email': '邮箱地址',
+    'forgot.submit': '发送重置链接',
+    'forgot.loading': '发送中...',
+    'forgot.sentTitle': '检查您的邮箱',
+    'forgot.sentDesc': '如果该邮箱已注册，您将很快收到密码重置邮件。',
+    'forgot.sentSpam': '没有收到邮件？请检查垃圾邮件文件夹。',
+    'forgot.backToLogin': '返回登录',
+
+    // 重置密码
+    'reset.title': '设置新密码',
+    'reset.desc': '请输入您的新密码',
+    'reset.newPassword': '新密码',
+    'reset.confirmPassword': '确认新密码',
+    'reset.confirmPlaceholder': '再次输入新密码',
+    'reset.submit': '重置密码',
+    'reset.loading': '重置中...',
+    'reset.successTitle': '密码重置成功',
+    'reset.successDesc': '您的密码已重置，现在可以使用新密码登录了。',
+    'reset.goToLogin': '前往登录',
 
     // Footer
     'footer.siteDesc': '美国电子烟批发供应商',
@@ -619,8 +649,6 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'cart.goToLogin': 'Go to Login',
     'cart.browseProducts': 'Browse Products',
 
-    // PI
-
     // 注册
     'register.title': 'Customer Registration',
     'register.desc': 'Register for VAPOR-X Wholesale Account',
@@ -675,6 +703,30 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'login.registerNow': 'Register Now',
     'login.adminEntry': 'Admin Entry',
     'login.adminLogin': 'Admin Login',
+    'login.forgotPassword': 'Forgot password?',
+
+    // 忘记密码
+    'forgot.title': 'Forgot Password',
+    'forgot.desc': 'Enter your email and we\'ll send you a reset link',
+    'forgot.email': 'Email Address',
+    'forgot.submit': 'Send Reset Link',
+    'forgot.loading': 'Sending...',
+    'forgot.sentTitle': 'Check Your Email',
+    'forgot.sentDesc': 'If your email is registered, you will receive a password reset link shortly.',
+    'forgot.sentSpam': "Didn't receive the email? Check your spam folder.",
+    'forgot.backToLogin': 'Back to Login',
+
+    // 重置密码
+    'reset.title': 'Set New Password',
+    'reset.desc': 'Enter your new password below',
+    'reset.newPassword': 'New Password',
+    'reset.confirmPassword': 'Confirm New Password',
+    'reset.confirmPlaceholder': 'Re-enter new password',
+    'reset.submit': 'Reset Password',
+    'reset.loading': 'Resetting...',
+    'reset.successTitle': 'Password Reset Successful',
+    'reset.successDesc': 'Your password has been reset. You can now log in with your new password.',
+    'reset.goToLogin': 'Go to Login',
 
     // Footer
     'footer.siteDesc': 'Premium Vape Wholesale Supplier USA',
