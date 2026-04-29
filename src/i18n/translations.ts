@@ -598,6 +598,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'contact.wechatDesc': 'Scan to add, get product catalog and price list',
     'contact.shippingText': 'Free shipping to 48 states, min order $1000',
 
+
     // 购物车
     'cart.title': 'Shopping Cart',
     'cart.empty': 'Your cart is empty',
