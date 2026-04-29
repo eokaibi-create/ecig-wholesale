@@ -1,6 +1,17 @@
+import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getServerLang()
+  return {
+    title: lang === 'zh' ? '关于 VAPOR-X - 美国电子烟批发供应商' : 'About VAPOR-X - Premium Vape Wholesale Supplier USA',
+    description: lang === 'zh'
+      ? '了解 VAPOR-X — 美国领先电子烟批发供应商，自2018年成立，服务5000+批发客户，与50+全球顶级品牌合作。'
+      : 'Learn about VAPOR-X — America\'s leading vape wholesale supplier since 2018, serving 5000+ clients with 50+ brand partners.',
+  }
+}
 
 export default async function AboutPage() {
   const lang = await getServerLang()

@@ -1,8 +1,19 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import HeroSwiper from '@/components/HeroSwiper'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
 import { cookies } from 'next/headers'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getServerLang()
+  return {
+    title: lang === 'zh' ? 'VAPOR-X - 美国电子烟批发供应商' : 'VAPOR-X - Premium Vape Wholesale Supplier USA',
+    description: lang === 'zh'
+      ? '美国电子烟批发供应商 — 一次性电子烟、换弹式电子烟、烟油批发。全美48州配送，支持国际发货。'
+      : 'Premium vape wholesale supplier USA — disposable vapes, pod systems, e-liquid wholesale. Ship nationwide, international shipping available.',
+  }
+}
 
 async function getCustomerTypeFromCookie() {
   const cookieStore = await cookies()
@@ -48,165 +59,209 @@ async function getData() {
     prisma.platform.findMany({ orderBy: { sortOrder: 'asc' } }),
     prisma.setting.findMany(),
     prisma.heroItem.findMany({
-      where: { published: true },
-      include: { product: true },
       orderBy: { sortOrder: 'asc' },
-      take: 5,
+      include: { product: true },
     }),
-    prisma.video.findMany({ orderBy: { sortOrder: "asc" } }),
+    prisma.video.findMany({ orderBy: { sortOrder: 'asc' } }),
   ])
-  const settingMap = Object.fromEntries(settings.map(s => [s.key, s.value]))
-  return { categories, brands, products, platforms, settings: settingMap, heroItems, videos }
+  // ... existing code ...
+  // 构建 settings map
+  const settingsMap: Record<string, string> = {}
+  settings.forEach(s => { settingsMap[s.key] = s.value })
+
+  const t = (key: string) => {
+    // 这里只是占位，实际在组件中用 serverT
+    return key
+  }
+
+  return {
+    categories,
+    brands,
+    products,
+    platforms,
+    settings: settingsMap,
+    heroItems,
+    videos,
+  }
 }
 
 export default async function HomePage() {
   const lang = await getServerLang()
-  const t = (key: any) => serverT(key, lang)
-
-  const data = await getData()
-  const { categories, brands, products, platforms, settings, heroItems, videos } = data
   const customerType = await getCustomerTypeFromCookie()
+  const { categories, brands, products, platforms, settings, heroItems, videos } = await getData()
 
-  const catIcons: Record<string, string> = {
-    disposable: '💨', 'pod-system': '⚡', 'e-liquid': '🧪', accessories: '🔧', 'nicotine-pouches': '🟤',
-  }
-
-  // 联系资料可见性（默认全可见）
-  const contactVisibility = {
-    showWhatsapp: settings.show_whatsapp !== 'false',
-    showEmail: settings.show_email !== 'false',
-    showPhone: settings.show_phone !== 'false',
-    showAddress: settings.show_address !== 'false',
-    showWechat: settings.show_wechat !== 'false',
-  }
-
-  const contact = {
-    whatsapp: contactVisibility.showWhatsapp ? (settings.whatsapp || '+13239260829') : '',
-    email: contactVisibility.showEmail ? (settings.email || 'EOKAIBI@GMAIL.COM') : '',
-    phone: contactVisibility.showPhone ? (settings.phone || '+1 (323) 926-0829') : '',
-    wechat: contactVisibility.showWechat ? (settings.wechat || 'EA_YONG') : '',
-    address: contactVisibility.showAddress ? (settings.address || 'Los Angeles, CA') : '',
-    siteName: settings.site_name || 'VAPOR-X USA',
-    minOrder: settings.min_order || '500',
-  }
-  // 英文模式：强制使用英文翻译
-  // 中文模式：优先数据库自定义内容，其次默认翻译
-  const sections = {
-    heroTitle: settings.hero_title || t('hero.title'),
-    productTitle: settings.section_product_title || t('product.title'),
-    productDesc: settings.section_product_desc || t('product.desc'),
-    brandTitle: settings.section_brand_title || t('brand.title'),
-    brandDesc: settings.section_brand_desc || t('brand.desc'),
-    platformTitle: settings.section_platform_title || t('platform.title'),
-    platformDesc: settings.section_platform_desc || t('platform.desc'),
-    contactTitle: settings.section_contact_title || t('contact.title'),
-    contactDesc: settings.section_contact_desc || t('contact.desc'),
-  }
-
-  const whatsappNum = contact.whatsapp ? contact.whatsapp.replace(/[^0-9]/g, '') : ''
+  const heroTitle = settings.hero_title || serverT('hero.title' as any, lang)
+  const productTitle = settings.section_product_title || serverT('product.title' as any, lang)
+  const brandTitle = settings.section_brand_title || serverT('brand.title' as any, lang)
+  const platformTitle = settings.section_platform_title || serverT('platform.title' as any, lang)
+  const contactTitle = settings.section_contact_title || serverT('contact.title' as any, lang)
 
   return (
     <div>
-      <HeroSwiper items={heroItems} heroTitle={sections.heroTitle} />
+      {/* Hero Section */}
+      <section className="relative">
+        <HeroSwiper items={heroItems} lang={lang} />
+      </section>
 
-      {/* Products */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <span className="text-2xl">🛒</span>
-              <h2 className="text-3xl font-bold text-gray-900">{sections.productTitle}</h2>
-            </div>
-            <p className="mt-2 text-gray-600 text-lg">{sections.productDesc}</p>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            <Link href="/products" className="px-5 py-2 bg-amber-500 text-black font-semibold rounded-full text-sm hover:bg-amber-600 transition">
-              {t('product.all')}
+      {/* Products Section */}
+      <section className="max-w-7xl mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900">{productTitle}</h2>
+          <p className="mt-4 text-gray-500">{serverT('product.desc' as any, lang)}</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {products.map((product) => {
+            const displayPrice = getDisplayPrice(product, customerType)
+            return (
+              <Link
+                key={product.id}
+                href={`/products/${product.slug}`}
+                className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300"
+              >
+                <div className="aspect-square bg-gray-50 relative overflow-hidden">
+                  {product.images && product.images.length > 0 ? (
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                      <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                  {product.featured && (
+                    <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      {serverT('product.hot' as any, lang)}
+                    </span>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                    {product.name}
+                  </h3>
+                  {product.shortDesc && (
+                    <p className="text-sm text-gray-500 mt-1 line-clamp-2">{product.shortDesc}</p>
+                  )}
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-lg font-bold text-blue-600">
+                      ${displayPrice.price.toFixed(2)}
+                    </span>
+                    {displayPrice.label !== 'retail' && (
+                      <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">
+                        {displayPrice.label === 'wholesaler' ? serverT('product.wholesalerPrice' as any, lang) : serverT('product.storePrice' as any, lang)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+        {products.length > 0 && (
+          <div className="text-center mt-10">
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors"
+            >
+              {serverT('product.viewAll' as any, lang)}
             </Link>
-            {categories.map(cat => (
-              <Link key={cat.id} href={`/products?category=${cat.slug}`}
-                className="px-5 py-2 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition">
-                {catIcons[cat.slug] || '📦'} {cat.name}
+          </div>
+        )}
+      </section>
+
+      {/* Brands Section */}
+      <section className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900">{brandTitle}</h2>
+            <p className="mt-4 text-gray-500">{serverT('brand.desc' as any, lang)}</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+            {brands.map((brand) => (
+              <Link
+                key={brand.id}
+                href={`/brands?brand=${brand.slug}`}
+                className="group flex flex-col items-center p-6 bg-white rounded-xl border border-gray-100 hover:shadow-md transition-all"
+              >
+                {brand.logo ? (
+                  <img
+                    src={brand.logo}
+                    alt={brand.name}
+                    className="h-16 w-auto object-contain mb-3 group-hover:scale-110 transition-transform"
+                  />
+                ) : (
+                  <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                    <span className="text-2xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
+                  </div>
+                )}
+                <span className="text-sm font-medium text-gray-700">{brand.name}</span>
               </Link>
             ))}
           </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.length > 0 ? products.map(product => (
-              <Link key={product.id} href={`/products/${product.slug}`} className="group bg-white rounded-xl border border-gray-100 hover:border-amber-200 hover:shadow-lg transition-all overflow-hidden">
-                <div className="aspect-square bg-gray-50 relative overflow-hidden">
-                  {product.image ? (
-                    <img src={product.image} alt={product.name} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl text-gray-300">📦</div>
-                  )}
-                  {product.hot && <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">{t('product.hot')}</span>}
-                </div>
-                <div className="p-4">
-                  <p className="text-xs text-gray-400 mb-1">{product.category?.name}</p>
-                  <h3 className="font-semibold text-gray-900 text-sm group-hover:text-amber-600 transition truncate">{product.name}</h3>
-                  {product.flavor && (
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {product.flavor.split(',').slice(0, 3).map(f => (
-                        <span key={f} className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded-full">{f.trim()}</span>
-                      ))}
-                      {product.flavor.split(',').length > 3 && <span className="text-[10px] text-gray-400">+{product.flavor.split(',').length - 3}</span>}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 mt-2">
-                    {(() => {
-                      const display = getDisplayPrice(product, customerType)
-                      const colorClass = display.label === 'retail' ? 'text-amber-600' : 'text-purple-600'
-                      return <span className={"text-lg font-bold " + colorClass}>${display.price.toFixed(2)}</span>
-                    })()}
-                  </div>
-                  {(() => {
-                    if (lang !== 'en' || !product.shortDesc) return <p className="text-xs text-gray-500 mt-1 line-clamp-2">{product.shortDesc}</p>
-                    const shortMap: Record<string, string> = {
-                      'elfbar-bc5000': '5000 puffs | 50mg | 15ml | 17 flavors',
-                      'geek-bar-pulse': '15000 puffs | 5% nicotine | LED display | 12 flavors',
-                      'lost-mary-mo20000-pro': '20000 puffs | Mesh coil | Adjustable airflow | 10 flavors',
-                      'raz-tn9000': '9000 puffs | Digital battery display | Icy experience',
-                      'geek-bar-meloso-mini': '600 puffs | 20mg nicotine salt | 1.2ml | Mini portable',
-                      'elfbar-600': '600 puffs | 20mg nicotine salt | 2ml | Classic entry',
-                    }
-                    return <p className="text-xs text-gray-500 mt-1 line-clamp-2">{shortMap[product.slug] || product.shortDesc}</p>
-                  })()}
-                </div>
-              </Link>
-            )) : (
-              <div className="col-span-full text-center py-12 text-gray-400">
-                <div className="text-4xl mb-3">📦</div>
-                <p>{t('product.none')}</p>
-                <Link href="/admin/products" className="text-amber-600 hover:underline text-sm mt-2 inline-block">{t('product.addInAdmin')}</Link>
-              </div>
-            )}
-          </div>
         </div>
       </section>
 
-      {/* Videos */}
-      {videos.length > 0 && videos.some(v => v.url) && (
-        <section className="py-20 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center space-x-2 mb-4">
-                <span className="text-2xl">📺</span>
-                <h2 className="text-3xl font-bold text-gray-900">{t("video.title")}</h2>
+      {/* Platforms Section */}
+      {platforms.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900">{platformTitle}</h2>
+            <p className="mt-4 text-gray-500">{serverT('platform.desc' as any, lang)}</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {platforms.map((platform) => (
+              <div key={platform.id} className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+                {platform.logo && (
+                  <img src={platform.logo} alt={platform.name} className="h-12 object-contain mb-4" />
+                )}
+                <h3 className="font-semibold text-gray-900 mb-2">{platform.name}</h3>
+                {platform.description && (
+                  <p className="text-sm text-gray-500">{platform.description}</p>
+                )}
               </div>
-              <p className="text-gray-600">{t("video.desc")}</p>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Video Section */}
+      {videos.length > 0 && (
+        <section className="bg-gray-50 py-16">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900">{serverT("video.title" as any, lang)}</h2>
+              <p className="mt-4 text-gray-500">{serverT('video.desc' as any, lang)}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {videos.filter(v => v.url).map(video => (
-                <div key={video.id} className="aspect-video rounded-xl overflow-hidden shadow-lg bg-black">
-                  <iframe
-                    src={video.url}
-                    title={video.title}
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
+              {videos.map((video) => (
+                <div key={video.id} className="bg-white rounded-xl overflow-hidden shadow-sm">
+                  <div className="aspect-video bg-gray-100">
+                    {video.url ? (
+                      <video
+                        src={video.url}
+                        controls
+                        className="w-full h-full object-cover"
+                        poster={video.cover || undefined}
+                        title={video.title}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900">{video.title}</h3>
+                    {video.description && (
+                      <p className="text-sm text-gray-500 mt-1">{video.description}</p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -214,121 +269,40 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Brands */}
-      {brands.length > 0 && (
-        <section className="py-20 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center space-x-2 mb-4">
-                <span className="text-2xl">🤝</span>
-                <h2 className="text-3xl font-bold text-gray-900">{sections.brandTitle}</h2>
-              </div>
-              <p className="text-gray-600">{sections.brandDesc}</p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-8 items-center">
-              {brands.map(brand => (
-                <div key={brand.id} className="flex flex-col items-center w-28">
-                  {brand.logo ? (
-                    <img src={brand.logo} alt={brand.name} className="h-14 w-auto object-contain mb-2 grayscale hover:grayscale-0 transition-all" />
-                  ) : (
-                    <div className="h-14 w-14 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs mb-2">{t('brand.logo')}</div>
-                  )}
-                  <span className="text-xs text-gray-600 font-medium text-center">{brand.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Platforms */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <span className="text-2xl">🌐</span>
-              <h2 className="text-3xl font-bold">{sections.platformTitle}</h2>
-            </div>
-            <p className="text-gray-400 text-lg">{sections.platformDesc}</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {platforms.length > 0 ? platforms.map(platform => (
-              <div key={platform.id} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center hover:bg-white/10 hover:border-amber-500/30 transition-all group">
-                <div className="w-16 h-16 mx-auto mb-4 bg-white/10 rounded-xl flex items-center justify-center overflow-hidden p-2 group-hover:bg-white/20 transition">
-                  {platform.logo ? <img src={platform.logo} alt={platform.name} className="h-10 w-auto object-contain" /> : <span className="text-2xl">📱</span>}
-                </div>
-                <h3 className="font-bold text-white mb-2">{platform.name}</h3>
-                {platform.description && <p className="text-sm text-gray-400 leading-relaxed">{platform.description}</p>}
-              </div>
-            )) : (
-              <>
-                {[
-                  { icon: '🏭', title: t('platform.fallback1Title'), desc: t('platform.fallback1Desc') },
-                  { icon: '🚚', title: t('platform.fallback2Title'), desc: t('platform.fallback2Desc') },
-                  { icon: '💰', title: t('platform.fallback3Title'), desc: t('platform.fallback3Desc') },
-                  { icon: '💬', title: t('platform.fallback4Title'), desc: t('platform.fallback4Desc') },
-                ].map((item, i) => (
-                  <div key={i} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-white/10 rounded-xl flex items-center justify-center"><span className="text-3xl">{item.icon}</span></div>
-                    <h3 className="font-bold text-white mb-2">{item.title}</h3>
-                    <p className="text-sm text-gray-400">{item.desc}</p>
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
+      {/* Contact Section */}
+      <section className="max-w-7xl mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900">{contactTitle}</h2>
+          <p className="mt-4 text-gray-500">{serverT('contact.desc' as any, lang)}</p>
         </div>
-      </section>
-
-      {/* Contact */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="flex items-center space-x-3 mb-6">
-                <span className="text-3xl">📞</span>
-                <h2 className="text-3xl font-bold text-gray-900">{sections.contactTitle}</h2>
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-xl border border-gray-100 p-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                <span className="text-2xl">💬</span>
+                <div>
+                  <p className="font-semibold text-gray-900">{serverT('contact.whatsapp' as any, lang)}</p>
+                  <p className="text-sm text-gray-500">{serverT('contact.prefix' as any, lang)}</p>
+                </div>
               </div>
-              <p className="text-gray-600 text-lg mb-8">{sections.contactDesc}</p>
-              <div className="space-y-5">
-                {(() => {
-                  const items = []
-                  if (contact.whatsapp) items.push({ icon: '💬', bg: 'bg-green-100', label: 'WhatsApp', val: contact.whatsapp, href: `https://wa.me/${whatsappNum}` })
-                  if (contact.email) items.push({ icon: '📧', bg: 'bg-blue-100', label: 'Email', val: contact.email, href: `mailto:${contact.email}` })
-                  if (contact.phone) items.push({ icon: '📞', bg: 'bg-amber-100', label: t('contact.phone'), val: contact.phone, href: `tel:${contact.phone.replace(/[^0-9+]/g, '')}` })
-                  if (contact.address) items.push({ icon: '📍', bg: 'bg-red-100', label: t('contact.address'), val: contact.address })
-                  if (contact.wechat) items.push({ icon: '💚', bg: 'bg-green-100', label: 'WeChat', val: contact.wechat })
-                  return items
-                })().map((item, i) => (
-                  <div key={i} className={`flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-100 transition`}>
-                    <div className={`w-12 h-12 ${item.bg} rounded-full flex items-center justify-center flex-shrink-0`}><span className="text-xl">{item.icon}</span></div>
-                    <div>
-                      <p className="text-sm text-gray-500">{item.label}</p>
-                      {'href' in item ? (
-                        <a href={(item as any).href} target="_blank" rel="noopener noreferrer" className="text-lg font-semibold text-gray-900 hover:text-green-600 transition">{item.val}</a>
-                      ) : (
-                        <p className="text-lg font-semibold text-gray-900">{item.val}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
+              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                <span className="text-2xl">📧</span>
+                <div>
+                  <p className="font-semibold text-gray-900">{serverT('contact.email' as any, lang)}</p>
+                  <p className="text-sm text-gray-500">sales@vapor-x.com</p>
+                </div>
               </div>
-            </div>
-
-            <div className="bg-gray-900 rounded-2xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-4">{t('contact.inquire')}</h3>
-              <p className="text-gray-400 mb-6">{t('contact.inquireDesc')}</p>
-              <form action="/api/inquiries" method="POST" className="space-y-4">
-                <input type="text" name="name" placeholder={t('contact.name')} required className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-amber-500 outline-none" />
-                <input type="email" name="email" placeholder="Email" required className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-amber-500 outline-none" />
-                <textarea name="message" rows={4} placeholder={t('contact.message')} required className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
-                <button type="submit" className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition">{t('contact.send')}</button>
-              </form>
+              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                <span className="text-2xl">📍</span>
+                <div>
+                  <p className="font-semibold text-gray-900">{serverT('contact.address' as any, lang)}</p>
+                  <p className="text-sm text-gray-500">Los Angeles, CA</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
-      {/* Note: Footer is rendered by layout.tsx */}
     </div>
   )
 }

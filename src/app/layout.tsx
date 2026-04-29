@@ -8,18 +8,37 @@ import { cookies, headers } from "next/headers";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "VAPOR-X - Premium Vape Wholesale Supplier USA",
-  description: "Premium vape wholesale supplier USA — disposable vapes, pod systems, e-liquid wholesale. Ship nationwide, international shipping available.",
-  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg", apple: "/favicon.svg" },
-};
-
 /** 服务端：从 Accept-Language 自动检测浏览器语言 */
 function detectServerLang(acceptLanguage: string | null): 'zh' | 'en' {
   if (!acceptLanguage) return 'zh'
   // 取第一个语言标签
   const primary = acceptLanguage.split(',')[0]?.split(';')[0]?.trim().toLowerCase() || ''
   return primary.startsWith('en') ? 'en' : 'zh'
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const headerList = await headers();
+
+  const cookieLang = cookieStore.get("vaporx-lang")?.value;
+  let lang: 'zh' | 'en' = 'zh';
+
+  if (cookieLang === 'en' || cookieLang === 'zh') {
+    lang = cookieLang;
+  } else {
+    const acceptLanguage = headerList.get('accept-language');
+    lang = detectServerLang(acceptLanguage);
+  }
+
+  return {
+    title: lang === 'zh'
+      ? 'VAPOR-X - 美国电子烟批发供应商'
+      : 'VAPOR-X - Premium Vape Wholesale Supplier USA',
+    description: lang === 'zh'
+      ? '美国电子烟批发供应商 — 一次性电子烟、换弹式电子烟、烟油批发。全美48州配送，支持国际发货。'
+      : "Premium vape wholesale supplier USA — disposable vapes, pod systems, e-liquid wholesale. Ship nationwide, international shipping available.",
+    icons: { icon: "/favicon.svg", shortcut: "/favicon.svg", apple: "/favicon.svg" },
+  };
 }
 
 export default async function RootLayout({

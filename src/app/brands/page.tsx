@@ -1,6 +1,17 @@
+import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getServerLang()
+  return {
+    title: lang === 'zh' ? '合作品牌 - VAPOR-X 电子烟批发' : 'Brand Partners - VAPOR-X Vape Wholesale',
+    description: lang === 'zh'
+      ? 'VAPOR-X 与全球顶级电子烟品牌战略合作 — ELF BAR、Geek Bar、Lost Mary、RAZ 等官方授权批发'
+      : 'VAPOR-X partners with top global vape brands — ELF BAR, Geek Bar, Lost Mary, RAZ official authorized wholesale',
+  }
+}
 
 export default async function BrandsPage() {
   const lang = await getServerLang()

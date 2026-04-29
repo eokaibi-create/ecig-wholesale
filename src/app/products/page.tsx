@@ -1,7 +1,39 @@
+import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
 import { cookies } from 'next/headers'
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; search?: string; brand?: string }>
+}): Promise<Metadata> {
+  const lang = await getServerLang()
+  const params = await searchParams
+  const t = (key: any) => serverT(key, lang)
+
+  if (params.brand) {
+    const brand = await prisma.brand.findFirst({ where: { slug: params.brand } })
+    if (brand) {
+      return {
+        title: lang === 'zh'
+          ? `${brand.name} - VAPOR-X 电子烟批发`
+          : `${brand.name} - VAPOR-X Vape Wholesale`,
+        description: lang === 'zh'
+          ? `VAPOR-X ${brand.name} 系列产品批发 — 正品保障，全美48州配送`
+          : `VAPOR-X ${brand.name} wholesale — authentic products, nationwide shipping`,
+      }
+    }
+  }
+
+  return {
+    title: lang === 'zh' ? '产品中心 - VAPOR-X 电子烟批发' : 'Products - VAPOR-X Vape Wholesale',
+    description: lang === 'zh'
+      ? 'VAPOR-X 全系列电子烟产品批发 — 一次性电子烟、换弹式电子烟、烟油。全美48州配送。'
+      : 'VAPOR-X full range vape products wholesale — disposable vapes, pod systems, e-liquid. Nationwide shipping.',
+  }
+}
 
 async function getCustomerTypeFromCookie(): Promise<string | null> {
   const cookieStore = await cookies()
@@ -96,7 +128,7 @@ export default async function ProductsPage({
             }`}>{t('product.all')}</Link>
           {categories.map((cat) => (
             <Link key={cat.id}
-              href={`/products?category=${cat.slug}${params.brand ? `&brand=${params.brand}` : ''}`}
+              href={`/products?category=${cat.slug}${params.brand ? `&brand=${cat.slug}` : ''}`}
               className={`px-4 py-2 rounded-full text-sm font-medium transition ${
                 params.category === cat.slug ? 'bg-amber-500 text-black' : 'bg-white text-gray-600 hover:bg-gray-100 border'
               }`}>{cat.name}</Link>

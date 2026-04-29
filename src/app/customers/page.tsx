@@ -1,6 +1,17 @@
+import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getServerLang()
+  return {
+    title: lang === 'zh' ? '客户服务 - VAPOR-X 电子烟批发' : 'Customer Service - VAPOR-X Vape Wholesale',
+    description: lang === 'zh'
+      ? 'VAPOR-X 为客户提供全方位的批发采购支持 — 最低起订$500，全美48州配送，正品保障，专属客服。'
+      : 'VAPOR-X wholesale customer service — min order $500, nationwide shipping, authenticity guaranteed, dedicated support.',
+  }
+}
 
 export default async function CustomersPage() {
   const lang = await getServerLang()
