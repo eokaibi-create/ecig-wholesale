@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Seeding database...')
 
-  // 管理员：已存在则保留密码（不更新），不存在则创建
+  // 管理员：用户名或邮箱已存在则保留，不存在则创建
   const admins = [
     { username: 'admin', email: 'admin@vaporx.com', defaultPassword: 'admin123', role: 'admin' },
     { username: 'YONGADMIN', email: 'EOKAIBI@GMAIL.COM', defaultPassword: 'yong123', role: 'superadmin' },
@@ -14,9 +14,16 @@ async function main() {
   ]
 
   for (const admin of admins) {
-    const existing = await prisma.admin.findUnique({ where: { username: admin.username } })
+    const existing = await prisma.admin.findFirst({
+      where: {
+        OR: [
+          { username: admin.username },
+          { email: admin.email },
+        ],
+      },
+    })
     if (existing) {
-      console.log(`  ⏭️  ${admin.username} (${admin.role}) 已存在，保留原密码`)
+      console.log(`  ⏭️  ${admin.username} (${admin.role}) 已存在（用户名或邮箱），保留原密码`)
     } else {
       const hash = await bcrypt.hash(
         process.env[`${admin.username}_PASSWORD`] || admin.defaultPassword,
