@@ -25,7 +25,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     // 验证管理员权限
-    const auth = requireAdmin(request)
+    const auth = await requireAdmin(request)
     if (!auth.authorized) {
       return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
     }

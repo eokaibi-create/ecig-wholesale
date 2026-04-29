@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // 优先 JWT 解析
-    const payload = verifyToken(token)
+    const payload = await verifyToken(token)
     if (payload) {
       return NextResponse.json({
         role: normalizeRole(payload.role),

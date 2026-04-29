@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       const normalizedRole = normalizeRole(rawRole)
 
       const payload = { type: 'user' as const, id: user.id, username: user.username, role: normalizedRole }
-      const token = signToken(payload)
+      const token = await signToken(payload)
       
       const response = NextResponse.json({ success: true, token, user: { id: user.id, username: user.username, role: normalizedRole } })
       response.cookies.set('admin_token', token, { httpOnly: true, path: '/', maxAge: 86400, sameSite: 'lax' })
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     const normalizedRole = normalizeRole(rawRole)
 
     const payload = { type: 'admin' as const, id: admin.id, username: admin.username, role: normalizedRole }
-    const token = signToken(payload)
+    const token = await signToken(payload)
 
     const response = NextResponse.json({ success: true, token, user: { id: admin.id, username: admin.username, role: normalizedRole, email: admin.email } })
     response.cookies.set('admin_token', token, { httpOnly: true, path: '/', maxAge: 86400, sameSite: 'lax' })

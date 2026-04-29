@@ -6,7 +6,7 @@ import { requireAdmin } from '@/lib/auth'
 export async function PUT(request: NextRequest) {
   try {
     // 仅 superadmin 可重置密码
-    const auth = requireAdmin(request, ['superadmin'])
+    const auth = await requireAdmin(request, ['superadmin'])
     if (!auth.authorized) {
       return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
     }

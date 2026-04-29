@@ -1,7 +1,10 @@
-import jwt from 'jsonwebtoken'
+import { SignJWT, jwtVerify } from 'jose'
 import { NextRequest } from 'next/server'
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.RESET_SECRET || 'vaporx-jwt-secret-key-2024'
+const encoder = new TextEncoder()
+const secretKey = encoder.encode(JWT_SECRET)
+
 const TOKEN_EXPIRY = '24h'
 
 export interface AdminTokenPayload {
@@ -24,13 +27,18 @@ export interface UserTokenPayload {
 
 export type TokenPayload = AdminTokenPayload | UserTokenPayload
 
-export function signToken(payload: TokenPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRY })
+export async function signToken(payload: TokenPayload): Promise<string> {
+  return new SignJWT({ ...payload })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(TOKEN_EXPIRY)
+    .sign(secretKey)
 }
 
-export function verifyToken(token: string): TokenPayload | null {
+export async function verifyToken(token: string): Promise<TokenPayload | null> {
   try {
-    return jwt.verify(token, JWT_SECRET) as TokenPayload
+    const { payload } = await jwtVerify(token, secretKey)
+    return payload as unknown as TokenPayload
   } catch {
     return null
   }
@@ -54,9 +62,8 @@ export function getToken(request: NextRequest): string | null {
 
 /**
  * 从请求中解析管理员身份
- * @returns TokenPayload | null
  */
-export function parseToken(request: NextRequest): TokenPayload | null {
+export async function parseToken(request: NextRequest): Promise<TokenPayload | null> {
   const token = getToken(request)
   if (!token) return null
   return verifyToken(token)
@@ -75,14 +82,13 @@ export function normalizeRole(role: string): string {
 
 /**
  * 检查是否有管理员权限
- * @param requiredRoles 允许的角色列表，为空则任何管理员都通过
  */
-export function requireAdmin(request: NextRequest, requiredRoles?: string[]): { 
+export async function requireAdmin(request: NextRequest, requiredRoles?: string[]): Promise<{ 
   authorized: boolean
   payload: TokenPayload | null
   error?: { message: string; status: number }
-} {
-  const payload = parseToken(request)
+}> {
+  const payload = await parseToken(request)
   
   if (!payload) {
     return {

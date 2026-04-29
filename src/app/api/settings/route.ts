@@ -11,7 +11,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     // 验证管理员权限（仅 admin/superadmin 可修改设置）
-    const auth = requireAdmin(request, ['admin', 'superadmin'])
+    const auth = await requireAdmin(request, ['admin', 'superadmin'])
     if (!auth.authorized) {
       return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
     }
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     // 验证管理员权限（仅 admin/superadmin 可删除设置）
-    const auth = requireAdmin(request, ['admin', 'superadmin'])
+    const auth = await requireAdmin(request, ['admin', 'superadmin'])
     if (!auth.authorized) {
       return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
     }

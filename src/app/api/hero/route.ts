@@ -16,7 +16,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = requireAdmin(request)
+    const auth = await requireAdmin(request)
     if (!auth.authorized) {
       return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
     }
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const auth = requireAdmin(request)
+    const auth = await requireAdmin(request)
     if (!auth.authorized) {
       return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
     }
@@ -78,7 +78,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const auth = requireAdmin(request)
+    const auth = await requireAdmin(request)
     if (!auth.authorized) {
       return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
     }

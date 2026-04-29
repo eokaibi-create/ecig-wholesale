@@ -34,11 +34,10 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    // 兼容旧 base64 token（逐步淘汰）
+    // 尝试 JWT 解析
+    const payload = await verifyToken(token)
     let role: string | null = null
     
-    // 尝试 JWT 解析
-    const payload = verifyToken(token)
     if (payload) {
       role = payload.role
     } else {
