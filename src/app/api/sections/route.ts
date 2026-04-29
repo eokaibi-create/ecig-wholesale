@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 
 export async function GET() {
   try {
@@ -23,6 +24,12 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    // 验证管理员权限
+    const auth = requireAdmin(request)
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
+    }
+
     const data = await request.json()
     const results = []
     for (const [key, value] of Object.entries(data)) {

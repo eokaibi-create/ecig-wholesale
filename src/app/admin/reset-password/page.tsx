@@ -24,8 +24,8 @@ export default function AdminResetPasswordPage() {
     e.preventDefault()
     setError('')
 
-    if (password.length < 6) {
-      setError('密码至少 6 位')
+    if (password.length < 8) {
+      setError('密码至少 8 位')
       return
     }
     if (password !== confirm) {
@@ -103,7 +103,7 @@ export default function AdminResetPasswordPage() {
             <label className="block text-sm font-medium text-gray-300 mb-1">新密码</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)}
               className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-white placeholder-gray-400"
-              placeholder="至少 6 位" required />
+              placeholder="至少 8 位" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">确认新密码</label>

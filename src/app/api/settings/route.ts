@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 
 export async function GET() {
   const settings = await prisma.setting.findMany()
@@ -9,6 +10,12 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // 验证管理员权限（仅 admin/superadmin 可修改设置）
+    const auth = requireAdmin(request, ['admin', 'superadmin'])
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
+    }
+
     const contentType = request.headers.get('content-type') || ''
     
     let entries: [string, string][] = []
@@ -65,7 +72,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 检查是 JSON 请求还是表单提交
     if (contentType.includes('application/json')) {
       return NextResponse.json({ success: true })
     }
@@ -80,14 +86,18 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // 验证管理员权限（仅 admin/superadmin 可删除设置）
+    const auth = requireAdmin(request, ['admin', 'superadmin'])
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
+    }
+
     const { searchParams } = new URL(request.url)
     const key = searchParams.get('key')
     
     if (key) {
-      // 删除单个设置项
       await prisma.setting.delete({ where: { key } })
     } else {
-      // 删除所有脏数据（[object Object]）
       const allSettings = await prisma.setting.findMany()
       const dirtyKeys = allSettings
         .filter(s => s.value === '[object Object]' || s.key === 'test_key' || s.key === 'key' || s.key === 'value')

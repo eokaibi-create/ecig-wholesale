@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { NextRequest, NextResponse } from 'next/server'
+import { signToken, normalizeRole } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,6 +10,10 @@ export async function POST(request: NextRequest) {
 
     if (!loginName || !password) {
       return NextResponse.json({ error: 'Please enter username/email and password' }, { status: 400 })
+    }
+
+    if (password.length < 8) {
+      return NextResponse.json({ error: '密码长度至少 8 位' }, { status: 400 })
     }
 
     // 先查 User 表（旧）
@@ -23,14 +28,11 @@ export async function POST(request: NextRequest) {
       const valid = await bcrypt.compare(password, user.password)
       if (!valid) return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
       
-      // 统一角色名
       const rawRole = user.role || 'admin'
-      const normalizedRole = rawRole === 'product_admin' || rawRole === 'product' ? 'brand'
-        : rawRole === 'super_admin' ? 'superadmin'
-        : rawRole
+      const normalizedRole = normalizeRole(rawRole)
 
-      // Token 格式: user:id:username:role:timestamp
-      const token = Buffer.from(`user:${user.id}:${user.username}:${normalizedRole}:${Date.now()}`).toString('base64')
+      const payload = { type: 'user' as const, id: user.id, username: user.username, role: normalizedRole }
+      const token = signToken(payload)
       
       const response = NextResponse.json({ success: true, token, user: { id: user.id, username: user.username, role: normalizedRole } })
       response.cookies.set('admin_token', token, { httpOnly: true, path: '/', maxAge: 86400, sameSite: 'lax' })
@@ -48,14 +50,11 @@ export async function POST(request: NextRequest) {
     const valid = await bcrypt.compare(password, admin.password)
     if (!valid) return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
 
-    // 统一角色名（兼容旧数据）
     const rawRole = admin.role || 'admin'
-    const normalizedRole = rawRole === 'product_admin' || rawRole === 'product' ? 'brand'
-      : rawRole === 'super_admin' ? 'superadmin'
-      : rawRole
+    const normalizedRole = normalizeRole(rawRole)
 
-    // Token 格式: admin:id:username:role:timestamp
-    const token = Buffer.from(`admin:${admin.id}:${admin.username}:${normalizedRole}:${Date.now()}`).toString('base64')
+    const payload = { type: 'admin' as const, id: admin.id, username: admin.username, role: normalizedRole }
+    const token = signToken(payload)
 
     const response = NextResponse.json({ success: true, token, user: { id: admin.id, username: admin.username, role: normalizedRole, email: admin.email } })
     response.cookies.set('admin_token', token, { httpOnly: true, path: '/', maxAge: 86400, sameSite: 'lax' })

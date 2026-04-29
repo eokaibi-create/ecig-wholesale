@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
+import { requireAdmin } from '@/lib/auth'
 
 export async function GET() {
   try {
@@ -16,7 +17,18 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // 仅 superadmin 可创建管理员
+    const auth = requireAdmin(request, ['superadmin'])
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
+    }
+
     const data = await request.json()
+
+    if (data.password && data.password.length < 8) {
+      return NextResponse.json({ error: '密码长度至少 8 位' }, { status: 400 })
+    }
+
     const existing = await prisma.admin.findFirst({
       where: { OR: [{ username: data.username }, { email: data.email }] }
     })
@@ -40,8 +52,18 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    // 仅 superadmin 可编辑管理员
+    const auth = requireAdmin(request, ['superadmin'])
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
+    }
+
     const { id, username, email, password, role } = await request.json()
     if (!id) return NextResponse.json({ error: '缺少ID' }, { status: 400 })
+
+    if (password && password.length < 8) {
+      return NextResponse.json({ error: '密码长度至少 8 位' }, { status: 400 })
+    }
 
     // 检查用户名/邮箱是否被其他管理员占用
     const existing = await prisma.admin.findFirst({
@@ -64,30 +86,6 @@ export async function PUT(request: NextRequest) {
     if (role !== undefined) data.role = role
     if (password) {
       data.password = await bcrypt.hash(password, 12)
-      // 同步密码到 Vercel 环境变量
-      if (process.env.VERCEL_TOKEN) {
-        try {
-          const vercelProject = process.env.VERCEL_PROJECT_ID || process.env.NEXT_PUBLIC_VERCEL_PROJECT_ID
-          if (vercelProject) {
-            await fetch(`https://api.vercel.com/v1/projects/${vercelProject}/env`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${process.env.VERCEL_TOKEN}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                key: 'ADMIN_PASSWORD',
-                value: password,
-                type: 'encrypted',
-                target: ['production', 'preview', 'development'],
-              }),
-            })
-            console.log('[Admin] Synced password to Vercel env')
-          }
-        } catch (e) {
-          console.warn('[Admin] Failed to sync password to Vercel:', e)
-        }
-      }
     }
 
     const admin = await prisma.admin.update({
@@ -103,6 +101,12 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // 仅 superadmin 可删除管理员
+    const auth = requireAdmin(request, ['superadmin'])
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
+    }
+
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
     if (!id) return NextResponse.json({ error: '缺少ID' }, { status: 400 })

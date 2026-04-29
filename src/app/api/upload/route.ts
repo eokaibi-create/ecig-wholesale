@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    // 验证管理员权限
+    const auth = requireAdmin(request)
+    if (!auth.authorized) {
+      return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
+    }
+
     const formData = await request.formData()
     const file = formData.get('file') as File | null
 
@@ -12,7 +19,7 @@ export async function POST(request: NextRequest) {
     // 直接上传到 Cloudinary（无大小限制，200MB 内视频+图片）
     const cloudFormData = new FormData()
     cloudFormData.append('file', file)
-    cloudFormData.append('upload_preset', 'ecig_upload')
+    cloudFormData.append('upload_preset', process.env.CLOUDINARY_UPLOAD_PRESET || 'ecig_upload')
     cloudFormData.append('folder', 'ecig-wholesale')
 
     const cloudRes = await fetch('https://api.cloudinary.com/v1_1/dlmgdbrte/auto/upload', {

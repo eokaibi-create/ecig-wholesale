@@ -43,6 +43,11 @@ export default function AdminAdminsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (form.password.length < 8) {
+      setMessage('❌ 密码至少 8 位')
+      setTimeout(() => setMessage(''), 3000)
+      return
+    }
     const res = await fetch('/api/admin/manage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -67,6 +72,11 @@ export default function AdminAdminsPage() {
   }
 
   const saveEdit = async (id: number) => {
+    if (editForm.password && editForm.password.length < 8) {
+      setMessage('❌ 密码至少 8 位')
+      setTimeout(() => setMessage(''), 3000)
+      return
+    }
     const res = await fetch('/api/admin/manage', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -91,8 +101,8 @@ export default function AdminAdminsPage() {
 
   const handleResetPassword = async () => {
     if (!resetModal) return
-    if (resetPassword.length < 6) {
-      setMessage('❌ 密码至少 6 位')
+    if (resetPassword.length < 8) {
+      setMessage('❌ 密码至少 8 位')
       setTimeout(() => setMessage(''), 3000)
       return
     }
@@ -152,7 +162,7 @@ export default function AdminAdminsPage() {
               <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
                 placeholder="邮箱" className="px-4 py-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500" required />
               <input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})}
-                placeholder="密码" className="px-4 py-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500" required />
+                placeholder="密码（至少 8 位）" className="px-4 py-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500" required />
               <select value={form.role} onChange={e => setForm({...form, role: e.target.value})}
                 className="px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-amber-500">
                 <option value="admin">管理员</option>
@@ -250,7 +260,7 @@ export default function AdminAdminsPage() {
             <p className="text-sm text-gray-500 mb-4">重置后将直接生效，请告知对方新密码</p>
             <div className="space-y-3">
               <input type="password" value={resetPassword} onChange={e => setResetPassword(e.target.value)}
-                placeholder="新密码（至少 6 位）" className="w-full px-4 py-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500" />
+                placeholder="新密码（至少 8 位）" className="w-full px-4 py-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500" />
               <input type="password" value={resetConfirm} onChange={e => setResetConfirm(e.target.value)}
                 placeholder="确认新密码" className="w-full px-4 py-2.5 border rounded-lg outline-none focus:ring-2 focus:ring-amber-500" />
               <div className="flex gap-3 pt-2">

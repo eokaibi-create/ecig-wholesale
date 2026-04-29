@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { verifyToken, normalizeRole } from '@/lib/auth'
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://okaibiglobal.com'
 
@@ -33,19 +34,29 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    const decoded = Buffer.from(token, 'base64').toString('utf-8')
-    const parts = decoded.split(':')
-    if (parts.length < 5) {
-      throw new Error('Invalid token')
+    // 兼容旧 base64 token（逐步淘汰）
+    let role: string | null = null
+    
+    // 尝试 JWT 解析
+    const payload = verifyToken(token)
+    if (payload) {
+      role = payload.role
+    } else {
+      // 向后兼容：尝试 base64 解析旧 token
+      try {
+        const decoded = Buffer.from(token, 'base64').toString('utf-8')
+        const parts = decoded.split(':')
+        if (parts.length >= 4) {
+          role = parts[3]
+        }
+      } catch {}
     }
 
-    const role = parts[3]
+    if (!role) {
+      return NextResponse.redirect(new URL('/admin/login', request.url))
+    }
 
-    // 统一角色名（兼容数据库旧数据）
-    const normalizedRole = role === 'product_admin' ? 'brand'
-      : role === 'product' ? 'brand'
-      : role === 'super_admin' ? 'superadmin'
-      : role
+    const normalizedRole = normalizeRole(role)
 
     // superadmin 和 admin 可访问所有后台页面
     const fullAccessRoles = ['superadmin', 'admin']

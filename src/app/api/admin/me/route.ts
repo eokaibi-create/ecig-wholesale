@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { verifyToken, normalizeRole } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   const token = request.cookies.get('admin_token')?.value
@@ -8,6 +9,18 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // 优先 JWT 解析
+    const payload = verifyToken(token)
+    if (payload) {
+      return NextResponse.json({
+        role: normalizeRole(payload.role),
+        userId: String(payload.id),
+        username: payload.username,
+        userType: payload.type,
+      })
+    }
+
+    // 向后兼容：尝试 base64 解析旧 token
     const decoded = Buffer.from(token, 'base64').toString('utf-8')
     const parts = decoded.split(':')
     if (parts.length < 5) {
@@ -19,10 +32,7 @@ export async function GET(request: NextRequest) {
     const username = parts[2]
     const role = parts[3]
 
-    // 统一角色名（兼容旧数据）
-    const normalizedRole = role === 'product_admin' || role === 'product' ? 'brand'
-      : role === 'super_admin' ? 'superadmin'
-      : role
+    const normalizedRole = normalizeRole(role)
 
     return NextResponse.json({
       role: normalizedRole,

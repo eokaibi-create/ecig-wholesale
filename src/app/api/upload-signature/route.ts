@@ -1,17 +1,23 @@
 import { NextResponse } from 'next/server'
 import { createHash } from 'crypto'
 
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dlmgdbrte'
+const apiKey = process.env.CLOUDINARY_API_KEY
+const apiSecret = process.env.CLOUDINARY_API_SECRET
+
 export async function GET() {
-  const cloudName = 'dlmgdbrte'
-  const apiKey = '439615235726973'
-  const apiSecret = 'gJPjgj7n9Fkf1zlfeXCDIZeb1jY'
-  const uploadPreset = 'ecig_upload'
+  if (!apiKey || !apiSecret) {
+    return NextResponse.json(
+      { error: 'Cloudinary 未配置，请在 .env 中设置 CLOUDINARY_API_KEY 和 CLOUDINARY_API_SECRET' },
+      { status: 500 }
+    )
+  }
+
+  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || 'ecig_upload'
   const timestamp = Math.floor(Date.now() / 1000)
   const folder = 'ecig-wholesale'
 
-  // 签名上传：Cloudinary 要求的签名参数字符串为
-  // 'folder=xxx&timestamp=xxx&upload_preset=xxx'
-  // 不包含 api_key！参数按字母序排列
+  // 签名上传：Cloudinary 要求的签名参数字符串
   const params = [
     `folder=${folder}`,
     `timestamp=${timestamp}`,
