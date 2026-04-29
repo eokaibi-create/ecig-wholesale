@@ -212,7 +212,7 @@ export default function ProductDetailPage() {
               <p className="mt-1 text-sm text-amber-500 font-medium">{t('product.storePrice')}</p>
             )}
             {!customerType && (
-              <p className="mt-1 text-sm text-gray-400">{t('product.wholesale')}</p>
+              <p className="mt-1 text-sm text-gray-400">{t('product.pricing')}</p>
             )}
 
             <div className="mt-6 p-4 bg-gray-50 rounded-xl">

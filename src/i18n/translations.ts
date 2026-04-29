@@ -7,7 +7,7 @@ export type TranslationKey =
   | 'product.addToCart' | 'product.added' | 'product.quantity' | 'product.chooseFlavor'
   | 'product.params' | 'product.brand' | 'product.nicotine' | 'product.capacity'
   | 'product.puffs' | 'product.flavor' | 'product.size' | 'product.stock'
-  | 'product.detail' | 'product.wholesale' | 'product.minOrder'
+  | 'product.detail' | 'product.wholesale' | 'product.pricing' | 'product.minOrder'
   | 'product.inquire' | 'product.specs' | 'product.newArrival'
   | 'product.notFound' | 'product.backToProducts' | 'product.filterByBrand'
   | 'product.productsCount' | 'product.comingSoon' | 'product.hot'
@@ -156,6 +156,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'product.stock': '库存',
     'product.detail': '产品详情',
     'product.wholesale': '批发价 / 量大从优',
+    'product.pricing': '价格',
     'product.minOrder': '最低起订量: $500 | 全美48州免运费',
     'product.inquire': '批量采购？获取最优报价',
     'product.specs': '电子烟参数',
@@ -477,6 +478,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'product.stock': 'Stock',
     'product.detail': 'Product Details',
     'product.wholesale': 'Wholesale Pricing',
+    'product.pricing': 'Pricing',
     'product.inquire': 'Bulk Orders? Get Best Pricing',
     'product.specs': 'Vape Specifications',
     'product.newArrival': 'New Arrival',
