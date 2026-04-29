@@ -3,23 +3,44 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-const adminNavItems = [
-  { href: '/admin/dashboard', label: '仪表盘', icon: '📊', roles: ['admin', 'superadmin', 'product'] },
-  { href: '/admin/home', label: '首页内容', icon: '🏠', roles: ['admin', 'superadmin'] },
-  { href: '/admin/products', label: '产品管理', icon: '📦', roles: ['admin', 'superadmin', 'product'] },
-  { href: '/admin/brands', label: '品牌管理', icon: '🏷️', roles: ['admin', 'superadmin', 'product'] },
-  { href: '/admin/platforms', label: '平台管理', icon: '🤝', roles: ['admin', 'superadmin'] },
-  { href: '/admin/videos', label: 'Youtube 视频', icon: '📺', roles: ['admin', 'superadmin'] },
-  { href: '/admin/orders', label: '订单管理', icon: '📑', roles: ['admin', 'superadmin'] },
-  { href: '/admin/customers', label: '客户管理', icon: '👥', roles: ['admin', 'superadmin'] },
-  { href: '/admin/admins', label: '管理员', icon: '👑', roles: ['admin', 'superadmin'] },
-  { href: '/admin/settings', label: '系统设置', icon: '⚙️', roles: ['admin', 'superadmin'] },
+// 角色层级：superadmin > admin > product
+// superadmin: 完全访问 + 管理员管理
+// admin: 所有页面可访问（除管理员管理）
+// product: 仅产品管理 + 品牌管理
+
+interface NavItem {
+  href: string
+  label: string
+  icon: string
+  roles: string[]
+}
+
+const adminNavItems: NavItem[] = [
+  { href: '/admin/dashboard', label: '仪表盘', icon: '📊', roles: ['superadmin', 'admin', 'product'] },
+  { href: '/admin/home', label: '首页内容', icon: '🏠', roles: ['superadmin', 'admin'] },
+  { href: '/admin/products', label: '产品管理', icon: '📦', roles: ['superadmin', 'admin', 'product'] },
+  { href: '/admin/brands', label: '品牌管理', icon: '🏷️', roles: ['superadmin', 'admin', 'product'] },
+  { href: '/admin/platforms', label: '平台管理', icon: '🤝', roles: ['superadmin', 'admin'] },
+  { href: '/admin/videos', label: 'Youtube 视频', icon: '📺', roles: ['superadmin', 'admin'] },
+  { href: '/admin/orders', label: '订单管理', icon: '📑', roles: ['superadmin', 'admin'] },
+  { href: '/admin/customers', label: '客户管理', icon: '👥', roles: ['superadmin', 'admin'] },
+  { href: '/admin/admins', label: '管理员', icon: '👑', roles: ['superadmin'] },
+  { href: '/admin/settings', label: '系统设置', icon: '⚙️', roles: ['superadmin', 'admin'] },
 ]
 
 function getRoleFromCookie() {
   if (typeof document === 'undefined') return 'admin'
   const match = document.cookie.match(/(?:^|;\s*)admin_role\s*=\s*([^;]*)/)
-  return match ? match[1] : 'admin'
+  const role = match ? match[1] : 'admin'
+  if (role === 'product_admin') return 'product'
+  if (role === 'super_admin') return 'admin'
+  return role
+}
+
+const roleLabels: Record<string, string> = {
+  superadmin: '超级管理员',
+  admin: '管理员',
+  product: '产品管理员',
 }
 
 export default function AdminLayout({ children, active }: { children: React.ReactNode; active?: string }) {
@@ -61,6 +82,9 @@ export default function AdminLayout({ children, active }: { children: React.Reac
           ))}
         </nav>
         <div className="p-3 border-t border-gray-700 mt-2 space-y-1">
+          <div className="px-3 py-1.5 text-xs text-gray-600">
+            当前角色：{roleLabels[role] || role}
+          </div>
           <Link href="/admin/change-password" className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-500 hover:text-white hover:bg-gray-800 rounded-lg transition">
             <span>🔑</span>
             <span>修改密码</span>

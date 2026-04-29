@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 const productAdminAllowed = [
   '/admin/login',
   '/admin/dashboard',
+  '/admin/home',
   '/admin/products',
-  '/admin/categories',
   '/admin/brands',
 ]
 
@@ -33,15 +33,18 @@ export async function middleware(request: NextRequest) {
 
     // 统一角色名（兼容数据库旧数据）
     const normalizedRole = role === 'product_admin' ? 'product'
-      : role === 'super_admin' ? 'admin'
+      : role === 'super_admin' ? 'superadmin'
       : role
 
-    // 超级管理员 - 全部放行
-    if (normalizedRole === 'admin' || normalizedRole === 'superadmin') {
+    // 管理员角色层级：superadmin > admin > editor/viewer > product
+    // 以下角色可访问所有后台页面
+    const fullAccessRoles = ['superadmin', 'admin', 'editor', 'viewer']
+
+    if (fullAccessRoles.includes(normalizedRole)) {
       return NextResponse.next()
     }
 
-    // 产品管理员 - 只能访问产品和仪表盘
+    // 产品管理员 - 只能访问产品和仪表盘等有限页面
     if (normalizedRole === 'product') {
       // 精确 /admin 放行（页面会重定向到 /admin/dashboard）
       if (pathname === '/admin') {
@@ -56,6 +59,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/admin/products', request.url))
     }
 
+    // 未知角色 - 重定向到登录
     return NextResponse.redirect(new URL('/admin/login', request.url))
   } catch {
     return NextResponse.redirect(new URL('/admin/login', request.url))
