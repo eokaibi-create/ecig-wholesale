@@ -8,7 +8,7 @@ export default function ContactPage() {
   const { t } = useLanguage()
   const [contact, setContact] = useState({
     whatsapp: '+13239260829',
-    email: 'EOKAIBI@GMAIL.COM',
+    email: 'sales@vapor-x.com',
     phone: '+1 (323) 926-0829',
     address: 'Los Angeles, CA',
     wechat: 'EA_YONG',
@@ -33,7 +33,7 @@ export default function ContactPage() {
         setContact(prev => ({
           ...prev,
           whatsapp: data.whatsapp || '+13239260829',
-          email: data.email || 'EOKAIBI@GMAIL.COM',
+          email: data.email || 'sales@vapor-x.com',
           phone: data.phone || '+1 (323) 926-0829',
           address: data.address || 'Los Angeles, CA',
           wechat: data.wechat || 'EA_YONG',

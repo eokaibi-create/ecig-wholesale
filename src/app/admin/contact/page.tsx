@@ -161,7 +161,7 @@ export default function AdminContactPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email 邮箱</label>
-                <input type="text" name="email" defaultValue={settings.email || 'EOKAIBI@GMAIL.COM'}
+                <input type="text" name="email" defaultValue={settings.email || 'sales@vapor-x.com'}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none" />
               </div>
               <div>

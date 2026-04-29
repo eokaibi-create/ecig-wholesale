@@ -25,7 +25,7 @@ const settingGroups = [
     desc: '修改网站的各类联系方式',
     keys: [
       { key: 'whatsapp', label: 'WhatsApp 号码', default: '+13239260829' },
-      { key: 'email', label: 'Email 地址', default: 'EOKAIBI@GMAIL.COM' },
+      { key: 'email', label: 'Email 地址', default: 'sales@vapor-x.com' },
       { key: 'phone', label: '电话', default: '+1 (323) 926-0829' },
       { key: 'wechat', label: '微信', default: 'EA_YONG' },
       { key: 'address', label: '公司地址', default: 'Los Angeles, CA' },
@@ -45,7 +45,7 @@ const settingGroups = [
     title: '📧 邮件通知',
     desc: '当客户提交询价时，系统会自动发送邮件通知到以下地址（需要在 Vercel 环境变量中设置 RESEND_API_KEY）',
     keys: [
-      { key: 'admin_email', label: '管理员邮箱（接收通知）', default: 'EOKAIBI@GMAIL.COM' },
+      { key: 'admin_email', label: '管理员邮箱（接收通知）', default: 'sales@vapor-x.com' },
       { key: 'email_from', label: '发件人邮箱', default: 'onboarding@resend.dev' },
     ],
   },

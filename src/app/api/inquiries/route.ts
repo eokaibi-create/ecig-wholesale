@@ -9,7 +9,7 @@ async function getEmailSettings() {
   })
   const map = Object.fromEntries(settings.map(s => [s.key, s.value]))
   return {
-    adminEmail: process.env.ADMIN_EMAIL || map.admin_email || 'EOKAIBI@GMAIL.COM',
+    adminEmail: process.env.ADMIN_EMAIL || map.admin_email || 'sales@vapor-x.com',
     fromEmail: process.env.EMAIL_FROM || map.email_from || 'onboarding@resend.dev',
   }
 }

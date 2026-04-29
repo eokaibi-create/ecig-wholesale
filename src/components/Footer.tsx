@@ -8,7 +8,7 @@ export default function Footer() {
   const { t, lang } = useLanguage()
   const [contact, setContact] = useState({
     whatsapp: '+13239260829',
-    email: 'EOKAIBI@GMAIL.COM',
+    email: 'sales@vapor-x.com',
     phone: '+1 (323) 926-0829',
     address: 'Los Angeles, CA',
     siteName: 'VAPOR-X USA',
@@ -21,7 +21,7 @@ export default function Footer() {
       .then(data => {
         setContact({
           whatsapp: data.whatsapp || '+13239260829',
-          email: data.email || 'EOKAIBI@GMAIL.COM',
+          email: data.email || 'sales@vapor-x.com',
           phone: data.phone || '+1 (323) 926-0829',
           address: data.address || 'Los Angeles, CA',
           siteName: data.siteName || 'VAPOR-X USA',

@@ -3,7 +3,7 @@
 // API Key: Set in Vercel environment variable RESEND_API_KEY
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'EOKAIBI@GMAIL.COM'
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sales@vapor-x.com'
 const EMAIL_FROM = process.env.EMAIL_FROM || 'onboarding@resend.dev'
 
 interface SendEmailParams {
