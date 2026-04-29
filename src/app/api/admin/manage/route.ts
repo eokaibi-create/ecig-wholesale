@@ -62,7 +62,33 @@ export async function PUT(request: NextRequest) {
     if (username !== undefined) data.username = username
     if (email !== undefined) data.email = email
     if (role !== undefined) data.role = role
-    if (password) data.password = await bcrypt.hash(password, 12)
+    if (password) {
+      data.password = await bcrypt.hash(password, 12)
+      // 同步密码到 Vercel 环境变量
+      if (process.env.VERCEL_TOKEN) {
+        try {
+          const vercelProject = process.env.VERCEL_PROJECT_ID || process.env.NEXT_PUBLIC_VERCEL_PROJECT_ID
+          if (vercelProject) {
+            await fetch(`https://api.vercel.com/v1/projects/${vercelProject}/env`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${process.env.VERCEL_TOKEN}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                key: 'ADMIN_PASSWORD',
+                value: password,
+                type: 'encrypted',
+                target: ['production', 'preview', 'development'],
+              }),
+            })
+            console.log('[Admin] Synced password to Vercel env')
+          }
+        } catch (e) {
+          console.warn('[Admin] Failed to sync password to Vercel:', e)
+        }
+      }
+    }
 
     const admin = await prisma.admin.update({
       where: { id: Number(id) },

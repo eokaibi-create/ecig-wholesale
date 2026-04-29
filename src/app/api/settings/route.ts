@@ -34,6 +34,37 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 同步邮件相关设置到 Vercel 环境变量
+    const emailKeys = ['admin_email', 'email_from']
+    const emailEntries = entries.filter(([k]) => emailKeys.includes(k))
+    if (emailEntries.length > 0 && process.env.VERCEL_TOKEN) {
+      try {
+        const vercelProject = process.env.VERCEL_PROJECT_ID || process.env.NEXT_PUBLIC_VERCEL_PROJECT_ID
+        if (vercelProject) {
+          const vercelToken = process.env.VERCEL_TOKEN
+          for (const [key, value] of emailEntries) {
+            const envKey = key === 'admin_email' ? 'ADMIN_EMAIL' : 'EMAIL_FROM'
+            await fetch(`https://api.vercel.com/v1/projects/${vercelProject}/env`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${vercelToken}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                key: envKey,
+                value: String(value),
+                type: 'encrypted',
+                target: ['production', 'preview', 'development'],
+              }),
+            })
+          }
+          console.log('[Settings] Synced email settings to Vercel env')
+        }
+      } catch (e) {
+        console.warn('[Settings] Failed to sync to Vercel:', e)
+      }
+    }
+
     // 检查是 JSON 请求还是表单提交
     if (contentType.includes('application/json')) {
       return NextResponse.json({ success: true })
