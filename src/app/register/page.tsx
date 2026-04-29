@@ -121,7 +121,7 @@ const COUNTRIES = [
 
 export default function RegisterPage() {
   const router = useRouter()
-  const { t, lang } = useLanguage()
+  const { t } = useLanguage()
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -188,9 +188,7 @@ export default function RegisterPage() {
         router.push('/')
         router.refresh()
       } else {
-        setSuccessMsg(lang === 'zh'
-          ? '注册已提交！您的账户正在审核中，审核通过后我们将通知您。'
-          : 'Registration submitted! Your account is pending review. We will notify you once approved.')
+        setSuccessMsg(t('register.success'))
         setForm({
           name: '', email: '', phone: '', countryCode: '+1',
           company: '', companyAddress: '', state: '', country: '',
@@ -205,9 +203,9 @@ export default function RegisterPage() {
   }
 
   const customerTypes = [
-    { value: 'wholesaler', label: lang === 'zh' ? '🏬 批发商' : '🏬 Wholesaler', desc: lang === 'zh' ? '批量采购 & 批发价格' : 'Bulk purchasing & wholesale pricing' },
-    { value: 'store', label: lang === 'zh' ? '🏪 店铺' : '🏪 Store', desc: lang === 'zh' ? '零售店店主' : 'Retail store owner' },
-    { value: 'individual', label: lang === 'zh' ? '👤 个人客户' : '👤 Individual', desc: lang === 'zh' ? '仅限个人使用' : 'Personal use only' },
+    { value: 'wholesaler', label: '🏬 ' + t('register.wholesaler'), desc: t('register.wholesalerDesc') },
+    { value: 'store', label: '🏪 ' + t('register.store'), desc: t('register.storeDesc') },
+    { value: 'individual', label: '👤 ' + t('register.individual'), desc: t('register.individualDesc') },
   ]
 
   const isBusiness = form.type !== 'individual'
@@ -218,7 +216,7 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">{t('register.title')}</h1>
           <p className="text-gray-500 mt-2">
-            {lang === 'zh' ? '加入 VAPOR-X，开启您的批发之旅' : 'Join VAPOR-X and start your wholesale journey'}
+            {t('register.desc')}
           </p>
         </div>
 
@@ -228,7 +226,7 @@ export default function RegisterPage() {
 
         {successMsg && (
           <div className="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
-            <p className="font-medium mb-1">✅ {lang === 'zh' ? '注册已提交' : 'Registration Submitted'}</p>
+            <p className="font-medium mb-1">{t('register.successTitle')}</p>
             <p>{successMsg}</p>
           </div>
         )}
@@ -237,7 +235,7 @@ export default function RegisterPage() {
           {/* Account Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {lang === 'zh' ? '账户类型 *' : 'Account Type *'}
+              {t('register.customerType')} *
             </label>
             <div className="grid grid-cols-3 gap-3">
               {customerTypes.map(ct => (
@@ -267,7 +265,7 @@ export default function RegisterPage() {
               <input type="text" required value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder={lang === 'zh' ? '您的姓名' : 'Your full name'} />
+                placeholder={t('register.namePlaceholder')} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -285,7 +283,7 @@ export default function RegisterPage() {
             <>
               <div className="border-t border-gray-200 pt-4">
                 <p className="text-sm font-semibold text-gray-700 mb-3">
-                  🏢 {lang === 'zh' ? '公司信息（必填）' : 'Company Information (Required)'}
+                  {t('register.companySection')}
                 </p>
               </div>
 
@@ -296,7 +294,7 @@ export default function RegisterPage() {
                 <input type="text" required value={form.company}
                   onChange={e => setForm({ ...form, company: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                  placeholder={lang === 'zh' ? '您的公司名称' : 'Your company name'} />
+                  placeholder={t('register.companyPlaceholder')} />
               </div>
 
               <div>
@@ -306,18 +304,18 @@ export default function RegisterPage() {
                 <input type="text" required value={form.companyAddress}
                   onChange={e => setForm({ ...form, companyAddress: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                  placeholder={lang === 'zh' ? '街道、城市、邮编' : 'Street, city, zip code'} />
+                  placeholder={t('register.addressPlaceholder')} />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {lang === 'zh' ? '国家 *' : 'Country *'}
+                    {t('register.country')} *
                   </label>
                   <select required value={form.country}
                     onChange={e => setForm({ ...form, country: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none bg-white">
-                    <option value="">{lang === 'zh' ? '选择国家' : 'Select country'}</option>
+                    <option value="">{t('register.selectCountry')}</option>
                     {COUNTRIES.map(c => (
                       <option key={c.code} value={c.code}>{c.name}</option>
                     ))}
@@ -364,14 +362,14 @@ export default function RegisterPage() {
               <input type="tel" value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder={lang === 'zh' ? '选填' : 'Optional'} />
+                placeholder={t('register.placeholderOptional')} />
             </div>
           )}
 
           {/* Password */}
           <div className="border-t border-gray-200 pt-4">
             <p className="text-sm font-semibold text-gray-700 mb-3">
-              🔐 {lang === 'zh' ? '登录信息' : 'Login Information'}
+              {t('register.loginInfo')}
             </p>
           </div>
 
@@ -392,7 +390,7 @@ export default function RegisterPage() {
               <input type="password" required value={form.confirm}
                 onChange={e => setForm({ ...form, confirm: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                placeholder={lang === 'zh' ? '再次输入密码' : 'Re-enter password'} />
+                placeholder={t('register.confirmPlaceholder')} />
             </div>
           </div>
 
@@ -401,7 +399,7 @@ export default function RegisterPage() {
             {loading
               ? t('register.loading')
               : form.type === 'individual'
-                ? (lang === 'zh' ? '注册并登录' : 'Register & Login')
+                ? t('register.submit')
                 : t('register.submit')}
           </button>
         </form>

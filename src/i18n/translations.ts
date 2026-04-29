@@ -49,6 +49,17 @@ export type TranslationKey =
   | 'register.companyAddress' | 'register.state' | 'register.wholesaler' | 'register.individual' | 'register.store'
   | 'register.optional' | 'register.emailPlaceholder' | 'register.passwordHint'
   | 'register.phonePlaceholder' | 'register.statePlaceholder' | 'register.addressPlaceholder'
+  | 'register.wholesalerDesc'
+  | 'register.storeDesc'
+  | 'register.individualDesc'
+  | 'register.namePlaceholder'
+  | 'register.companySection'
+  | 'register.companyPlaceholder'
+  | 'register.country'
+  | 'register.selectCountry'
+  | 'register.loginInfo'
+  | 'register.confirmPlaceholder'
+  | 'register.placeholderOptional'
   // 登录
   | 'login.title' | 'login.email' | 'login.password' | 'login.submit'
   | 'login.error' | 'login.noAccount' | 'login.register' | 'login.networkError'
@@ -288,6 +299,22 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'register.phonePlaceholder': '+1 (xxx) xxx-xxxx',
     'register.statePlaceholder': 'CA / NY / TX ...',
     'register.addressPlaceholder': 'Street, City, Zip',
+    'register.wholesalerDesc': '批量采购 & 批发价格',
+    'register.storeDesc': '零售店店主',
+    'register.individualDesc': '个人自用',
+    'register.namePlaceholder': '您的姓名',
+    'register.companySection': '🏢 公司信息（必填）',
+    'register.companyPlaceholder': '您的公司名称',
+    'register.country': '国家',
+    'register.selectCountry': '选择国家',
+    'register.loginInfo': '🔐 登录信息',
+    'register.confirmPlaceholder': '再次输入密码',
+    'register.placeholderOptional': '选填',
+    'register.success': '您的注册已提交！账户正在审核中，审核通过后我们会通知您。',
+    'register.successTitle': '✅ 注册已提交',
+    'register.customerType': '账户类型',
+    'register.error': '注册失败',
+    'register.networkError': '网络错误，请重试',
     'register.submit': '注 册',
     'register.loading': '注册中...',
     'register.haveAccount': '已有账户？',
@@ -606,6 +633,22 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'register.phonePlaceholder': '+1 (xxx) xxx-xxxx',
     'register.statePlaceholder': 'CA / NY / TX ...',
     'register.addressPlaceholder': 'Street, City, Zip',
+    'register.wholesalerDesc': 'Bulk purchasing & wholesale pricing',
+    'register.storeDesc': 'Retail store owner',
+    'register.individualDesc': 'Personal use only',
+    'register.namePlaceholder': 'Your full name',
+    'register.companySection': '🏢 Company Information (Required)',
+    'register.companyPlaceholder': 'Your company name',
+    'register.country': 'Country',
+    'register.selectCountry': 'Select country',
+    'register.loginInfo': '🔐 Login Information',
+    'register.confirmPlaceholder': 'Re-enter password',
+    'register.placeholderOptional': 'Optional',
+    'register.success': 'Registration submitted! Your account is pending review. We will notify you once approved.',
+    'register.successTitle': '✅ Registration Submitted',
+    'register.customerType': 'Account Type',
+    'register.error': 'Registration failed',
+    'register.networkError': 'Network error, please try again',
     'register.submit': 'Register',
     'register.loading': 'Registering...',
     'register.haveAccount': 'Already have an account?',
