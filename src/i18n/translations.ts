@@ -592,6 +592,11 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'contact.wholesaleTip': '💡 Wholesale Tip',
     'contact.minOrder': 'Minimum Order',
     'contact.shippingInfo': 'Free shipping to 48 states, min order $1000',
+    'contact.prefix': 'Reply within 24 hours, looking forward to cooperating with you',
+    'contact.replyHour': 'Reply within 24 hours',
+    'contact.placeholder': 'Please describe the products, quantity and your requirements...',
+    'contact.wechatDesc': 'Scan to add, get product catalog and price list',
+    'contact.shippingText': 'Free shipping to 48 states, min order $1000',
 
     // 购物车
     'cart.title': 'Shopping Cart',
