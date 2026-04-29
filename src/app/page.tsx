@@ -92,15 +92,15 @@ export default async function HomePage() {
   // 英文模式：强制使用英文翻译
   // 中文模式：优先数据库自定义内容，其次默认翻译
   const sections = {
-    heroTitle: lang === 'en' ? t('hero.title') : (settings.hero_title || t('hero.title')),
-    productTitle: lang === 'en' ? t('product.title') : (settings.section_product_title || t('product.title')),
-    productDesc: lang === 'en' ? t('product.desc') : (settings.section_product_desc || t('product.desc')),
-    brandTitle: lang === 'en' ? t('brand.title') : (settings.section_brand_title || t('brand.title')),
-    brandDesc: lang === 'en' ? t('brand.desc') : (settings.section_brand_desc || t('brand.desc')),
-    platformTitle: lang === 'en' ? t('platform.title') : (settings.section_platform_title || t('platform.title')),
-    platformDesc: lang === 'en' ? t('platform.desc') : (settings.section_platform_desc || t('platform.desc')),
-    contactTitle: lang === 'en' ? t('contact.title') : (settings.section_contact_title || t('contact.title')),
-    contactDesc: lang === 'en' ? t('contact.desc') : (settings.section_contact_desc || t('contact.desc')),
+    heroTitle: settings.hero_title || t('hero.title'),
+    productTitle: settings.section_product_title || t('product.title'),
+    productDesc: settings.section_product_desc || t('product.desc'),
+    brandTitle: settings.section_brand_title || t('brand.title'),
+    brandDesc: settings.section_brand_desc || t('brand.desc'),
+    platformTitle: settings.section_platform_title || t('platform.title'),
+    platformDesc: settings.section_platform_desc || t('platform.desc'),
+    contactTitle: settings.section_contact_title || t('contact.title'),
+    contactDesc: settings.section_contact_desc || t('contact.desc'),
   }
 
   const whatsappNum = contact.whatsapp ? contact.whatsapp.replace(/[^0-9]/g, '') : ''
