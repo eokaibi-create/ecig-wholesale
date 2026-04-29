@@ -5,41 +5,7 @@ const prisma = new PrismaClient()
 
 async function main() {
   console.log('🌱 Seeding database...')
-
-  // 管理员：用户名或邮箱已存在则保留，不存在则创建
-  const admins = [
-    { username: 'admin', email: 'admin@vaporx.com', defaultPassword: 'admin123', role: 'admin' },
-    { username: 'YONGADMIN', email: 'EOKAIBI@GMAIL.COM', defaultPassword: 'yong123', role: 'superadmin' },
-    { username: 'product', email: 'product@vaporx.com', defaultPassword: 'product123', role: 'brand' },
-  ]
-
-  for (const admin of admins) {
-    const existing = await prisma.admin.findFirst({
-      where: {
-        OR: [
-          { username: admin.username },
-          { email: admin.email },
-        ],
-      },
-    })
-    if (existing) {
-      console.log(`  ⏭️  ${admin.username} (${admin.role}) 已存在（用户名或邮箱），保留原密码`)
-    } else {
-      const hash = await bcrypt.hash(
-        process.env[`${admin.username}_PASSWORD`] || admin.defaultPassword,
-        12
-      )
-      await prisma.admin.create({
-        data: {
-          username: admin.username,
-          email: admin.email,
-          password: hash,
-          role: admin.role as any,
-        },
-      })
-      console.log(`  ✅ ${admin.username} (${admin.role}) 已创建`)
-    }
-  }
+  console.log('  ⏭️  跳过管理员 seed，保持数据库现有管理员不变')
 
   // 设置
   const settings = [
@@ -98,7 +64,7 @@ async function main() {
   }
   console.log('✅ 示例客户已就绪')
 
-  console.log('\n🎉 Seed 完成！（已有管理员密码保持不变）')
+  console.log('\n🎉 Seed 完成！')
 }
 
 main()
