@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import AdminLayout from '@/components/AdminLayout'
-import { redirect } from 'next/navigation'
+import ContactVisibility from './ContactVisibility'
 
 // 设置分组和友好名称
 const settingGroups = [
@@ -86,6 +86,9 @@ export default async function AdminSettingsPage() {
               </div>
             </div>
           ))}
+
+          {/* 联系方式可见性开关 — 客户端组件 */}
+          <ContactVisibility />
 
           <div className="flex justify-end">
             <button type="submit"

@@ -30,7 +30,7 @@ export default function Footer() {
       .catch(() => {})
   }, [])
 
-  const whatsappNum = contact.whatsapp.replace(/[^0-9]/g, '')
+  const whatsappNum = (contact.whatsapp || "").replace(/[^0-9]/g, '')
 
   const siteDesc = t('footer.siteDesc')
 
