@@ -48,7 +48,7 @@ async function main() {
         username: 'product',
         email: 'product@vaporx.com',
         password: prodHash,
-        role: 'product',
+        role: 'brand',
       },
     })
     console.log('✅ Product admin created (product / ' + (process.env.PRODUCT_PASSWORD || 'product123') + ')')

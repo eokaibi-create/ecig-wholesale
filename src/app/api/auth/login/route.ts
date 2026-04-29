@@ -23,13 +23,18 @@ export async function POST(request: NextRequest) {
       const valid = await bcrypt.compare(password, user.password)
       if (!valid) return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
       
+      // 统一角色名
+      const rawRole = user.role || 'admin'
+      const normalizedRole = rawRole === 'product_admin' || rawRole === 'product' ? 'brand'
+        : rawRole === 'super_admin' ? 'superadmin'
+        : rawRole
+
       // Token 格式: user:id:username:role:timestamp
-      const token = Buffer.from(`user:${user.id}:${user.username}:${user.role || 'admin'}:${Date.now()}`).toString('base64')
+      const token = Buffer.from(`user:${user.id}:${user.username}:${normalizedRole}:${Date.now()}`).toString('base64')
       
-      const response = NextResponse.json({ success: true, token, user: { id: user.id, username: user.username, role: user.role || 'admin' } })
+      const response = NextResponse.json({ success: true, token, user: { id: user.id, username: user.username, role: normalizedRole } })
       response.cookies.set('admin_token', token, { httpOnly: true, path: '/', maxAge: 86400, sameSite: 'lax' })
-          const normalizedOldRole = (user.role || 'admin') === 'product_admin' ? 'product' : (user.role || 'admin') === 'super_admin' ? 'admin' : (user.role || 'admin')
-    response.cookies.set('admin_role', normalizedOldRole, { httpOnly: false, path: '/', maxAge: 86400, sameSite: 'lax' })
+      response.cookies.set('admin_role', normalizedRole, { httpOnly: false, path: '/', maxAge: 86400, sameSite: 'lax' })
       return response
     }
 
@@ -44,7 +49,10 @@ export async function POST(request: NextRequest) {
     if (!valid) return NextResponse.json({ error: 'Incorrect password' }, { status: 401 })
 
     // 统一角色名（兼容旧数据）
-    const normalizedRole = admin.role === 'product_admin' ? 'product' : admin.role === 'super_admin' ? 'admin' : admin.role
+    const rawRole = admin.role || 'admin'
+    const normalizedRole = rawRole === 'product_admin' || rawRole === 'product' ? 'brand'
+      : rawRole === 'super_admin' ? 'superadmin'
+      : rawRole
 
     // Token 格式: admin:id:username:role:timestamp
     const token = Buffer.from(`admin:${admin.id}:${admin.username}:${normalizedRole}:${Date.now()}`).toString('base64')

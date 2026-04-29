@@ -19,9 +19,9 @@ export async function GET(request: NextRequest) {
     const username = parts[2]
     const role = parts[3]
 
-    // 统一角色名
-    const normalizedRole = role === 'product_admin' ? 'product' 
-      : role === 'super_admin' ? 'admin' 
+    // 统一角色名（兼容旧数据）
+    const normalizedRole = role === 'product_admin' || role === 'product' ? 'brand'
+      : role === 'super_admin' ? 'superadmin'
       : role
 
     return NextResponse.json({

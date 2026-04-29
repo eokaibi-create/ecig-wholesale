@@ -32,7 +32,7 @@ export default function AdminDashboardPage() {
   }
 
   if (role === 'superadmin') return <SuperAdminDashboard />
-  if (role === 'product') return <ProductDashboard />
+  if (role === 'brand') return <BrandDashboard />
   return <AdminDashboard />
 }
 
@@ -351,8 +351,8 @@ function AdminDashboard() {
   )
 }
 
-// ==================== 📦 产品管理员工作台 ====================
-function ProductDashboard() {
+// ==================== 🏢 品牌方工作台 ====================
+function BrandDashboard() {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
@@ -382,7 +382,7 @@ function ProductDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-900">📦 产品管理员工作台</h1>
+              <h1 className="text-2xl font-bold text-gray-900">🏢 品牌方工作台</h1>
               <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">product</span>
             </div>
             <p className="text-sm text-gray-500 mt-1">产品数据管理 · 品牌与分类维护</p>

@@ -3,10 +3,10 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-// 角色层级：superadmin > admin > product
+// 角色层级：superadmin > admin > brand
 // superadmin: 完全访问 + 管理员管理
 // admin: 所有页面可访问（除管理员管理）
-// product: 仅产品管理 + 品牌管理
+// brand: 仅产品管理 + 品牌管理
 
 interface NavItem {
   href: string
@@ -16,10 +16,10 @@ interface NavItem {
 }
 
 const adminNavItems: NavItem[] = [
-  { href: '/admin/dashboard', label: '仪表盘', icon: '📊', roles: ['superadmin', 'admin', 'product'] },
+  { href: '/admin/dashboard', label: '仪表盘', icon: '📊', roles: ['superadmin', 'admin', 'brand'] },
   { href: '/admin/home', label: '首页内容', icon: '🏠', roles: ['superadmin', 'admin'] },
-  { href: '/admin/products', label: '产品管理', icon: '📦', roles: ['superadmin', 'admin', 'product'] },
-  { href: '/admin/brands', label: '品牌管理', icon: '🏷️', roles: ['superadmin', 'admin', 'product'] },
+  { href: '/admin/products', label: '产品管理', icon: '📦', roles: ['superadmin', 'admin', 'brand'] },
+  { href: '/admin/brands', label: '品牌管理', icon: '🏷️', roles: ['superadmin', 'admin', 'brand'] },
   { href: '/admin/platforms', label: '平台管理', icon: '🤝', roles: ['superadmin', 'admin'] },
   { href: '/admin/videos', label: 'Youtube 视频', icon: '📺', roles: ['superadmin', 'admin'] },
   { href: '/admin/orders', label: '订单管理', icon: '📑', roles: ['superadmin', 'admin'] },
@@ -32,15 +32,15 @@ function getRoleFromCookie() {
   if (typeof document === 'undefined') return 'admin'
   const match = document.cookie.match(/(?:^|;\s*)admin_role\s*=\s*([^;]*)/)
   const role = match ? match[1] : 'admin'
-  if (role === 'product_admin') return 'product'
-  if (role === 'super_admin') return 'admin'
+  if (role === 'product_admin' || role === 'product') return 'brand'
+  if (role === 'super_admin') return 'superadmin'
   return role
 }
 
 const roleLabels: Record<string, string> = {
   superadmin: '超级管理员',
   admin: '管理员',
-  product: '产品管理员',
+  brand: '品牌方',
 }
 
 export default function AdminLayout({ children, active }: { children: React.ReactNode; active?: string }) {
@@ -57,12 +57,12 @@ export default function AdminLayout({ children, active }: { children: React.Reac
       {/* 左侧边栏 */}
       <aside className="w-60 bg-gray-900 text-white flex-shrink-0 overflow-y-auto hidden lg:block">
         <div className="p-4 border-b border-gray-700">
-          <Link href={role === 'product' ? '/admin/products' : '/admin/dashboard'} className="flex items-center space-x-2">
+          <Link href={role === 'brand' ? '/admin/products' : '/admin/dashboard'} className="flex items-center space-x-2">
             <span className="text-2xl">⚡</span>
             <span className="font-bold text-amber-400 text-lg">VAPOR-X</span>
           </Link>
           <p className="text-xs text-gray-500 mt-0.5">
-            {role === 'product' ? '产品管理平台' : '批发管理平台'}
+            {role === 'brand' ? '品牌方工作台' : '批发管理平台'}
           </p>
         </div>
         <nav className="p-2 space-y-0.5">
@@ -103,7 +103,7 @@ export default function AdminLayout({ children, active }: { children: React.Reac
       {/* 移动端导航 */}
       <nav className="lg:hidden bg-gray-900 text-white fixed top-0 left-0 right-0 z-50">
         <div className="flex items-center justify-between px-4 h-12">
-          <Link href={role === 'product' ? '/admin/products' : '/admin/dashboard'} className="font-bold text-amber-400">VAPOR-X 后台</Link>
+          <Link href={role === 'brand' ? '/admin/products' : '/admin/dashboard'} className="font-bold text-amber-400">VAPOR-X 后台</Link>
           <div className="flex space-x-3 overflow-x-auto no-scrollbar">
             {allowedNavItems.slice(0, 5).map((item) => (
               <Link

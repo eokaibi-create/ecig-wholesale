@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// 产品管理员允许的路由前缀
-const productAdminAllowed = [
+// 品牌方（原产品管理员）允许的路由前缀
+const brandAllowedRoutes = [
   '/admin/login',
   '/admin/dashboard',
   '/admin/home',
@@ -32,25 +32,24 @@ export async function middleware(request: NextRequest) {
     const role = parts[3]
 
     // 统一角色名（兼容数据库旧数据）
-    const normalizedRole = role === 'product_admin' ? 'product'
+    const normalizedRole = role === 'product_admin' ? 'brand'
+      : role === 'product' ? 'brand'
       : role === 'super_admin' ? 'superadmin'
       : role
 
-    // 管理员角色层级：superadmin > admin > editor/viewer > product
-    // 以下角色可访问所有后台页面
-    const fullAccessRoles = ['superadmin', 'admin', 'editor', 'viewer']
+    // superadmin 和 admin 可访问所有后台页面
+    const fullAccessRoles = ['superadmin', 'admin']
 
     if (fullAccessRoles.includes(normalizedRole)) {
       return NextResponse.next()
     }
 
-    // 产品管理员 - 只能访问产品和仪表盘等有限页面
-    if (normalizedRole === 'product') {
-      // 精确 /admin 放行（页面会重定向到 /admin/dashboard）
+    // 品牌方 - 只能访问产品和仪表盘等有限页面
+    if (normalizedRole === 'brand') {
       if (pathname === '/admin') {
         return NextResponse.next()
       }
-      const allowed = productAdminAllowed.some(prefix => 
+      const allowed = brandAllowedRoutes.some(prefix => 
         pathname === prefix || pathname.startsWith(prefix + '/')
       )
       if (allowed) {

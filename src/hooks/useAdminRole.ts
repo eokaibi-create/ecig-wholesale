@@ -12,35 +12,31 @@ export function useAdminRole() {
   useEffect(() => {
     const match = document.cookie.match(/(?:^|;\s*)admin_role\s*=\s*([^;]*)/)
     const rawRole = match ? match[1] : 'admin'
-    // 统一旧角色名
-    const normalized = rawRole === 'product_admin' ? 'product'
-      : rawRole === 'super_admin' ? 'admin'
+    // 统一旧角色名（兼容数据库旧数据）
+    const normalized = rawRole === 'product_admin' || rawRole === 'product' ? 'brand'
+      : rawRole === 'super_admin' ? 'superadmin'
       : rawRole
     setRole(normalized)
   }, [])
 
   const isSuperadmin = role === 'superadmin'
   const isAdmin = role === 'admin'
-  const isEditor = role === 'editor'
-  const isViewer = role === 'viewer'
-  const isProduct = role === 'product'
+  const isBrand = role === 'brand'
 
-  // 是否可以编辑内容（增删改）
-  const canEdit = isSuperadmin || isAdmin || isEditor || isProduct
+  // 是否可以编辑内容（增删改）- 除 viewer 外都可以
+  const canEdit = isSuperadmin || isAdmin || isBrand
 
-  // 是否可以管理管理员
+  // 是否可以管理管理员 - 仅 superadmin
   const canManageAdmins = isSuperadmin
 
-  // 是否可以访问系统设置
+  // 是否可以访问系统设置 - superadmin + admin
   const canAccessSettings = isSuperadmin || isAdmin
 
   // 角色中文名
   const roleLabel: Record<string, string> = {
     superadmin: '超级管理员',
     admin: '管理员',
-    editor: '编辑',
-    viewer: '仅查看',
-    product: '产品管理员',
+    brand: '品牌方',
   }
 
   return {
@@ -48,9 +44,7 @@ export function useAdminRole() {
     roleLabel: roleLabel[role] || role,
     isSuperadmin,
     isAdmin,
-    isEditor,
-    isViewer,
-    isProduct,
+    isBrand,
     canEdit,
     canManageAdmins,
     canAccessSettings,

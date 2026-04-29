@@ -43,7 +43,9 @@ export default function AdminAdminsPage() {
 
   const startEdit = (a: any) => {
     setEditingId(a.id)
-    setEditForm({ username: a.username, email: a.email, password: '', role: a.role })
+    // 兼容旧角色名
+    const normalizedRole = a.role === 'product' ? 'brand' : a.role === 'editor' || a.role === 'viewer' ? 'admin' : a.role
+    setEditForm({ username: a.username, email: a.email, password: '', role: normalizedRole })
   }
 
   const saveEdit = async (id: number) => {
@@ -69,8 +71,18 @@ export default function AdminAdminsPage() {
     fetchAdmins()
   }
 
+  // 角色显示名和标签样式
+  const getRoleBadge = (role: string) => {
+    switch (role) {
+      case 'superadmin': return { label: '超级管理员', class: 'bg-red-100 text-red-700' }
+      case 'admin': return { label: '管理员', class: 'bg-purple-100 text-purple-700' }
+      case 'brand': return { label: '品牌方', class: 'bg-blue-100 text-blue-700' }
+      default: return { label: role, class: 'bg-gray-100 text-gray-600' }
+    }
+  }
+
   return (
-    <AdminLayout active="管理员管理">
+    <AdminLayout active="管理员">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -98,9 +110,7 @@ export default function AdminAdminsPage() {
                 className="px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-amber-500">
                 <option value="admin">管理员</option>
                 <option value="superadmin">超级管理员</option>
-                <option value="product">产品管理员</option>
-                <option value="editor">编辑</option>
-                <option value="viewer">仅查看</option>
+                <option value="brand">品牌方</option>
               </select>
               <button type="submit" className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg col-span-full md:col-span-1">添加</button>
             </form>
@@ -125,82 +135,61 @@ export default function AdminAdminsPage() {
               ) : admins.length === 0 ? (
                 <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400">暂无管理员</td></tr>
               ) : (
-                admins.map(a => (
-                  <tr key={a.id} className="hover:bg-gray-50">
-                    {editingId === a.id ? (
-                      <>
-                        <td className="px-4 py-2 text-sm text-gray-500">{a.id}</td>
-                        <td className="px-4 py-2">
-                          <input value={editForm.username} onChange={e => setEditForm({...editForm, username: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm" placeholder="用户名" />
-                        </td>
-                        <td className="px-4 py-2">
-                          <input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm" placeholder="邮箱" />
-                        </td>
-                        <td className="px-4 py-2">
-                          <select value={editForm.role} onChange={e => setEditForm({...editForm, role: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm">
-                            <option value="admin">管理员</option>
-                            <option value="superadmin">超级管理员</option>
-                            <option value="product">产品管理员</option>
-                            <option value="editor">编辑</option>
-                            <option value="viewer">仅查看</option>
-                          </select>
-                        </td>
-                        <td className="px-4 py-2 text-sm text-gray-400">{new Date(a.createdAt).toLocaleDateString()}</td>
-                        <td className="px-4 py-2 text-right space-x-2">
-                          <button onClick={() => saveEdit(a.id)} className="text-sm text-green-600 hover:text-green-700 font-medium">保存</button>
-                          <button onClick={() => setEditingId(null)} className="text-sm text-gray-500 hover:text-gray-600">取消</button>
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="px-4 py-3 text-sm text-gray-500">{a.id}</td>
-                        <td className="px-4 py-3 font-medium text-gray-900">{a.username}</td>
-                        <td className="px-4 py-3 text-sm text-gray-500">{a.email}</td>
-                        <td className="px-4 py-3">
-                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                            a.role === 'superadmin' ? 'bg-red-100 text-red-700' :
-                            a.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                            a.role === 'product' ? 'bg-blue-100 text-blue-700' :
-                            a.role === 'editor' ? 'bg-amber-100 text-amber-700' :
-                            'bg-gray-100 text-gray-600'
-                          }`}>
-                            {a.role === 'superadmin' ? '超级管理员' :
-                             a.role === 'admin' ? '管理员' :
-                             a.role === 'product' ? '产品管理员' :
-                             a.role === 'editor' ? '编辑' : '仅查看'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-400">{new Date(a.createdAt).toLocaleDateString()}</td>
-                        <td className="px-4 py-3 text-right space-x-3">
-                          <button onClick={() => startEdit(a)} className="text-sm text-amber-600 hover:text-amber-700 font-medium">编辑</button>
-                          <button onClick={() => handleDelete(a.id)} className="text-sm text-red-500 hover:text-red-600">删除</button>
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                ))
+                admins.map(a => {
+                  // 兼容旧角色名显示
+                  const displayRole = a.role === 'product' ? 'brand' : a.role === 'editor' || a.role === 'viewer' ? 'admin' : a.role
+                  const badge = getRoleBadge(displayRole)
+                  return (
+                    <tr key={a.id} className="hover:bg-gray-50">
+                      {editingId === a.id ? (
+                        <>
+                          <td className="px-4 py-2 text-sm text-gray-500">{a.id}</td>
+                          <td className="px-4 py-2">
+                            <input value={editForm.username} onChange={e => setEditForm({...editForm, username: e.target.value})}
+                              className="w-full px-2 py-1 border rounded text-sm" placeholder="用户名" />
+                          </td>
+                          <td className="px-4 py-2">
+                            <input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})}
+                              className="w-full px-2 py-1 border rounded text-sm" placeholder="邮箱" />
+                          </td>
+                          <td className="px-4 py-2">
+                            <select value={editForm.role} onChange={e => setEditForm({...editForm, role: e.target.value})}
+                              className="w-full px-2 py-1 border rounded text-sm">
+                              <option value="admin">管理员</option>
+                              <option value="superadmin">超级管理员</option>
+                              <option value="brand">品牌方</option>
+                            </select>
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-400">{new Date(a.createdAt).toLocaleDateString()}</td>
+                          <td className="px-4 py-2 text-right space-x-2">
+                            <button onClick={() => saveEdit(a.id)} className="text-sm text-green-600 hover:text-green-700 font-medium">保存</button>
+                            <button onClick={() => setEditingId(null)} className="text-sm text-gray-500 hover:text-gray-600">取消</button>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="px-4 py-3 text-sm text-gray-500">{a.id}</td>
+                          <td className="px-4 py-3 font-medium text-gray-900">{a.username}</td>
+                          <td className="px-4 py-3 text-sm text-gray-500">{a.email}</td>
+                          <td className="px-4 py-3">
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${badge.class}`}>
+                              {badge.label}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-400">{new Date(a.createdAt).toLocaleDateString()}</td>
+                          <td className="px-4 py-3 text-right space-x-3">
+                            <button onClick={() => startEdit(a)} className="text-sm text-amber-600 hover:text-amber-700 font-medium">编辑</button>
+                            <button onClick={() => handleDelete(a.id)} className="text-sm text-red-500 hover:text-red-600">删除</button>
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  )
+                })
               )}
             </tbody>
           </table>
         </div>
-
-        {editingId && (
-          <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-sm font-medium text-amber-800 mb-2">🔑 修改密码</p>
-            <div className="flex gap-3">
-              <input type="password" value={editForm.password} onChange={e => setEditForm({...editForm, password: e.target.value})}
-                placeholder="输入新密码（留空不修改）" className="flex-1 px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-amber-500" />
-              <button onClick={() => {
-                const id = editingId
-                if (!editForm.password) { setMessage('⚠️ 请输入新密码'); setTimeout(() => setMessage(''), 3000); return }
-                saveEdit(id)
-              }} className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black text-sm font-semibold rounded-lg">更新密码</button>
-            </div>
-          </div>
-        )}
       </div>
     </AdminLayout>
   )
