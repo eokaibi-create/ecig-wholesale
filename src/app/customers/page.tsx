@@ -188,7 +188,7 @@ export default async function CustomersPage() {
       <section className="py-16 bg-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-8">
-            {isEn ? 'Contact Us' : '联系我们'}
+            {serverT('contact.title' as any, lang)}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 bg-gray-800 rounded-xl">

@@ -77,7 +77,7 @@ export default function AdminContactPage() {
 
   if (loading) {
     return (
-      <AdminLayout active="联系我们">
+      <AdminLayout active="contact">
         <div className="flex items-center justify-center h-64">
           <div className="text-gray-400">加载中...</div>
         </div>
@@ -90,8 +90,8 @@ export default function AdminContactPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">📞 联系我们管理</h1>
-            <p className="text-sm text-gray-500 mt-1">管理联系方式和可见性设置</p>
+            <h1 className="text-2xl font-bold text-gray-900">📞 Contact Us Management</h1>
+            <p className="text-sm text-gray-500 mt-1">Manage contact info and visibility settings</p>
           </div>
           <Link href="/admin/home" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm transition">
             ← 返回首页内容

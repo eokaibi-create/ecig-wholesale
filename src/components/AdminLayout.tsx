@@ -14,7 +14,7 @@ const adminNavItems = [
   { href: '/admin/platforms', label: '平台管理', icon: '🤝', roles: ['admin', 'superadmin'] },
   { href: '/admin/videos', label: 'Youtube 视频', icon: '📺', roles: ['admin', 'superadmin'] },
   { href: '/admin/sections', label: '区块标题', icon: '📑', roles: ['admin', 'superadmin'] },
-  { href: '/admin/contact', label: '联系我们', icon: '📞', roles: ['admin', 'superadmin'] },
+  { href: '/admin/contact', label: 'Contact Us', icon: '📞', roles: ['admin', 'superadmin'] },
   { href: '/admin/inquiries', label: '询价管理', icon: '📋', roles: ['admin', 'superadmin'] },
   { href: '/admin/orders', label: '订单管理', icon: '📑', roles: ['admin', 'superadmin'] },
   { href: '/admin/customers', label: '客户管理', icon: '👥', roles: ['admin', 'superadmin'] },

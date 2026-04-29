@@ -16,8 +16,8 @@ const settingGroups = [
       { key: 'section_brand_desc', label: '合作品牌描述', default: 'VAPOR-X 与全球顶级电子烟品牌战略合作' },
       { key: 'section_platform_title', label: '合作平台标题', default: '合作平台' },
       { key: 'section_platform_desc', label: '合作平台描述', default: '多平台布局，助力您的电子烟业务全球拓展' },
-      { key: 'section_contact_title', label: '联系我们标题', default: '联系我们' },
-      { key: 'section_contact_desc', label: '联系我们描述', default: '欢迎联系我们获取最新批发报价和产品信息' },
+      { key: 'section_contact_title', label: 'Contact Us Title', default: 'Contact Us' },
+      { key: 'section_contact_desc', label: 'Contact Us Description', default: 'Reach out for wholesale pricing and product info' },
     ],
   },
   {

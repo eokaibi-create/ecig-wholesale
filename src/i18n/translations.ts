@@ -27,7 +27,7 @@ export type TranslationKey =
   // 联系
   | 'contact.title' | 'contact.desc' | 'contact.whatsapp' | 'contact.email'
   | 'contact.phone' | 'contact.address' | 'contact.wechat'
-  | 'contact.inquire' | 'contact.inquireDesc' | 'contact.name'
+  | 'contact.inquire' | 'contact.inquireDesc' | 'contact.name' | 'contact.bulkOrder'
   | 'contact.message' | 'contact.send' | 'contact.subscribed'
   | 'contact.company' | 'contact.submitInquiry'
   | 'contact.success' | 'contact.successDesc' | 'contact.error' | 'contact.errorDesc'
@@ -229,8 +229,8 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'video.desc': '了解 VAPOR-X 的产品与服务',
 
     // 联系
-    'contact.title': '联系我们',
-    'contact.desc': '欢迎联系我们获取最新批发报价和产品信息',
+    'contact.title': 'Contact Us',
+    'contact.desc': 'Reach out for wholesale pricing and product info',
     'contact.whatsapp': 'WhatsApp',
     'contact.email': '邮箱',
     'contact.phone': '电话',
@@ -238,6 +238,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'contact.wechat': '微信',
     'contact.inquire': '批发询价',
     'contact.inquireDesc': '留下您的信息，我们将在24小时内回复',
+    'contact.bulkOrder': '联系我们获取批发报价',
     'contact.name': '您的姓名',
     'contact.message': '询价内容（产品/数量/要求等）',
     'contact.send': '发送询价 →',
@@ -577,6 +578,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'contact.wechat': 'WeChat',
     'contact.inquire': 'Wholesale Inquiry',
     'contact.inquireDesc': 'Leave your info and we will reply within 24 hours',
+    'contact.bulkOrder': 'Contact Us for Bulk Orders',
     'contact.name': 'Your Name',
     'contact.message': 'Inquiry details (product/qty/requirements)',
     'contact.send': 'Send Inquiry →',

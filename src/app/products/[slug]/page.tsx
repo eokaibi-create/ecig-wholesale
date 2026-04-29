@@ -233,7 +233,7 @@ export default function ProductDetailPage() {
             {/* 联系客服询价 */}
             <div className="mt-6 p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl">
               <h3 className="font-semibold text-amber-800 mb-3">
-                💬 {lang === 'en' ? 'Contact Us for Bulk Orders' : '联系我们获取批发报价'}
+                💬 {t('contact.bulkOrder')}
               </h3>
               <p className="text-sm text-gray-600 mb-4">
                 {t('contact.inquireDesc')}

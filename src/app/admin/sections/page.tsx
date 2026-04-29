@@ -45,8 +45,8 @@ export default function AdminSectionsPage() {
     { key: 'section_brand_desc', label: '合作品牌描述', desc: '品牌展示区域副标题' },
     { key: 'section_platform_title', label: '🌐 合作平台标题', desc: '平台展示区域标题' },
     { key: 'section_platform_desc', label: '合作平台描述', desc: '平台展示区域副标题' },
-    { key: 'section_contact_title', label: '📞 联系我们标题', desc: '联系区域标题' },
-    { key: 'section_contact_desc', label: '联系我们描述', desc: '联系区域副标题' },
+    { key: 'section_contact_title', label: '📞 Contact Us Title', desc: 'Contact section heading' },
+    { key: 'section_contact_desc', label: 'Contact Us Description', desc: 'Contact section subtitle' },
   ]
 
   return (
