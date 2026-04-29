@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { requireAdmin } from '@/lib/auth'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
   try {
     const admins = await prisma.admin.findMany({
       select: { id: true, username: true, email: true, role: true, createdAt: true },
