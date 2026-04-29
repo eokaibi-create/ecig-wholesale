@@ -6,12 +6,22 @@ import Link from 'next/link'
 
 export default function ContactPage() {
   const { t } = useLanguage()
-  const [contact, setContact] = useState({
-    whatsapp: '+13239260829',
-    email: 'sales@vapor-x.com',
-    phone: '+1 (323) 926-0829',
-    address: 'Los Angeles, CA',
-    wechat: 'EA_YONG',
+  const [contact, setContact] = useState<{
+    whatsapp: string | null
+    email: string | null
+    phone: string | null
+    address: string | null
+    wechat: string | null
+    siteName: string
+    minOrder: string
+    shippingInfo: string
+    isLoggedIn: boolean
+  }>({
+    whatsapp: null,
+    email: null,
+    phone: null,
+    address: null,
+    wechat: null,
     siteName: 'VAPOR-X USA',
     minOrder: '500',
     shippingInfo: '全美48州免运费，订单满$500起批',
@@ -30,18 +40,17 @@ export default function ContactPage() {
     fetch('/api/contact')
       .then(res => res.json())
       .then(data => {
-        setContact(prev => ({
-          ...prev,
-          whatsapp: data.whatsapp || '+13239260829',
-          email: data.email || 'sales@vapor-x.com',
-          phone: data.phone || '+1 (323) 926-0829',
-          address: data.address || 'Los Angeles, CA',
-          wechat: data.wechat || 'EA_YONG',
+        setContact({
+          whatsapp: data.whatsapp,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+          wechat: data.wechat,
           siteName: data.siteName || 'VAPOR-X USA',
           minOrder: data.minOrder || '500',
           shippingInfo: data.shippingInfo || '全美48州免运费，订单满$500起批',
           isLoggedIn: data.isLoggedIn || false,
-        }))
+        })
         setLoading(false)
       })
       .catch(() => setLoading(false))
