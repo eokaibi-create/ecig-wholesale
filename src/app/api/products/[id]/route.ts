@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 
 export async function GET(
   _request: NextRequest,
@@ -20,6 +21,11 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const { id } = await params
     const data = await request.json()
@@ -56,9 +62,14 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const { id } = await params
     await prisma.product.delete({ where: { id: Number(id) } })

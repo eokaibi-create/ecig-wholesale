@@ -1,7 +1,13 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const { id } = await params
     const data = await request.json()
@@ -12,7 +18,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const { id } = await params
     await prisma.order.delete({ where: { id: Number(id) } })

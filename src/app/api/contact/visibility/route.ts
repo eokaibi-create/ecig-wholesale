@@ -1,8 +1,14 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 
 // 保存联系资料可见性设置
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const body = await request.json()
     

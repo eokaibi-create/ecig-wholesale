@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 import { sendEmail, inquiryNotificationHtml, adminReplyHtml } from '@/lib/email'
 
 // Read email settings from database
@@ -14,7 +15,7 @@ async function getEmailSettings() {
   }
 }
 
-// POST - Submit inquiry from frontend => save to DB + email admin
+// POST - Submit inquiry from frontend => save to DB + email admin (公开接口)
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
@@ -67,8 +68,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET - List inquiries (support single inquiry filter)
+// GET - List inquiries (需管理员权限)
 export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
 
@@ -88,8 +94,13 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(inquiries)
 }
 
-// PUT - Update inquiry (status / reply / notes), optionally send email to customer
+// PUT - Update inquiry (需管理员权限)
 export async function PUT(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const body = await request.json()
     const { id, status, adminReply, adminNote, sendEmailToCustomer } = body
@@ -136,8 +147,13 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Delete inquiry
+// DELETE - Delete inquiry (需管理员权限)
 export async function DELETE(request: NextRequest) {
+  const auth = await requireAdmin(request)
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
