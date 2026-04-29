@@ -6,55 +6,45 @@ const prisma = new PrismaClient()
 async function main() {
   // 创建超级管理员 (Admin 表)
   const adminHash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 12)
-  // 只在用户不存在时创建，避免每次部署重置密码
-  const existingAdmin = await prisma.admin.findUnique({ where: { username: 'admin' } })
-  if (!existingAdmin) {
-    await prisma.admin.create({
-      data: {
-        username: 'admin',
-        email: 'admin@vaporx.com',
-        password: adminHash,
-        role: 'admin',
-      },
-    })
-    console.log('✅ Admin created (admin / ' + (process.env.ADMIN_PASSWORD || 'admin123') + ')')
-  } else {
-    console.log('⏭️ Admin already exists, skipping')
-  }
+  await prisma.admin.upsert({
+    where: { email: 'admin@vaporx.com' },
+    update: { password: adminHash },
+    create: {
+      username: 'admin',
+      email: 'admin@vaporx.com',
+      password: adminHash,
+      role: 'admin',
+    },
+  })
+  console.log('✅ Admin: admin / ' + (process.env.ADMIN_PASSWORD || 'admin123'))
 
   // 创建 YONGADMIN 超级管理员
   const yongHash = await bcrypt.hash(process.env.YONGADMIN_PASSWORD || 'yong123', 12)
-  const existingYong = await prisma.admin.findUnique({ where: { username: 'YONGADMIN' } })
-  if (!existingYong) {
-    await prisma.admin.create({
-      data: {
-        username: 'YONGADMIN',
-        email: 'EOKAIBI@GMAIL.COM',
-        password: yongHash,
-        role: 'admin',
-      },
-    })
-    console.log('✅ YONGADMIN created (YONGADMIN / ' + (process.env.YONGADMIN_PASSWORD || 'yong123') + ')')
-  } else {
-    console.log('⏭️ YONGADMIN already exists, skipping')
-  }
+  await prisma.admin.upsert({
+    where: { email: 'EOKAIBI@GMAIL.COM' },
+    update: { password: yongHash },
+    create: {
+      username: 'YONGADMIN',
+      email: 'EOKAIBI@GMAIL.COM',
+      password: yongHash,
+      role: 'superadmin',
+    },
+  })
+  console.log('✅ YONGADMIN: YONGADMIN / ' + (process.env.YONGADMIN_PASSWORD || 'yong123'))
 
-  // 创建产品管理员（仅可上传产品）
+  // 创建品牌方（仅可上传产品）
   const prodHash = await bcrypt.hash(process.env.PRODUCT_PASSWORD || 'product123', 12)
-  const existingProd = await prisma.admin.findUnique({ where: { username: 'product' } })
-  if (!existingProd) {
-    await prisma.admin.create({
-      data: {
-        username: 'product',
-        email: 'product@vaporx.com',
-        password: prodHash,
-        role: 'brand',
-      },
-    })
-    console.log('✅ Product admin created (product / ' + (process.env.PRODUCT_PASSWORD || 'product123') + ')')
-  } else {
-    console.log('⏭️ Product admin already exists, skipping')
-  }
+  await prisma.admin.upsert({
+    where: { email: 'product@vaporx.com' },
+    update: { password: prodHash },
+    create: {
+      username: 'product',
+      email: 'product@vaporx.com',
+      password: prodHash,
+      role: 'brand',
+    },
+  })
+  console.log('✅ Brand: product / ' + (process.env.PRODUCT_PASSWORD || 'product123'))
 
   // 清理旧 User 表残留
   const oldUsers = await prisma.user.findMany()
@@ -124,7 +114,7 @@ async function main() {
   console.log('\n🎉 Seed completed!')
   console.log('   Admin:     admin / ' + (process.env.ADMIN_PASSWORD || 'admin123'))
   console.log('   YONGADMIN: YONGADMIN / ' + (process.env.YONGADMIN_PASSWORD || 'yong123'))
-  console.log('   Product:   product / ' + (process.env.PRODUCT_PASSWORD || 'product123'))
+  console.log('   Brand:     product / ' + (process.env.PRODUCT_PASSWORD || 'product123'))
 }
 
 main()
