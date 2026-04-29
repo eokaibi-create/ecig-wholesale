@@ -12,10 +12,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please enter username/email and password' }, { status: 400 })
     }
 
-    if (password.length < 8) {
-      return NextResponse.json({ error: '密码长度至少 8 位' }, { status: 400 })
-    }
-
     // 先查 User 表（旧）
     let user: any = null
     try {
