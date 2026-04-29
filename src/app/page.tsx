@@ -90,11 +90,12 @@ export default async function HomePage() {
   const customerType = await getCustomerTypeFromCookie()
   const { categories, brands, products, platforms, settings, heroItems, videos } = await getData()
 
-  const heroTitle = settings.hero_title || serverT('hero.title' as any, lang)
-  const productTitle = settings.section_product_title || serverT('product.title' as any, lang)
-  const brandTitle = settings.section_brand_title || serverT('brand.title' as any, lang)
-  const platformTitle = settings.section_platform_title || serverT('platform.title' as any, lang)
-  const contactTitle = settings.section_contact_title || serverT('contact.title' as any, lang)
+  // 英文模式下优先使用翻译，中文模式下 settings 中的值优先
+  const heroTitle = lang === 'en' ? (serverT('hero.title' as any, lang) || settings.hero_title) : (settings.hero_title || serverT('hero.title' as any, lang))
+  const productTitle = lang === 'en' ? (serverT('product.title' as any, lang) || settings.section_product_title) : (settings.section_product_title || serverT('product.title' as any, lang))
+  const brandTitle = lang === 'en' ? (serverT('brand.title' as any, lang) || settings.section_brand_title) : (settings.section_brand_title || serverT('brand.title' as any, lang))
+  const platformTitle = lang === 'en' ? (serverT('platform.title' as any, lang) || settings.section_platform_title) : (settings.section_platform_title || serverT('platform.title' as any, lang))
+  const contactTitle = lang === 'en' ? (serverT('contact.title' as any, lang) || settings.section_contact_title) : (settings.section_contact_title || serverT('contact.title' as any, lang))
 
   return (
     <div>
