@@ -4,22 +4,11 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  // 获取现有管理员列表
-  const existingAdmins = await prisma.admin.findMany()
-  console.log(`📋 Found ${existingAdmins.length} existing admins:`)
-  for (const a of existingAdmins) {
-    console.log(`   - ${a.username} / ${a.email} / role: ${a.role}`)
-  }
+  // 删除所有现有管理员，避免唯一约束冲突
+  await prisma.admin.deleteMany()
+  console.log('🗑️ Deleted all existing admins')
 
-  // 先删除已有的 admin/product 账户（email 和 username 都有唯一约束，避免冲突）
-  for (const a of existingAdmins) {
-    if (['admin', 'YONGADMIN', 'product'].includes(a.username)) {
-      await prisma.admin.delete({ where: { id: a.id } })
-      console.log(`   🗑️ Deleted: ${a.username}`)
-    }
-  }
-
-  // 重新创建
+  // 创建超级管理员
   const adminHash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 12)
   await prisma.admin.create({
     data: {
@@ -31,6 +20,7 @@ async function main() {
   })
   console.log('✅ Admin: admin / ' + (process.env.ADMIN_PASSWORD || 'admin123'))
 
+  // 创建 YONGADMIN 超级管理员
   const yongHash = await bcrypt.hash(process.env.YONGADMIN_PASSWORD || 'yong123', 12)
   await prisma.admin.create({
     data: {
@@ -42,6 +32,7 @@ async function main() {
   })
   console.log('✅ YONGADMIN: YONGADMIN / ' + (process.env.YONGADMIN_PASSWORD || 'yong123'))
 
+  // 创建品牌方
   const prodHash = await bcrypt.hash(process.env.PRODUCT_PASSWORD || 'product123', 12)
   await prisma.admin.create({
     data: {
