@@ -18,7 +18,25 @@ export default function AdminBrandsPage() {
   const [form, setForm] = useState({ name: '', slug: '', logo: '', sortOrder: 0 })
   const [message, setMessage] = useState('')
   const [uploading, setUploading] = useState(false)
+  const [fixing, setFixing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const fixBase64Logos = async () => {
+    if (!confirm("将把 base64 格式的 Logo 上传到 Cloudinary，是否继续？")) return
+    setFixing(true)
+    try {
+      const res = await fetch("/api/fix-brand-logos", { method: "POST" })
+      const data = await res.json()
+      const msg = data.fixed > 0 
+        ? "✅ 已修复 " + data.fixed + " 个品牌 Logo"
+        : "ℹ️ 没有需要修复的 Logo"
+      showMsg(msg, "success")
+      fetchBrands()
+    } catch {
+      showMsg("❌ 修复失败", "error")
+    }
+    setFixing(false)
+  }
 
   const fetchBrands = async () => {
     const res = await fetch('/api/brands')
@@ -107,7 +125,13 @@ export default function AdminBrandsPage() {
   return (
     <AdminLayout active="品牌管理">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">🏷️ 品牌管理</h1>
+        <div className="flex items-center justify-between mb-2">
+            <h1 className="text-2xl font-bold text-gray-900">🏷️ 品牌管理</h1>
+            <button onClick={fixBase64Logos} disabled={fixing}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white text-sm font-medium rounded-lg transition">
+              {fixing ? "⏳ 修复中..." : "🔄 优化Logo（上传到CDN）"}
+            </button>
+          </div>
         <p className="text-sm text-gray-500 mb-6">Logo支持文件上传或URL链接</p>
 
         {message && (
