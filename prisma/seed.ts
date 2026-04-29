@@ -4,12 +4,25 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  // 创建超级管理员 (Admin 表)
+  // 获取现有管理员列表
+  const existingAdmins = await prisma.admin.findMany()
+  console.log(`📋 Found ${existingAdmins.length} existing admins:`)
+  for (const a of existingAdmins) {
+    console.log(`   - ${a.username} / ${a.email} / role: ${a.role}`)
+  }
+
+  // 先删除已有的 admin/product 账户（email 和 username 都有唯一约束，避免冲突）
+  for (const a of existingAdmins) {
+    if (['admin', 'YONGADMIN', 'product'].includes(a.username)) {
+      await prisma.admin.delete({ where: { id: a.id } })
+      console.log(`   🗑️ Deleted: ${a.username}`)
+    }
+  }
+
+  // 重新创建
   const adminHash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 12)
-  await prisma.admin.upsert({
-    where: { email: 'admin@vaporx.com' },
-    update: { password: adminHash },
-    create: {
+  await prisma.admin.create({
+    data: {
       username: 'admin',
       email: 'admin@vaporx.com',
       password: adminHash,
@@ -18,12 +31,9 @@ async function main() {
   })
   console.log('✅ Admin: admin / ' + (process.env.ADMIN_PASSWORD || 'admin123'))
 
-  // 创建 YONGADMIN 超级管理员
   const yongHash = await bcrypt.hash(process.env.YONGADMIN_PASSWORD || 'yong123', 12)
-  await prisma.admin.upsert({
-    where: { email: 'EOKAIBI@GMAIL.COM' },
-    update: { password: yongHash },
-    create: {
+  await prisma.admin.create({
+    data: {
       username: 'YONGADMIN',
       email: 'EOKAIBI@GMAIL.COM',
       password: yongHash,
@@ -32,12 +42,9 @@ async function main() {
   })
   console.log('✅ YONGADMIN: YONGADMIN / ' + (process.env.YONGADMIN_PASSWORD || 'yong123'))
 
-  // 创建品牌方（仅可上传产品）
   const prodHash = await bcrypt.hash(process.env.PRODUCT_PASSWORD || 'product123', 12)
-  await prisma.admin.upsert({
-    where: { email: 'product@vaporx.com' },
-    update: { password: prodHash },
-    create: {
+  await prisma.admin.create({
+    data: {
       username: 'product',
       email: 'product@vaporx.com',
       password: prodHash,
@@ -66,7 +73,6 @@ async function main() {
     { key: 'address', value: 'Los Angeles, CA' },
     { key: 'min_order', value: '500' },
     { key: 'shipping_info', value: '全美48州免运费，订单满$500起批。支持海外直邮。' },
-    // 联系资料可见性设置（默认全可见）
     { key: 'show_whatsapp', value: 'true' },
     { key: 'show_email', value: 'true' },
     { key: 'show_phone', value: 'true' },
