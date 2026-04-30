@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import HeroSwiper from '@/components/HeroSwiper'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
 import { cookies } from 'next/headers'
+import { verifyToken } from '@/lib/auth'
 
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await getServerLang()
@@ -32,6 +33,33 @@ async function getCustomerTypeFromCookie() {
   } catch {
     return null
   }
+}
+
+async function getLoginStatus() {
+  let isLoggedIn = false
+  try {
+    const cookieStore = await cookies()
+    const customerToken = cookieStore.get('customer_token')?.value
+    if (customerToken) {
+      try {
+        const decoded = Buffer.from(customerToken, 'base64').toString('utf-8')
+        const parts = decoded.split(':')
+        if (parts.length >= 4 && parts[0] === 'customer') {
+          isLoggedIn = true
+        }
+      } catch {}
+    }
+    if (!isLoggedIn) {
+      const adminToken = cookieStore.get('admin_token')?.value
+      if (adminToken) {
+        try {
+          const payload = await verifyToken(adminToken)
+          if (payload) isLoggedIn = true
+        } catch {}
+      }
+    }
+  } catch {}
+  return isLoggedIn
 }
 
 function getDisplayPrice(product, customerType) {
@@ -87,7 +115,10 @@ async function getData() {
 
 export default async function HomePage() {
   const lang = await getServerLang()
-  const customerType = await getCustomerTypeFromCookie()
+  const [customerType, isLoggedIn] = await Promise.all([
+    getCustomerTypeFromCookie(),
+    getLoginStatus(),
+  ])
   const { categories, brands, products, platforms, settings, heroItems, videos } = await getData()
 
   // 英文模式下优先使用翻译，中文模式下 settings 中的值优先
@@ -280,7 +311,7 @@ export default async function HomePage() {
           <div className="bg-white rounded-xl border border-gray-100 p-8">
             <div className="space-y-4">
               {/* WhatsApp - only show if visible or logged in */}
-              {(customerType !== null || settings.show_whatsapp !== 'false') && (
+              {(isLoggedIn || settings.show_whatsapp !== 'false') && (
                 <a href={'https://wa.me/' + (settings.whatsapp || '+13239260829').replace(/[^0-9]/g, '')} target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-green-50 transition-colors">
                   <span className="text-2xl">💬</span>
@@ -291,7 +322,7 @@ export default async function HomePage() {
                 </a>
               )}
               {/* Email - only show if visible or logged in */}
-              {(customerType !== null || settings.show_email !== 'false') && (
+              {(isLoggedIn || settings.show_email !== 'false') && (
                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                   <span className="text-2xl">📧</span>
                   <div>
@@ -301,7 +332,7 @@ export default async function HomePage() {
                 </div>
               )}
               {/* Phone - only show if visible or logged in */}
-              {(customerType !== null || settings.show_phone !== 'false') && (
+              {(isLoggedIn || settings.show_phone !== 'false') && (
                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                   <span className="text-2xl">📞</span>
                   <div>
@@ -311,7 +342,7 @@ export default async function HomePage() {
                 </div>
               )}
               {/* Address - only show if visible or logged in */}
-              {(customerType !== null || settings.show_address !== 'false') && (
+              {(isLoggedIn || settings.show_address !== 'false') && (
                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                   <span className="text-2xl">📍</span>
                   <div>
@@ -321,7 +352,7 @@ export default async function HomePage() {
                 </div>
               )}
               {/* WeChat - only show if visible or logged in */}
-              {(customerType !== null || settings.show_wechat !== 'false') && settings.wechat && (
+              {(isLoggedIn || settings.show_wechat !== 'false') && settings.wechat && (
                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                   <span className="text-2xl">💚</span>
                   <div>
@@ -332,7 +363,7 @@ export default async function HomePage() {
               )}
 
               {/* Hidden fallback - only when ALL contact info is hidden and user not logged in */}
-              {(customerType === null && (settings.show_whatsapp === 'false' || !settings.show_whatsapp) && (settings.show_email === 'false' || !settings.show_email) && (settings.show_phone === 'false' || !settings.show_phone) && (settings.show_address === 'false' || !settings.show_address) && (settings.show_wechat === 'false' || !settings.show_wechat || !settings.wechat)) && (
+              {(!isLoggedIn && settings.show_whatsapp === 'false' && settings.show_email === 'false' && settings.show_phone === 'false' && settings.show_address === 'false' && settings.show_wechat === 'false') && (
                 <div className="text-center py-8 text-gray-400">
                   <div className="text-4xl mb-3">🔒</div>
                   <p className="text-sm">{serverT('contact.contactHidden' as any, lang)}</p>
