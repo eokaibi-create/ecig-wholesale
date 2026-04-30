@@ -7,11 +7,9 @@ import { useLanguage } from '@/i18n/LanguageProvider'
 export default function Footer() {
   const { t, lang } = useLanguage()
   const [contact, setContact] = useState({
-    whatsapp: '+13239260829',
-    email: 'sales@okaibiglobal.com',
-    phone: '+1 (323) 926-0829',
-    address: 'Los Angeles, CA',
-    wechat: 'EA_YONG',
+    whatsapp: null as string | null,
+    email: null as string | null,
+    phone: null as string | null,
     siteName: 'VAPOR-X USA',
   })
 
@@ -20,14 +18,13 @@ export default function Footer() {
     fetch('/api/contact')
       .then(res => res.json())
       .then(data => {
-        setContact({
-          whatsapp: data.whatsapp || '+13239260829',
-          email: data.email || 'sales@okaibiglobal.com',
-          phone: data.phone || '+1 (323) 926-0829',
-          address: data.address || 'Los Angeles, CA',
-          wechat: data.wechat || 'EA_YONG',
+        setContact(prev => ({
+          ...prev,
+          whatsapp: data.whatsapp,
+          email: data.email,
+          phone: data.phone,
           siteName: data.siteName || 'VAPOR-X USA',
-        })
+        }))
       })
       .catch(() => {})
   }, [])
@@ -68,17 +65,13 @@ export default function Footer() {
             <div className="space-y-2 text-sm">
               {contact.email && <p>📧 {contact.email}</p>}
               {contact.phone && <p>📞 {contact.phone}</p>}
-              {contact.address && <p>📍 {contact.address}</p>}
               {contact.whatsapp && (
                 <a href={`https://wa.me/${whatsappNum}`} target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition">
                   💬 {t('contact.whatsapp')}
                 </a>
               )}
-              {contact.wechat && (
-                <p>💚 {contact.wechat}</p>
-              )}
-              {!contact.email && !contact.phone && !contact.address && !contact.whatsapp && !contact.wechat && (
+              {!contact.email && !contact.phone && !contact.whatsapp && (
                 <div className="text-center py-4">
                   <p className="text-sm text-gray-500">🔒 {t('contact.contactHidden')}</p>
                   <Link href="/login" className="text-amber-400 hover:text-amber-300 text-xs mt-1 inline-block transition">

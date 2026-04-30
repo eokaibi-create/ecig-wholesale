@@ -94,7 +94,7 @@ export type TranslationKey =
   | 'product.inStock'
   | 'products.emptyDesc' | 'products.withBrand' | 'products.brandSeries'
   // 底部
-  | 'footer.siteDesc'
+  | 'footer.siteDesc' | 'footer.powered' | 'footer.rights' | 'footer.age' | 'footer.quickLinks'
   // 语言切换
   | 'header.switchToEn' | 'header.switchToZh' | 'header.langLabel'
   // 关于
@@ -103,6 +103,7 @@ export type TranslationKey =
   | 'brands.desc'
   // 联系
   | 'contact.placeholder' | 'contact.wechatDesc' | 'contact.replyHour' | 'contact.shippingText'
+  | 'contact.contactHidden' | 'contact.selectProduct'
   | 'contact.prefix' | 'contact.selectProduct' | 'contact.optional' | 'contact.contactHidden'
 export const translations: Record<Lang, Record<TranslationKey, string>> = {
   zh: {
