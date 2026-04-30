@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { verifyToken } from '@/lib/auth'
 
 // 联系资料可见性 API
 // GET /api/contact → 返回联系信息和可见性设置（前台用）
@@ -10,15 +11,37 @@ export async function GET() {
   const settings = await prisma.setting.findMany()
   const map = Object.fromEntries(settings.map(s => [s.key, s.value]))
 
-  // 检查用户是否登录
+  // 检查用户是否登录（兼容 customer_token 和 admin_token 两种格式）
   let isLoggedIn = false
   try {
     const cookieStore = await cookies()
-    const token = cookieStore.get('customer_token')?.value
-      || cookieStore.get('admin_token')?.value
-    if (token) {
-      const payload = JSON.parse(Buffer.from(token, 'base64').toString())
-      isLoggedIn = !!payload.id || !!payload.customerId
+    const customerToken = cookieStore.get('customer_token')?.value
+    const adminToken = cookieStore.get('admin_token')?.value
+
+    if (customerToken) {
+      // customer_token 格式: base64("customer:id:email:timestamp")
+      try {
+        const decoded = Buffer.from(customerToken, 'base64').toString('utf-8')
+        const parts = decoded.split(':')
+        // 格式: customer:<id>:<email>:<timestamp>
+        if (parts.length >= 4 && parts[0] === 'customer') {
+          isLoggedIn = true
+        }
+      } catch {
+        // 解码失败，不认为是登录
+      }
+    }
+
+    if (!isLoggedIn && adminToken) {
+      // admin_token 是 JWT 格式，尝试验证
+      try {
+        const payload = await verifyToken(adminToken)
+        if (payload) {
+          isLoggedIn = true
+        }
+      } catch {
+        // JWT 验证失败
+      }
     }
   } catch {
     // Cookie 读取失败，视为未登录

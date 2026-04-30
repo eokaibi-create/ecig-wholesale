@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
+import crypto from 'crypto'
+import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
-const bcrypt = require('bcryptjs')
 
 const RESET_SECRET = process.env.RESET_SECRET || process.env.JWT_SECRET || 'admin-reset-secret-key'
 
@@ -22,10 +23,15 @@ function verifyResetToken(token: string): { adminId: number; email: string } | n
     const timestamp = parseInt(timestampBase36, 36)
     if (Date.now() - timestamp > 3600000) return null
 
-    // 验证 HMAC
-    const crypto = require('crypto')
+    // 验证 HMAC（恒定时间比较，防止时序攻击）
     const expectedHmac = crypto.createHmac('sha256', RESET_SECRET).update(payload).digest('hex').slice(0, 16)
-    if (hmac !== expectedHmac) return null
+
+    if (hmac.length !== expectedHmac.length) return null
+    let match = true
+    for (let i = 0; i < hmac.length; i++) {
+      if (hmac[i] !== expectedHmac[i]) match = false
+    }
+    if (!match) return null
 
     return { adminId, email }
   } catch {
