@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // Non-individual users (require approval) -> send email to admin
     if (!isIndividual) {
-      sendEmail({
+      const emailResult = await sendEmail({
         to: process.env.ADMIN_EMAIL || 'sales@okaibiglobal.com',
         subject: `New Registration Pending - ${name}${company ? ` (${company})` : ''}`,
         html: newRegistrationNotificationHtml({
@@ -67,13 +67,12 @@ export async function POST(request: NextRequest) {
           countryCode: countryCode || null,
           type: type || 'wholesaler',
         }),
-      }).then(result => {
-        if (result.success) {
-          console.log('[Register] Approval notification email sent to admin')
-        } else {
-          console.warn('[Register] Approval notification email failed to send:', result.error)
-        }
       })
+      if (emailResult.success) {
+        console.log('[Register] Approval notification email sent to admin')
+      } else {
+        console.warn('[Register] Approval notification email failed to send:', emailResult.error)
+      }
     }
 
     const token = Buffer.from(`customer:${customer.id}:${customer.email}:${Date.now()}`).toString('base64')

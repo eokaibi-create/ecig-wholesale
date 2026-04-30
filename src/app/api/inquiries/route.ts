@@ -37,17 +37,16 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Send email to admin (async)
-    sendEmail({
+    // Send email to admin (await is critical in Vercel Serverless!)
+    const result = await sendEmail({
       to: ADMIN_EMAIL,
       subject: `New Inquiry - ${name}${company ? ` (${company})` : ''}`,
       html: inquiryNotificationHtml({ name, email, phone, company, message }),
       replyTo: email,
-    }).then(result => {
-      if (!result.success) {
-        console.warn('[Inquiry] Email notification failed, but inquiry saved:', inquiry.id)
-      }
     })
+    if (!result.success) {
+      console.warn('[Inquiry] Email notification failed, but inquiry saved:', inquiry.id)
+    }
 
     return NextResponse.redirect(new URL('/contact?success=true', request.url))
   } catch (error) {
@@ -108,7 +107,7 @@ export async function PUT(request: NextRequest) {
 
     // If "send email to customer" is checked and reply content exists
     if (sendEmailToCustomer && adminReply && updated.customer?.email) {
-      sendEmail({
+      const emailResult = await sendEmail({
         to: updated.customer.email,
         subject: `Reply - VAPOR-X Regarding Your Inquiry`,
         html: adminReplyHtml({
@@ -117,13 +116,12 @@ export async function PUT(request: NextRequest) {
           originalMessage: updated.message,
         }),
         replyTo: ADMIN_EMAIL,
-      }).then(result => {
-        if (result.success) {
-          console.log('[Inquiry] Reply email sent to:', updated.customer?.email)
-        } else {
-          console.warn('[Inquiry] Reply email failed:', result.error)
-        }
       })
+      if (emailResult.success) {
+        console.log('[Inquiry] Reply email sent to:', updated.customer?.email)
+      } else {
+        console.warn('[Inquiry] Reply email failed:', emailResult.error)
+      }
     }
 
     return NextResponse.json(updated)

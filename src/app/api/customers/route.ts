@@ -78,7 +78,7 @@ export async function PATCH(request: NextRequest) {
     })
 
     if (approved === true && !existing.approved) {
-      sendEmail({
+      const emailResult = await sendEmail({
         to: existing.email,
         subject: `Your VAPOR-X Account Has Been Approved`,
         html: customerApprovedHtml({
@@ -86,29 +86,27 @@ export async function PATCH(request: NextRequest) {
           customerEmail: existing.email,
           type: existing.type || 'wholesaler',
         }),
-      }).then(result => {
-        if (result.success) {
-          console.log(`[Customers] Approval email sent to ${existing.email}`)
-        } else {
-          console.warn(`[Customers] Approval email failed to send:`, result.error)
-        }
       })
+      if (emailResult.success) {
+        console.log(`[Customers] Approval email sent to ${existing.email}`)
+      } else {
+        console.warn(`[Customers] Approval email failed to send:`, emailResult.error)
+      }
     }
 
     if (rejected === true && !existing.rejected) {
-      sendEmail({
+      const emailResult = await sendEmail({
         to: existing.email,
         subject: `Your VAPOR-X Account Has Not Been Approved`,
         html: customerRejectedHtml({
           customerName: existing.name,
         }),
-      }).then(result => {
-        if (result.success) {
-          console.log(`[Customers] Rejection email sent to ${existing.email}`)
-        } else {
-          console.warn(`[Customers] Rejection email failed to send:`, result.error)
-        }
       })
+      if (emailResult.success) {
+        console.log(`[Customers] Rejection email sent to ${existing.email}`)
+      } else {
+        console.warn(`[Customers] Rejection email failed to send:`, emailResult.error)
+      }
     }
 
     return NextResponse.json(customer)
