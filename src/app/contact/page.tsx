@@ -133,7 +133,7 @@ export default function ContactPage() {
               {/* Product selector */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {'\u9009\u62e9\u4ea7\u54c1'} <span className="text-gray-400 text-xs">({'\u53ef\u9009'})</span>
+                  {t('contact.selectProduct')} <span className="text-gray-400 text-xs">({t('contact.optional')})</span>
                 </label>
                 <select
                   name="productId"
@@ -147,7 +147,7 @@ export default function ContactPage() {
                   }}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none bg-white"
                 >
-                  <option value="">-- {'\u9009\u62e9\u4ea7\u54c1'} --</option>
+                  <option value="">-- {t('contact.selectProduct')} --</option>
                   {products.map(product => (
                     <option key={product.id} value={product.id}>
                       {product.name}
@@ -235,7 +235,7 @@ export default function ContactPage() {
                   {!contact.email && !contact.phone && !contact.whatsapp && !contact.wechat && !contact.address && (
                     <div className="text-center py-12 text-gray-400">
                       <div className="text-4xl mb-3">🔒</div>
-                      <p className="text-sm">{'\u8054\u7cfb\u8d44\u6599\u5df2\u9690\u85cf'}</p>
+                      <p className="text-sm">{t('contact.contactHidden')}</p>
                       {!contact.isLoggedIn && (
                         <Link href="/login" className="text-amber-600 hover:underline text-sm mt-2 inline-block">
                           {t('login.title')}

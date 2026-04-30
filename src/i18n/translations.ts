@@ -103,7 +103,7 @@ export type TranslationKey =
   | 'brands.desc'
   // 联系
   | 'contact.placeholder' | 'contact.wechatDesc' | 'contact.replyHour' | 'contact.shippingText'
-  | 'contact.prefix'
+  | 'contact.prefix' | 'contact.selectProduct' | 'contact.optional' | 'contact.contactHidden'
 export const translations: Record<Lang, Record<TranslationKey, string>> = {
   zh: {
     // 导航
@@ -267,7 +267,9 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'contact.replyHour': '24小时内回复',
     'contact.shippingText': '全美48州免运费，订单满$1000起批',
     'contact.prefix': '24小时内回复，期待与您合作',
-
+    'contact.selectProduct': '选择产品',
+    'contact.optional': '可选',
+    'contact.contactHidden': '联系方式已隐藏',
     // 购物车
     'cart.title': '购物车',
     'cart.empty': '购物车是空的',
@@ -625,12 +627,13 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     'contact.minOrder': 'Minimum Order',
     'contact.shippingInfo': 'Free shipping to 48 states, min order $1000',
     'contact.prefix': 'Reply within 24 hours, looking forward to cooperating with you',
-    'contact.replyHour': 'Reply within 24 hours',
     'contact.placeholder': 'Please describe the products, quantity and your requirements...',
     'contact.wechatDesc': 'Scan to add, get product catalog and price list',
     'contact.shippingText': 'Free shipping to 48 states, min order $1000',
 
-
+    'contact.selectProduct': 'Select Product',
+    'contact.optional': 'Optional',
+    'contact.contactHidden': 'Contact info hidden',
     // 购物车
     'cart.title': 'Shopping Cart',
     'cart.empty': 'Your cart is empty',
