@@ -23,6 +23,7 @@ const adminNavItems: NavItem[] = [
   { href: '/admin/platforms', label: '平台管理', icon: '🤝', roles: ['superadmin', 'admin'] },
   { href: '/admin/videos', label: 'Youtube 视频', icon: '📺', roles: ['superadmin', 'admin'] },
   { href: '/admin/orders', label: '订单管理', icon: '📑', roles: ['superadmin', 'admin'] },
+  { href: '/admin/inquiries', label: '询价管理', icon: '📋', roles: ['superadmin', 'admin'] },
   { href: '/admin/customers', label: '客户管理', icon: '👥', roles: ['superadmin', 'admin'] },
   { href: '/admin/admins', label: '管理员', icon: '👑', roles: ['superadmin'] },
   { href: '/admin/settings', label: '系统设置', icon: '⚙️', roles: ['superadmin', 'admin'] },
