@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sendEmail, passwordResetHtml } from '@/lib/email'
 import crypto from 'crypto'
 
-const RESET_SECRET = process.env.RESET_TOKEN_SECRET || 'vapor-x-reset-secret-key-2024'
+const RESET_SECRET = process.env.RESET_SECRET || process.env.RESET_TOKEN_SECRET || 'vapor-x-reset-secret-key-2024'
 
 export async function POST(request: NextRequest) {
   try {
