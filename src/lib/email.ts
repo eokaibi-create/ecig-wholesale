@@ -1,10 +1,10 @@
 // GoDaddy SMTP Email Service
-// SMTP: smtp.secureserver.net:465 (SSL)
+// SMTP: smtpout.secureserver.net:465 (SSL)
 // Account: sales@okaibiglobal.com
 
 import nodemailer from 'nodemailer'
 
-const SMTP_HOST = process.env.SMTP_HOST || 'smtp.secureserver.net'
+const SMTP_HOST = process.env.SMTP_HOST || 'smtpout.secureserver.net'
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465')
 const SMTP_USER = process.env.SMTP_USER || 'sales@okaibiglobal.com'
 const SMTP_PASS = process.env.SMTP_PASS || '12138Ekke'
