@@ -3,17 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import { sendEmail, inquiryNotificationHtml, adminReplyHtml } from '@/lib/email'
 
-// Read email settings from database
-async function getEmailSettings() {
-  const settings = await prisma.setting.findMany({
-    where: { key: { in: ['admin_email', 'email_from'] } }
-  })
-  const map = Object.fromEntries(settings.map(s => [s.key, s.value]))
-  return {
-    adminEmail: process.env.ADMIN_EMAIL || map.admin_email || 'sales@vapor-x.com',
-    fromEmail: process.env.EMAIL_FROM || map.email_from || 'onboarding@resend.dev',
-  }
-}
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sales@okaibiglobal.com'
 
 // POST - Submit inquiry from frontend => save to DB + email admin (公开接口)
 export async function POST(request: NextRequest) {
@@ -48,10 +38,8 @@ export async function POST(request: NextRequest) {
     })
 
     // Send email to admin (async)
-    const { adminEmail, fromEmail } = await getEmailSettings()
     sendEmail({
-      to: adminEmail,
-      from: fromEmail,
+      to: ADMIN_EMAIL,
       subject: `New Inquiry - ${name}${company ? ` (${company})` : ''}`,
       html: inquiryNotificationHtml({ name, email, phone, company, message }),
       replyTo: email,
@@ -120,17 +108,15 @@ export async function PUT(request: NextRequest) {
 
     // If "send email to customer" is checked and reply content exists
     if (sendEmailToCustomer && adminReply && updated.customer?.email) {
-      const { fromEmail, adminEmail } = await getEmailSettings()
       sendEmail({
         to: updated.customer.email,
-        from: fromEmail,
         subject: `Reply - VAPOR-X Regarding Your Inquiry`,
         html: adminReplyHtml({
           customerName: updated.customer.name,
           replyMessage: adminReply,
           originalMessage: updated.message,
         }),
-        replyTo: adminEmail,
+        replyTo: ADMIN_EMAIL,
       }).then(result => {
         if (result.success) {
           console.log('[Inquiry] Reply email sent to:', updated.customer?.email)
