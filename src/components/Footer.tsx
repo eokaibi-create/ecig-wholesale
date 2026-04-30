@@ -6,27 +6,41 @@ import { useLanguage } from '@/i18n/LanguageProvider'
 
 export default function Footer() {
   const { t, lang } = useLanguage()
-  const [contact, setContact] = useState({
-    whatsapp: null as string | null,
-    email: null as string | null,
-    phone: null as string | null,
+  const [contact, setContact] = useState<{
+    whatsapp: string | null
+    email: string | null
+    phone: string | null
+    siteName: string
+  }>({
+    whatsapp: '+1 (323) 926-0829',
+    email: 'EOKAIBI@GMAIL.COM',
+    phone: '+1 (323) 926-0829',
     siteName: 'VAPOR-X USA',
   })
+  const [loaded, setLoaded] = useState(false)
+  const [showAdminLink, setShowAdminLink] = useState(false)
 
   useEffect(() => {
-    // 使用 /api/contact API，它根据登录状态和可见性设置自动过滤
+    // 检查是否通过 ?admin=1 秘密参数访问
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('admin') === '1') {
+        setShowAdminLink(true)
+      }
+    }
+
     fetch('/api/contact')
       .then(res => res.json())
       .then(data => {
-        setContact(prev => ({
-          ...prev,
-          whatsapp: data.whatsapp,
-          email: data.email,
-          phone: data.phone,
+        setContact({
+          whatsapp: data.whatsapp || '+1 (323) 926-0829',
+          email: data.email || 'EOKAIBI@GMAIL.COM',
+          phone: data.phone || '+1 (323) 926-0829',
           siteName: data.siteName || 'VAPOR-X USA',
-        }))
+        })
+        setLoaded(true)
       })
-      .catch(() => {})
+      .catch(() => setLoaded(true))
   }, [])
 
   const whatsappNum = (contact.whatsapp || "").replace(/[^0-9]/g, '')
@@ -43,10 +57,15 @@ export default function Footer() {
               <span className="text-white">-X</span>
             </p>
             <p className="mt-1 text-xs text-gray-500 uppercase tracking-widest">
-              {contact.siteName} — {siteDesc}
+              {contact.siteName} &mdash; {siteDesc}
             </p>
             <p className="mt-3 text-xs text-gray-600">{t('footer.powered')}</p>
             <p className="text-xs text-gray-600 mt-1">{t('footer.age')}</p>
+            {showAdminLink && (
+              <Link href="/admin/login" className="mt-2 inline-block text-xs text-amber-500/60 hover:text-amber-400 transition">
+                ⚙️ Admin Panel
+              </Link>
+            )}
           </div>
 
           <div>
@@ -71,7 +90,12 @@ export default function Footer() {
                   💬 {t('contact.whatsapp')}
                 </a>
               )}
-              {!contact.email && !contact.phone && !contact.whatsapp && (
+              {!loaded && (
+                <div className="text-center py-4">
+                  <p className="text-sm text-gray-600">{t('orders.loading') || 'Loading...'}</p>
+                </div>
+              )}
+              {loaded && !contact.email && !contact.phone && !contact.whatsapp && (
                 <div className="text-center py-4">
                   <p className="text-sm text-gray-500">🔒 {t('contact.contactHidden')}</p>
                   <Link href="/login" className="text-amber-400 hover:text-amber-300 text-xs mt-1 inline-block transition">
