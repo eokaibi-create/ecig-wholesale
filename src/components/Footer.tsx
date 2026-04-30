@@ -11,6 +11,7 @@ export default function Footer() {
     email: 'sales@okaibiglobal.com',
     phone: '+1 (323) 926-0829',
     address: 'Los Angeles, CA',
+    wechat: 'EA_YONG',
     siteName: 'VAPOR-X USA',
   })
 
@@ -24,6 +25,7 @@ export default function Footer() {
           email: data.email || 'sales@okaibiglobal.com',
           phone: data.phone || '+1 (323) 926-0829',
           address: data.address || 'Los Angeles, CA',
+          wechat: data.wechat || 'EA_YONG',
           siteName: data.siteName || 'VAPOR-X USA',
         })
       })
@@ -73,7 +75,10 @@ export default function Footer() {
                   💬 {t('contact.whatsapp')}
                 </a>
               )}
-              {!contact.email && !contact.phone && !contact.address && !contact.whatsapp && (
+              {contact.wechat && (
+                <p>💚 {contact.wechat}</p>
+              )}
+              {!contact.email && !contact.phone && !contact.address && !contact.whatsapp && !contact.wechat && (
                 <p className="text-sm text-gray-500">{t('contact.title')}</p>
               )}
             </div>
