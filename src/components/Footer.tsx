@@ -79,7 +79,12 @@ export default function Footer() {
                 <p>💚 {contact.wechat}</p>
               )}
               {!contact.email && !contact.phone && !contact.address && !contact.whatsapp && !contact.wechat && (
-                <p className="text-sm text-gray-500">{t('contact.title')}</p>
+                <div className="text-center py-4">
+                  <p className="text-sm text-gray-500">🔒 {t('contact.contactHidden')}</p>
+                  <Link href="/login" className="text-amber-400 hover:text-amber-300 text-xs mt-1 inline-block transition">
+                    {t('login.title')}
+                  </Link>
+                </div>
               )}
             </div>
           </div>

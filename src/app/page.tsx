@@ -330,6 +330,17 @@ export default async function HomePage() {
                   </div>
                 </div>
               )}
+
+              {/* Hidden fallback - only when ALL contact info is hidden and user not logged in */}
+              {(customerType === null && (settings.show_whatsapp === 'false' || !settings.show_whatsapp) && (settings.show_email === 'false' || !settings.show_email) && (settings.show_phone === 'false' || !settings.show_phone) && (settings.show_address === 'false' || !settings.show_address) && (settings.show_wechat === 'false' || !settings.show_wechat || !settings.wechat)) && (
+                <div className="text-center py-8 text-gray-400">
+                  <div className="text-4xl mb-3">🔒</div>
+                  <p className="text-sm">{serverT('contact.contactHidden' as any, lang)}</p>
+                  <Link href="/login" className="text-amber-600 hover:underline text-sm mt-2 inline-block">
+                    {serverT('login.title' as any, lang)}
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
