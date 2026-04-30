@@ -11,21 +11,21 @@ const SMTP_PASS = process.env.SMTP_PASS || '12138Ekke'
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sales@okaibiglobal.com'
 const EMAIL_FROM = process.env.EMAIL_FROM || 'sales@okaibiglobal.com'
 
-let transporter: nodemailer.Transporter | null = null
-
-function getTransporter(): nodemailer.Transporter {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: true, // 465 SSL
-      auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
-      },
-    })
-  }
-  return transporter
+/**
+ * Create a fresh transporter for each call.
+ * IMPORTANT: In Vercel Serverless, singleton transporter connections go stale,
+ * causing "Greeting never received" errors. Always create a new connection.
+ */
+function createTransporter(): nodemailer.Transporter {
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: true,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS,
+    },
+  })
 }
 
 interface SendEmailParams {
@@ -38,11 +38,12 @@ interface SendEmailParams {
 
 /**
  * Send email via GoDaddy SMTP
+ * Always creates a fresh connection to avoid stale connection issues in serverless.
  */
 export async function sendEmail({ to, subject, html, replyTo, from }: SendEmailParams) {
+  const transporter = createTransporter()
   try {
-    const t = getTransporter()
-    const info = await t.sendMail({
+    const info = await transporter.sendMail({
       from: `VAPOR-X <${from || EMAIL_FROM}>`,
       to,
       subject,
@@ -55,6 +56,8 @@ export async function sendEmail({ to, subject, html, replyTo, from }: SendEmailP
   } catch (error) {
     console.error('[Email] Send error:', error)
     return { success: false, error: 'Failed to send email' }
+  } finally {
+    transporter.close()
   }
 }
 
@@ -226,25 +229,22 @@ export function customerApprovedHtml({
     body: `
       <p>Hello <strong>${customerName}</strong>,</p>
       <p>Congratulations! Your account at <strong>VAPOR-X</strong> has been approved!</p>
-      <div style="background:#f0fdf4;padding:16px;border-radius:6px;border-left:4px solid #22c55e;margin:16px 0;">
-        <p style="margin:0 0 8px 0;color:#333;font-weight:600;">You can now:</p>
-        <ul style="margin:0;padding-left:20px;color:#555;line-height:1.8;">
-          <li>Log in to your account</li>
-          <li>Browse all products and place orders</li>
-          <li>Submit inquiries</li>
-          <li>View your order status</li>
+      <div style="background:#f0fdf4;padding:16px;border-radius:6px;border-left:4px solid #22c55e;color:#333;line-height:1.6;">
+        <p style="margin:0;font-weight:600;">✅ You can now:</p>
+        <ul style="margin:8px 0 0 0;padding-left:20px;">
+          <li>View wholesale pricing</li>
+          <li>Place bulk orders</li>
+          <li>Track your orders</li>
         </ul>
       </div>
       <p style="margin-top:16px;">
         <a href="https://okaibiglobal.com/login" 
            style="display:inline-block;background:#f59e0b;color:#000;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600;">
-          Log In Now ->
+          Login to Your Account ->
         </a>
       </p>
-      <p style="margin-top:16px;color:#666;">If you have any questions, please contact us: <a href="mailto:${ADMIN_EMAIL}" style="color:#f59e0b;">${ADMIN_EMAIL}</a></p>
-      <p style="color:#666;">VAPOR-X Team</p>
     `,
-    footer: 'This email was sent automatically by VAPOR-X. Please do not reply directly.',
+    footer: "If you have any questions, please contact our support team.",
   })
 }
 
@@ -257,50 +257,47 @@ export function customerRejectedHtml({
   customerName: string
 }) {
   return buildEmailHtml({
-    title: 'Your Account Has Not Been Approved',
+    title: 'Account Status Update',
     body: `
       <p>Hello <strong>${customerName}</strong>,</p>
-      <p>Unfortunately, your registration at <strong>VAPOR-X</strong> has not been approved at this time.</p>
-      <p style="margin-top:16px;">Possible reasons include:</p>
-      <ul style="color:#555;line-height:1.8;">
-        <li>Incomplete or inaccurate information provided</li>
-        <li>Unable to verify your business credentials</li>
-        <li>Your business type does not match our current wholesale criteria</li>
-      </ul>
-      <p style="margin-top:16px;">If you believe this was a mistake, please contact us at <a href="mailto:${ADMIN_EMAIL}" style="color:#f59e0b;">${ADMIN_EMAIL}</a>.</p>
-      <p>VAPOR-X Team</p>
+      <p>Thank you for your interest in <strong>VAPOR-X</strong>.</p>
+      <p>After reviewing your application, we regret to inform you that we are unable to approve your account at this time.</p>
+      <p>If you believe this is an error or would like to reapply with additional information, please contact our support team.</p>
+      <p>We appreciate your understanding.</p>
+      <p style="font-weight:600;">VAPOR-X Team</p>
     `,
-    footer: 'This email was sent automatically by VAPOR-X. Please do not reply directly.',
+    footer: "This is an automated message. Please do not reply directly.",
   })
 }
 
-// ========== Password Reset Templates ==========
-
 /**
- * Customer password reset email
+ * Password reset email for customers
  */
 export function passwordResetHtml({
-  customerName, resetLink,
+  name, resetLink,
 }: {
-  customerName: string
+  name: string
   resetLink: string
 }) {
   return buildEmailHtml({
-    title: 'Reset Your VAPOR-X Password',
+    title: 'Password Reset',
     body: `
-      <p>Hello <strong>${customerName}</strong>,</p>
-      <p>We received a request to reset your VAPOR-X account password.</p>
-      <p style="margin:20px 0;">Click the button below to reset your password:</p>
+      <p>Hello <strong>${name}</strong>,</p>
+      <p>We received a request to reset your password for your <strong>VAPOR-X</strong> account.</p>
       <p style="text-align:center;margin:24px 0;">
         <a href="${resetLink}" 
            style="display:inline-block;background:#f59e0b;color:#000;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;font-size:16px;">
           Reset Password
         </a>
       </p>
-      <p style="color:#999;font-size:13px;">This link will expire in 1 hour.</p>
-      <p style="color:#999;font-size:13px;">If you did not request this, you can safely ignore this email.</p>
+      <p>Or copy this link into your browser:</p>
+      <p style="background:#f9fafb;padding:10px;border-radius:4px;word-break:break-all;font-size:13px;color:#666;">
+        ${resetLink}
+      </p>
+      <p>This link will expire in 1 hour.</p>
+      <p>If you did not request a password reset, please ignore this email.</p>
     `,
-    footer: 'VAPOR-X USA • Los Angeles, CA',
+    footer: "For security, do not share this link with anyone.",
   })
 }
 
@@ -308,26 +305,29 @@ export function passwordResetHtml({
  * Admin password reset email
  */
 export function adminPasswordResetHtml({
-  adminName, resetLink,
+  name, resetLink,
 }: {
-  adminName: string
+  name: string
   resetLink: string
 }) {
   return buildEmailHtml({
-    title: 'Reset Your Admin Password',
+    title: 'Admin Password Reset',
     body: `
-      <p>Hello <strong>${adminName}</strong>,</p>
-      <p>We received a request to reset your VAPOR-X admin panel password.</p>
-      <p style="margin:20px 0;">Click the button below to reset your password:</p>
+      <p>Hello <strong>${name}</strong>,</p>
+      <p>An administrator password reset has been requested.</p>
       <p style="text-align:center;margin:24px 0;">
         <a href="${resetLink}" 
            style="display:inline-block;background:#f59e0b;color:#000;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;font-size:16px;">
-          Reset Password
+          Reset Admin Password
         </a>
       </p>
-      <p style="color:#999;font-size:13px;">This link will expire in 1 hour.</p>
-      <p style="color:#999;font-size:13px;">If you did not request this, you can safely ignore this email.</p>
+      <p>Or copy this link into your browser:</p>
+      <p style="background:#f9fafb;padding:10px;border-radius:4px;word-break:break-all;font-size:13px;color:#666;">
+        ${resetLink}
+      </p>
+      <p>This link will expire in 1 hour.</p>
+      <p>If you did not request this reset, please contact the system administrator immediately.</p>
     `,
-    footer: 'VAPOR-X USA • Los Angeles, CA',
+    footer: "This is an automated message. For security, do not share this link.",
   })
 }
