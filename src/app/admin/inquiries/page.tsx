@@ -26,6 +26,8 @@ interface Inquiry {
   status: string
   adminReply: string | null
   adminNote: string | null
+  productId: number | null
+  productName: string | null
   createdAt: string
   updatedAt: string
 }

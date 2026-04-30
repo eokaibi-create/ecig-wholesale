@@ -114,10 +114,9 @@ export function buildEmailHtml({
  * Customer inquiry => Notify admin
  */
 export function inquiryNotificationHtml({
-  name, email, phone, company, message,
+  name, email, phone, company, message, productName,
 }: {
-  name: string; email: string; phone?: string | null; company?: string | null; message: string
-}) {
+  name: string; email: string; phone?: string | null; company?: string | null; message: string; productName?: string | null}) {
   return buildEmailHtml({
     title: 'New Inquiry',
     body: `
@@ -125,6 +124,7 @@ export function inquiryNotificationHtml({
         <tr><td style="padding:8px 0;color:#999;width:90px;">Name</td><td style="padding:8px 0;font-weight:600;">${name}</td></tr>
         ${company ? `<tr><td style="padding:8px 0;color:#999;">Company</td><td style="padding:8px 0;">${company}</td></tr>` : ''}
         <tr><td style="padding:8px 0;color:#999;">Email</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#f59e0b;">${email}</a></td></tr>
+        ${productName ? `<tr><td style="padding:8px 0;color:#999;">Product</td><td style="padding:8px 0;font-weight:600;">${productName}</td></tr>` : ''}
         ${phone ? `<tr><td style="padding:8px 0;color:#999;">Phone</td><td style="padding:8px 0;">${phone}</td></tr>` : ''}
       </table>
       <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">

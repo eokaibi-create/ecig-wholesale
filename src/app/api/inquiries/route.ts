@@ -13,7 +13,9 @@ export async function POST(request: NextRequest) {
     const email = formData.get('email') as string
     const phone = formData.get('phone') as string || null
     const company = formData.get('company') as string || null
-    const message = formData.get('message') as string
+    const message = formData.get("message") as string
+    const productId = formData.get("productId") as string || null
+    const productName = formData.get("productName") as string || null
 
     // Find or create customer
     let customer = await prisma.customer.findUnique({ where: { email } })
@@ -34,6 +36,8 @@ export async function POST(request: NextRequest) {
         customerId: customer.id,
         subject: `Inquiry - ${company || name}`,
         message,
+        productId: productId ? parseInt(productId) : null,
+        productName,
       },
     })
 
@@ -41,7 +45,7 @@ export async function POST(request: NextRequest) {
     const result = await sendEmail({
       to: ADMIN_EMAIL,
       subject: `New Inquiry - ${name}${company ? ` (${company})` : ''}`,
-      html: inquiryNotificationHtml({ name, email, phone, company, message }),
+      html: inquiryNotificationHtml({ name, email, phone, company, message, productName }),
       replyTo: email,
     })
     if (!result.success) {

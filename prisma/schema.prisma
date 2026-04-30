@@ -98,6 +98,8 @@ model Inquiry {
   adminNote  String?  @db.Text
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now())
+  productId   Int?
+  productName String? @db.VarChar(255)
 }
 
 model Order {

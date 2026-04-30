@@ -4,6 +4,12 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 
+interface Product {
+  id: number
+  name: string
+  category?: { name: string } | null
+}
+
 export default function ContactPage() {
   const { t } = useLanguage()
   const [contact, setContact] = useState<{
@@ -29,6 +35,8 @@ export default function ContactPage() {
   })
   const [loading, setLoading] = useState(true)
   const [searchParams, setSearchParams] = useState<{ success?: string; error?: string }>({})
+  const [products, setProducts] = useState<Product[]>([])
+  const [selectedProduct, setSelectedProduct] = useState('')
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -54,6 +62,12 @@ export default function ContactPage() {
         setLoading(false)
       })
       .catch(() => setLoading(false))
+
+    // Load products for the dropdown
+    fetch('/api/products?all=1')
+      .then(res => res.json())
+      .then((data: Product[]) => setProducts(data))
+      .catch(() => {})
   }, [])
 
   const { success, error } = searchParams
@@ -115,6 +129,34 @@ export default function ContactPage() {
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none" />
                 </div>
               </div>
+
+              {/* Product selector */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {'\u9009\u62e9\u4ea7\u54c1'} <span className="text-gray-400 text-xs">({'\u53ef\u9009'})</span>
+                </label>
+                <select
+                  name="productId"
+                  value={selectedProduct}
+                  onChange={e => {
+                    setSelectedProduct(e.target.value)
+                    const selected = products.find(p => p.id.toString() === e.target.value)
+                    const hiddenInput = document.querySelector('input[name="productName"]') as HTMLInputElement
+                    if (hiddenInput && selected) hiddenInput.value = selected.name
+                    if (hiddenInput && !e.target.value) hiddenInput.value = ''
+                  }}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none bg-white"
+                >
+                  <option value="">-- {'\u9009\u62e9\u4ea7\u54c1'} --</option>
+                  {products.map(product => (
+                    <option key={product.id} value={product.id}>
+                      {product.name}
+                    </option>
+                  ))}
+                </select>
+                <input type="hidden" name="productName" value="" />
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('contact.message')} *</label>
                 <textarea name="message" rows={5} required
@@ -193,7 +235,7 @@ export default function ContactPage() {
                   {!contact.email && !contact.phone && !contact.whatsapp && !contact.wechat && !contact.address && (
                     <div className="text-center py-12 text-gray-400">
                       <div className="text-4xl mb-3">🔒</div>
-                      <p className="text-sm">联系资料已隐藏</p>
+                      <p className="text-sm">{'\u8054\u7cfb\u8d44\u6599\u5df2\u9690\u85cf'}</p>
                       {!contact.isLoggedIn && (
                         <Link href="/login" className="text-amber-600 hover:underline text-sm mt-2 inline-block">
                           {t('login.title')}
