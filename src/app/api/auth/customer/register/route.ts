@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     // Non-individual users (require approval) -> send email to admin
     if (!isIndividual) {
       sendEmail({
-        to: process.env.ADMIN_EMAIL || 'sales@vapor-x.com',
+        to: process.env.ADMIN_EMAIL || 'sales@okaibiglobal.com',
         subject: `New Registration Pending - ${name}${company ? ` (${company})` : ''}`,
         html: newRegistrationNotificationHtml({
           name,

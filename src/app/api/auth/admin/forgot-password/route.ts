@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
     await sendEmail({
       to: admin.email,
-      subject: '重置您的 VAPOR-X 管理后台密码',
+      subject: '重置您的 OKAIBIGLOBAL 管理后台密码',
       html: adminPasswordResetHtml({
         adminName: admin.username,
         resetLink,

@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 
-const RESET_SECRET = process.env.RESET_SECRET || process.env.RESET_TOKEN_SECRET || 'vapor-x-reset-secret-key-2024'
+const RESET_SECRET = process.env.RESET_SECRET || process.env.RESET_TOKEN_SECRET || 'okaibiglobal-reset-secret-key-2024'
 const TOKEN_VALIDITY_MS = 60 * 60 * 1000 // 1 hour
 
 export async function POST(request: NextRequest) {

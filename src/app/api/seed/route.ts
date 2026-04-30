@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       'section_contact_title': 'Contact Us',
       'section_contact_desc': 'Reach out for wholesale pricing and product info',
       'whatsapp': '+13239260829',
-      'email': 'sales@vapor-x.com',
+      'email': 'sales@okaibiglobal.com',
       'phone': '+1 (323) 926-0829',
       'site_name': 'VAPOR-X USA',
       'site_description': '美国电子烟批发供应商',

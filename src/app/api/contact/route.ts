@@ -34,7 +34,7 @@ export async function GET() {
   return NextResponse.json({
     isLoggedIn,
     whatsapp: showWhatsapp ? (map.whatsapp || '+1 (323) 926-0829') : null,
-    email: showEmail ? (map.email || 'sales@vapor-x.com') : null,
+    email: showEmail ? (map.email || 'sales@okaibiglobal.com') : null,
     phone: showPhone ? (map.phone || '+1 (323) 926-0829') : null,
     address: showAddress ? (map.address || 'Los Angeles, CA') : null,
     wechat: showWechat ? (map.wechat || 'EA_YONG') : null,

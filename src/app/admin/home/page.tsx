@@ -52,7 +52,7 @@ const defaultSettings: HomeSettings = {
   hero_title: '美国电子烟批发首选',
   hero_subtitle: 'VAPOR-X — 全美发货 · 批发价直供 · 支持海外直邮',
   whatsapp: '+15559876543',
-  email: 'sales@vapor-x.com',
+  email: 'sales@okaibiglobal.com',
   phone: '+1 (555) 987-6543',
   address: '',
   wechat: '',

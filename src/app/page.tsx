@@ -296,7 +296,7 @@ export default async function HomePage() {
                   <span className="text-2xl">📧</span>
                   <div>
                     <p className="font-semibold text-gray-900">{serverT('contact.email' as any, lang)}</p>
-                    <p className="text-sm text-gray-500">{settings.email || 'sales@vapor-x.com'}</p>
+                    <p className="text-sm text-gray-500">{settings.email || 'sales@okaibiglobal.com'}</p>
                   </div>
                 </div>
               )}
