@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { sendEmail, adminPasswordResetHtml } from '@/lib/email'
 
@@ -8,7 +9,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://okaibiglobal.com'
 function generateResetToken(adminId: number, email: string): string {
   const timestamp = Date.now().toString(36)
   const payload = `${adminId}:${email}:${timestamp}`
-  const crypto = require('crypto')
+  // crypto already imported at top
   const hmac = crypto.createHmac('sha256', RESET_SECRET).update(payload).digest('hex').slice(0, 16)
   const data = Buffer.from(payload).toString('base64url')
   return `${data}:${hmac}`
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
       to: admin.email,
       subject: '重置您的 OKAIBIGLOBAL 管理后台密码',
       html: adminPasswordResetHtml({
-        adminName: admin.username,
+        name: admin.username,
         resetLink,
       }),
     })

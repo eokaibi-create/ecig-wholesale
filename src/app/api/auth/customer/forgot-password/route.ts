@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       to: customer.email,
       subject: 'Reset Your VAPOR-X Password',
       html: passwordResetHtml({
-        customerName: customer.name,
+        name: customer.name,
         resetLink,
       }),
     })

@@ -46,7 +46,7 @@ const settingGroups = [
     desc: '当客户提交询价时，系统会自动发送邮件通知到以下地址已启用 GoDaddy SMTP（sales@okaibiglobal.com）',
     keys: [
       { key: 'admin_email', label: '管理员邮箱（接收通知）', default: 'sales@okaibiglobal.com' },
-      { key: 'email_from', label: '发件人邮箱', default: 'onboarding@resend.dev' },
+      { key: 'email_from', label: '发件人邮箱', default: 'sales@okaibiglobal.com' },
     ],
   },
 ]
