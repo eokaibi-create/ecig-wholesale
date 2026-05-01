@@ -165,10 +165,16 @@ export default async function ProductsPage({
         )}
 
         {products.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4"></div>
+          <div className="text-center py-20 bg-white rounded-xl border border-gray-100">
+            <div className="text-6xl mb-4 text-gray-300"></div>
             <h3 className="text-xl font-semibold text-gray-600">{t('product.none')}</h3>
             <p className="text-gray-400 mt-2">{t('products.emptyDesc')}</p>
+            <p className="text-gray-400 text-sm mt-1">
+              数据库暂无数据。请前往 后台管理 → 系统设置 → 导入示例数据
+            </p>
+            <Link href="/admin/settings" className="inline-block mt-4 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition text-sm">
+              前往后台导入数据
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

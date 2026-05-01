@@ -109,11 +109,24 @@ export default function ProductDetailPage() {
 
   if (notFoundState || !product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4"></div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('product.notFound')}</h2>
-          <Link href="/products" className="text-amber-600 hover:underline">{t('product.backToProducts')}</Link>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md mx-auto text-center px-4">
+          <div className="text-6xl mb-4 text-gray-300"></div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('product.notFound') || 'Product Not Found'}</h2>
+          <p className="text-gray-500 mb-6">
+            {t('products.emptyDesc') || 'The product you are looking for does not exist or may have been removed.'}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/products" className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition">
+              {t('product.backToProducts') || 'View All Products'}
+            </Link>
+            <Link href="/admin/settings" className="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition">
+              {t('admin.importData') || 'Import Sample Data'}
+            </Link>
+          </div>
+          <p className="mt-4 text-xs text-gray-400">
+            {t('products.emptyDescHint') || 'Database is empty? Import sample data via the Admin Panel → Settings'}
+          </p>
         </div>
       </div>
     )
@@ -223,50 +236,33 @@ export default function ProductDetailPage() {
                   {product.nicotine && <tr><td className="py-1 text-gray-500 pr-4">{t('product.nicotine')}</td><td className="font-medium">{product.nicotine}</td></tr>}
                   {product.capacity && <tr><td className="py-1 text-gray-500 pr-4">{t('product.capacity')}</td><td className="font-medium">{product.capacity}</td></tr>}
                   {product.puffs && <tr><td className="py-1 text-gray-500 pr-4">{t('product.puffs')}</td><td className="font-medium">{product.puffs}</td></tr>}
-                  {product.flavor && <tr><td className="py-1 text-gray-500 pr-4 align-top">{t('product.flavor')}</td><td className="font-medium"><div className="flex flex-wrap gap-1.5">{(typeof product.flavor === "string" ? product.flavor.split(",").map((f: string) => f.trim()).filter(Boolean) : []).map((f: string, fi: number) => <span key={fi} className="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full border border-amber-200">{f}</span>)}</div></td></tr>}
-                  {product.size && <tr><td className="py-1 text-gray-500 pr-4">{t('product.size')}</td><td className="font-medium">{product.size}</td></tr>}
-                  <tr><td className="py-1 text-gray-500 pr-4">{t('product.stock')}</td><td className="font-medium text-green-600">{product.stock}+ {t('product.inStock')}</td></tr>
+                  {product.flavor && <tr><td className="py-1 text-gray-500 pr-4">{t('product.flavor')}</td><td className="font-medium">{product.flavor}</td></tr>}
+                  {product.stock > 0 && <tr><td className="py-1 text-gray-500 pr-4">{t('product.stock')}</td><td className="font-medium text-green-600">{product.stock} {t('product.units')}</td></tr>}
                 </tbody>
               </table>
             </div>
 
-            {/* 联系客服询价 */}
-            <div className="mt-6 p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl">
-              <h3 className="font-semibold text-amber-800 mb-3">
-                 {t('contact.bulkOrder')}
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                {t('contact.inquireDesc')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <a href={`https://wa.me/${whatsappNum}?text=Hi!%20I'm%20interested%20in%20${encodeURIComponent(product.name)}`}
-                   target="_blank" rel="noopener noreferrer"
-                   className="flex-1 text-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition">
-                   WhatsApp
-                </a>
-                <Link href="/contact"
-                   className="flex-1 text-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition">
-                  {t('contact.send')}
-                </Link>
+            {/* 产品描述 */}
+            {getEnglishDescription() && (
+              <div className="mt-6">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('product.description')}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{getEnglishDescription()}</p>
               </div>
+            )}
+
+            {/* 批发询价按钮 */}
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <a href={`https://wa.me/${whatsappNum}?text=${encodeURIComponent(`Hi, I'm interested in ${product.name} (${product.slug}) — SKU: ${product.id}. Please send me wholesale pricing.`)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition text-center">
+                {t('product.inquire') || 'Inquire via WhatsApp'}
+              </a>
+              <Link href="/products"
+                className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition text-center">
+                {t('product.backToProducts') || 'Back to Products'}
+              </Link>
             </div>
-
           </div>
-        </div>
-
-        <div className="mt-12 border-t pt-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('product.detail')}</h2>
-          <div className="prose max-w-none text-gray-600 whitespace-pre-wrap leading-relaxed">
-            {getEnglishDescription()}
-          </div>
-        </div>
-
-        <div className="mt-12 bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-8 text-center">
-          <h3 className="text-2xl font-bold text-gray-900">{t('product.inquire')}</h3>
-          <p className="mt-2 text-gray-600">{t('contact.inquireDesc')}</p>
-          <Link href="/contact" className="mt-4 inline-block px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition">
-            {t('contact.send')}
-          </Link>
         </div>
       </div>
     </div>
