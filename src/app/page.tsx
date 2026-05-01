@@ -92,15 +92,9 @@ async function getData() {
     }),
     prisma.video.findMany({ orderBy: { sortOrder: 'asc' } }),
   ])
-  // ... existing code ...
   // 构建 settings map
   const settingsMap: Record<string, string> = {}
   settings.forEach(s => { settingsMap[s.key] = s.value })
-
-  const t = (key: string) => {
-    // 这里只是占位，实际在组件中用 serverT
-    return key
-  }
 
   return {
     categories,
@@ -132,7 +126,7 @@ export default async function HomePage() {
     <div>
       {/* Hero Section */}
       <section className="relative">
-        <HeroSwiper items={heroItems} lang={lang} />
+        <HeroSwiper items={heroItems} heroTitle={heroTitle} />
       </section>
 
       {/* Products Section */}
@@ -352,12 +346,12 @@ export default async function HomePage() {
                 </div>
               )}
               {/* WeChat - only show if visible or logged in */}
-              {(isLoggedIn || settings.show_wechat !== 'false') && settings.wechat && (
+              {(isLoggedIn || settings.show_wechat !== 'false') && (
                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                   <span className="text-2xl">💚</span>
                   <div>
                     <p className="font-semibold text-gray-900">{serverT('contact.wechat' as any, lang)}</p>
-                    <p className="text-sm text-gray-500">{settings.wechat}</p>
+                    <p className="text-sm text-gray-500">{settings.wechat || 'EA_YONG'}</p>
                   </div>
                 </div>
               )}

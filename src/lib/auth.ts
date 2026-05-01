@@ -1,9 +1,9 @@
 import { SignJWT, jwtVerify } from 'jose'
 import { NextRequest } from 'next/server'
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.RESET_SECRET || 'vaporx-jwt-secret-key-2024'
+const JWT_SECRET = process.env.JWT_SECRET
 const encoder = new TextEncoder()
-const secretKey = encoder.encode(JWT_SECRET)
+const secretKey = JWT_SECRET ? encoder.encode(JWT_SECRET) : encoder.encode('fallback-do-not-use-in-production')
 
 const TOKEN_EXPIRY = '24h'
 

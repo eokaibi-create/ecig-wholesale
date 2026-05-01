@@ -50,7 +50,14 @@ async function main() {
   for (const c of customers) {
     await prisma.customer.upsert({
       where: { email: c.email },
-      update: {},
+      update: {
+        name: c.name,
+        phone: c.phone,
+        company: c.company,
+        state: c.state,
+        approved: c.approved,
+        password: c.password || undefined,
+      },
       create: {
         name: c.name,
         email: c.email,

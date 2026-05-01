@@ -7,7 +7,7 @@ import nodemailer from 'nodemailer'
 const SMTP_HOST = process.env.SMTP_HOST || 'smtpout.secureserver.net'
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465')
 const SMTP_USER = process.env.SMTP_USER || 'sales@okaibiglobal.com'
-const SMTP_PASS = process.env.SMTP_PASS || '12138Ekke'
+const SMTP_PASS = process.env.SMTP_PASS
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sales@okaibiglobal.com'
 const EMAIL_FROM = process.env.EMAIL_FROM || 'sales@okaibiglobal.com'
 
@@ -17,6 +17,9 @@ const EMAIL_FROM = process.env.EMAIL_FROM || 'sales@okaibiglobal.com'
  * causing "Greeting never received" errors. Always create a new connection.
  */
 function createTransporter(): nodemailer.Transporter {
+  if (!SMTP_PASS) {
+    throw new Error('SMTP_PASS environment variable is not set')
+  }
   return nodemailer.createTransport({
     host: SMTP_HOST,
     port: SMTP_PORT,
@@ -41,23 +44,25 @@ interface SendEmailParams {
  * Always creates a fresh connection to avoid stale connection issues in serverless.
  */
 export async function sendEmail({ to, subject, html, replyTo, from }: SendEmailParams) {
-  const transporter = createTransporter()
   try {
-    const info = await transporter.sendMail({
-      from: `VAPOR-X <${from || EMAIL_FROM}>`,
-      to,
-      subject,
-      html,
-      replyTo: replyTo || from || EMAIL_FROM,
-    })
+    const transporter = createTransporter()
+    try {
+      const info = await transporter.sendMail({
+        from: `VAPOR-X <${from || EMAIL_FROM}>`,
+        to,
+        subject,
+        html,
+        replyTo: replyTo || from || EMAIL_FROM,
+      })
 
-    console.log('[Email] Sent successfully:', info.messageId)
-    return { success: true, id: info.messageId }
+      console.log('[Email] Sent successfully:', info.messageId)
+      return { success: true, id: info.messageId }
+    } finally {
+      transporter.close()
+    }
   } catch (error) {
     console.error('[Email] Send error:', error)
     return { success: false, error: 'Failed to send email' }
-  } finally {
-    transporter.close()
   }
 }
 
