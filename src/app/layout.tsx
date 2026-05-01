@@ -8,7 +8,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { cookies, headers } from "next/headers";
-import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +19,7 @@ function detectServerLang(acceptLanguage: string | null): 'zh' | 'en' {
 }
 
 const SITE_NAME = 'VAPOR-X'
-const SITE_URL = 'https://ecig-wholesale.vercel.app'
+const SITE_URL = 'https://okaibiglobal.com'
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || ''
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -148,20 +147,22 @@ export default async function RootLayout({
       <head>
         {/* Google Search Console 验证 */}
         <meta name="google-site-verification" content="UJbpC_2y6q0h6OGZlObTZ2shiTlPJii3tMdQCUxQ0dE" />
-        {/* Google Analytics */}
+        {/* Google Analytics - 使用普通 script 标签确保在 HTML 源码中可见 */}
         {GA_ID && (
           <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${GA_ID}', {
-                  page_path: window.location.pathname,
-                });
-              `}
-            </Script>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_ID}', {
+                    page_path: window.location.pathname,
+                  });
+                `,
+              }}
+            />
           </>
         )}
         {/* JSON-LD Structured Data */}

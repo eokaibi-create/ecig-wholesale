@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const baseUrl = 'https://ecig-wholesale.vercel.app'
+  const baseUrl = 'https://okaibiglobal.com'
 
   // 获取所有已发布的产品
   const products = await prisma.product.findMany({
@@ -46,40 +46,57 @@ export async function GET() {
 </url>
 <url>
 <loc>${baseUrl}/brands</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/brands" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/brands" />
 <lastmod>${today}</lastmod>
 <changefreq>weekly</changefreq>
 <priority>0.8</priority>
 </url>
 <url>
 <loc>${baseUrl}/categories</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/categories" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/categories" />
 <lastmod>${today}</lastmod>
 <changefreq>weekly</changefreq>
 <priority>0.7</priority>
 </url>
 <url>
 <loc>${baseUrl}/contact</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/contact" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/contact" />
 <lastmod>${today}</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.7</priority>
 </url>
 <url>
 <loc>${baseUrl}/about</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/about" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/about" />
 <lastmod>${today}</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.7</priority>
 </url>
 <url>
 <loc>${baseUrl}/login</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/login" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/login" />
+<lastmod>${today}</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.4</priority>
 </url>
 <url>
 <loc>${baseUrl}/register</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/register" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/register" />
+<lastmod>${today}</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
 <url>
 <loc>${baseUrl}/cart</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/cart" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/cart" />
+<lastmod>${today}</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.3</priority>
 </url>`
@@ -89,6 +106,9 @@ export async function GET() {
     xml += `
 <url>
 <loc>${baseUrl}/products?category=${cat.slug}</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/products?category=${cat.slug}" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/products?category=${cat.slug}" />
+<lastmod>${today}</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.6</priority>
 </url>`
@@ -99,12 +119,15 @@ export async function GET() {
     xml += `
 <url>
 <loc>${baseUrl}/products?brand=${brand.slug}</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/products?brand=${brand.slug}" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/products?brand=${brand.slug}" />
+<lastmod>${today}</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.6</priority>
 </url>`
   }
 
-  // 添加产品详情页面（包含 hreflang 标签）
+  // 添加产品详情页面
   for (const product of products) {
     const lastmod = product.updatedAt.toISOString().split('T')[0]
     xml += `
