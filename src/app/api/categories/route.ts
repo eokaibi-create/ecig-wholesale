@@ -3,24 +3,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 
 export async function GET() {
-  const categories = await prisma.category.findMany({
-    include: { _count: { select: { products: true } } },
-    orderBy: { sortOrder: 'asc' },
-  })
-  return NextResponse.json(categories)
+ const categories = await prisma.category.findMany({
+ include: { _count: { select: { products: true } } },
+ orderBy: { sortOrder: 'asc' },
+ })
+ return NextResponse.json(categories)
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await requireAdmin(request)
-  if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
-  }
+ const auth = await requireAdmin(request)
+ if (!auth.authorized) {
+ return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+ }
 
-  try {
-    const data = await request.json()
-    const category = await prisma.category.create({ data })
-    return NextResponse.json(category)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
-  }
+ try {
+ const data = await request.json()
+ const category = await prisma.category.create({ data })
+ return NextResponse.json(category)
+ } catch (error: any) {
+ return NextResponse.json({ error: error.message }, { status: 400 })
+ }
 }

@@ -4,119 +4,119 @@ import bcrypt from 'bcryptjs'
 import { requireAdmin } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
-  const auth = await requireAdmin(request)
-  if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
-  }
-  try {
-    const admins = await prisma.admin.findMany({
-      select: { id: true, username: true, email: true, role: true, createdAt: true },
-      orderBy: { createdAt: 'asc' },
-    })
-    return NextResponse.json(admins)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
+ const auth = await requireAdmin(request)
+ if (!auth.authorized) {
+ return NextResponse.json({ error: auth.error?.message }, { status: auth.error?.status || 401 })
+ }
+ try {
+ const admins = await prisma.admin.findMany({
+ select: { id: true, username: true, email: true, role: true, createdAt: true },
+ orderBy: { createdAt: 'asc' },
+ })
+ return NextResponse.json(admins)
+ } catch (error: any) {
+ return NextResponse.json({ error: error.message }, { status: 500 })
+ }
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    // 仅 superadmin 可创建管理员
-    const auth = await requireAdmin(request, ['superadmin'])
-    if (!auth.authorized) {
-      return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
-    }
+ try {
+ // 仅 superadmin 可创建管理员
+ const auth = await requireAdmin(request, ['superadmin'])
+ if (!auth.authorized) {
+ return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
+ }
 
-    const data = await request.json()
+ const data = await request.json()
 
-    if (data.password && data.password.length < 8) {
-      return NextResponse.json({ error: '密码长度至少 8 位' }, { status: 400 })
-    }
+ if (data.password && data.password.length < 8) {
+ return NextResponse.json({ error: '密码长度至少 8 位' }, { status: 400 })
+ }
 
-    const existing = await prisma.admin.findFirst({
-      where: { OR: [{ username: data.username }, { email: data.email }] }
-    })
-    if (existing) return NextResponse.json({ error: '用户名或邮箱已存在' }, { status: 400 })
-    
-    const hash = await bcrypt.hash(data.password, 12)
-    const admin = await prisma.admin.create({
-      data: {
-        username: data.username,
-        email: data.email,
-        password: hash,
-        role: data.role || 'admin',
-      },
-      select: { id: true, username: true, email: true, role: true, createdAt: true },
-    })
-    return NextResponse.json(admin)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
-  }
+ const existing = await prisma.admin.findFirst({
+ where: { OR: [{ username: data.username }, { email: data.email }] }
+ })
+ if (existing) return NextResponse.json({ error: '用户名或邮箱已存在' }, { status: 400 })
+ 
+ const hash = await bcrypt.hash(data.password, 12)
+ const admin = await prisma.admin.create({
+ data: {
+ username: data.username,
+ email: data.email,
+ password: hash,
+ role: data.role || 'admin',
+ },
+ select: { id: true, username: true, email: true, role: true, createdAt: true },
+ })
+ return NextResponse.json(admin)
+ } catch (error: any) {
+ return NextResponse.json({ error: error.message }, { status: 400 })
+ }
 }
 
 export async function PUT(request: NextRequest) {
-  try {
-    // 仅 superadmin 可编辑管理员
-    const auth = await requireAdmin(request, ['superadmin'])
-    if (!auth.authorized) {
-      return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
-    }
+ try {
+ // 仅 superadmin 可编辑管理员
+ const auth = await requireAdmin(request, ['superadmin'])
+ if (!auth.authorized) {
+ return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
+ }
 
-    const { id, username, email, password, role } = await request.json()
-    if (!id) return NextResponse.json({ error: '缺少ID' }, { status: 400 })
+ const { id, username, email, password, role } = await request.json()
+ if (!id) return NextResponse.json({ error: '缺少ID' }, { status: 400 })
 
-    if (password && password.length < 8) {
-      return NextResponse.json({ error: '密码长度至少 8 位' }, { status: 400 })
-    }
+ if (password && password.length < 8) {
+ return NextResponse.json({ error: '密码长度至少 8 位' }, { status: 400 })
+ }
 
-    // 检查用户名/邮箱是否被其他管理员占用
-    const existing = await prisma.admin.findFirst({
-      where: {
-        OR: [
-          ...(username ? [{ username }] : []),
-          ...(email ? [{ email }] : []),
-        ],
-        NOT: { id: Number(id) },
-      }
-    })
-    if (existing) {
-      const field = existing.username === username ? '用户名' : '邮箱'
-      return NextResponse.json({ error: `${field}已被其他管理员使用` }, { status: 400 })
-    }
+ // 检查用户名/邮箱是否被其他管理员占用
+ const existing = await prisma.admin.findFirst({
+ where: {
+ OR: [
+ ...(username ? [{ username }] : []),
+ ...(email ? [{ email }] : []),
+ ],
+ NOT: { id: Number(id) },
+ }
+ })
+ if (existing) {
+ const field = existing.username === username ? '用户名' : '邮箱'
+ return NextResponse.json({ error: `${field}已被其他管理员使用` }, { status: 400 })
+ }
 
-    const data: any = {}
-    if (username !== undefined) data.username = username
-    if (email !== undefined) data.email = email
-    if (role !== undefined) data.role = role
-    if (password) {
-      data.password = await bcrypt.hash(password, 12)
-    }
+ const data: any = {}
+ if (username !== undefined) data.username = username
+ if (email !== undefined) data.email = email
+ if (role !== undefined) data.role = role
+ if (password) {
+ data.password = await bcrypt.hash(password, 12)
+ }
 
-    const admin = await prisma.admin.update({
-      where: { id: Number(id) },
-      data,
-      select: { id: true, username: true, email: true, role: true, createdAt: true },
-    })
-    return NextResponse.json(admin)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
-  }
+ const admin = await prisma.admin.update({
+ where: { id: Number(id) },
+ data,
+ select: { id: true, username: true, email: true, role: true, createdAt: true },
+ })
+ return NextResponse.json(admin)
+ } catch (error: any) {
+ return NextResponse.json({ error: error.message }, { status: 400 })
+ }
 }
 
 export async function DELETE(request: NextRequest) {
-  try {
-    // 仅 superadmin 可删除管理员
-    const auth = await requireAdmin(request, ['superadmin'])
-    if (!auth.authorized) {
-      return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
-    }
+ try {
+ // 仅 superadmin 可删除管理员
+ const auth = await requireAdmin(request, ['superadmin'])
+ if (!auth.authorized) {
+ return NextResponse.json({ error: auth.error!.message }, { status: auth.error!.status })
+ }
 
-    const { searchParams } = new URL(request.url)
-    const id = searchParams.get('id')
-    if (!id) return NextResponse.json({ error: '缺少ID' }, { status: 400 })
-    await prisma.admin.delete({ where: { id: Number(id) } })
-    return NextResponse.json({ success: true })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
-  }
+ const { searchParams } = new URL(request.url)
+ const id = searchParams.get('id')
+ if (!id) return NextResponse.json({ error: '缺少ID' }, { status: 400 })
+ await prisma.admin.delete({ where: { id: Number(id) } })
+ return NextResponse.json({ success: true })
+ } catch (error: any) {
+ return NextResponse.json({ error: error.message }, { status: 400 })
+ }
 }
