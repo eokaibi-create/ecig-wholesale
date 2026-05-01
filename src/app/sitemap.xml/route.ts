@@ -63,6 +63,12 @@ export async function GET() {
 <priority>0.7</priority>
 </url>
 <url>
+<loc>${baseUrl}/about</loc>
+<lastmod>${today}</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
 <loc>${baseUrl}/login</loc>
 <changefreq>monthly</changefreq>
 <priority>0.4</priority>
@@ -76,11 +82,6 @@ export async function GET() {
 <loc>${baseUrl}/cart</loc>
 <changefreq>monthly</changefreq>
 <priority>0.3</priority>
-</url>
-<url>
-<loc>${baseUrl}/about</loc>
-<changefreq>monthly</changefreq>
-<priority>0.6</priority>
 </url>`
 
   // 添加分类页面
@@ -103,17 +104,7 @@ export async function GET() {
 </url>`
   }
 
-  // 添加品牌详情页
-  for (const brand of brands) {
-    xml += `
-<url>
-<loc>${baseUrl}/brands/${brand.slug}</loc>
-<changefreq>weekly</changefreq>
-<priority>0.6</priority>
-</url>`
-  }
-
-  // 添加产品详情页面
+  // 添加产品详情页面（包含 hreflang 标签）
   for (const product of products) {
     const lastmod = product.updatedAt.toISOString().split('T')[0]
     xml += `

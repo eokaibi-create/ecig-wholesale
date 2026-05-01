@@ -172,3 +172,13 @@ model HeroVideo {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// 邮件订阅
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  lang      String   @default("zh")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

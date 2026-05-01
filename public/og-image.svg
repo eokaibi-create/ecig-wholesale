@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#1F2937"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="900" cy="200" r="400" fill="url(#accent)"/>
+  <circle cx="300" cy="500" r="300" fill="url(#accent)"/>
+
+  <!-- Decorative line -->
+  <line x1="80" y1="200" x2="350" y2="200" stroke="#FBBF24" stroke-width="3" opacity="0.4"/>
+  <line x1="80" y1="210" x2="280" y2="210" stroke="#FBBF24" stroke-width="1.5" opacity="0.2"/>
+
+  <!-- Logo / Brand -->
+  <text x="80" y="180" font-family="Arial,Helvetica,sans-serif" font-size="100" font-weight="900" fill="url(#gold)">VAPOR-X</text>
+
+  <!-- Tagline -->
+  <text x="80" y="250" font-family="Arial,Helvetica,sans-serif" font-size="28" fill="#9CA3AF" font-weight="300" letter-spacing="6">PREMIUM VAPE WHOLESALE SUPPLIER</text>
+
+  <!-- Key selling points -->
+  <g transform="translate(80, 340)">
+    <rect x="0" y="0" width="360" height="50" rx="25" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+    <text x="180" y="32" font-family="Arial,Helvetica,sans-serif" font-size="20" fill="#FBBF24" text-anchor="middle" font-weight="bold">🇺🇸  USA Nationwide Shipping</text>
+  </g>
+  <g transform="translate(80, 405)">
+    <rect x="0" y="0" width="360" height="50" rx="25" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+    <text x="180" y="32" font-family="Arial,Helvetica,sans-serif" font-size="20" fill="#FBBF24" text-anchor="middle" font-weight="bold">🏭  Factory Direct Wholesale</text>
+  </g>
+  <g transform="translate(80, 470)">
+    <rect x="0" y="0" width="360" height="50" rx="25" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+    <text x="180" y="32" font-family="Arial,Helvetica,sans-serif" font-size="20" fill="#FBBF24" text-anchor="middle" font-weight="bold">🚀  500+ MOQ</text>
+  </g>
+
+  <!-- Vapor image / illustration -->
+  <g transform="translate(750, 100)">
+    <text font-family="Arial,Helvetica,sans-serif" font-size="260" fill="#FBBF24" opacity="0.15" font-weight="900">V</text>
+  </g>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="600" width="1200" height="30" fill="#FBBF24" opacity="0.9"/>
+  <text x="600" y="620" font-family="Arial,Helvetica,sans-serif" font-size="14" fill="#111827" text-anchor="middle" font-weight="bold">WHOLESALE · BRANDS · DISPOSABLE · POD · E-LIQUID</text>
+
+  <!-- Contact -->
+  <text x="800" y="550" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#6B7280">🌐  ecig-wholesale.vercel.app</text>
+</svg>
