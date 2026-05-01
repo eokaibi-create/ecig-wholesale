@@ -56,8 +56,6 @@ const settingGroups = [
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [seeding, setSeeding] = useState(false)
-  const [seedMessage, setSeedMessage] = useState('')
 
   useEffect(() => {
     fetch('/api/settings')
@@ -68,26 +66,6 @@ export default function AdminSettingsPage() {
       })
       .catch(() => setLoading(false))
   }, [])
-
-  const handleSeed = async () => {
-    if (!confirm('确定要导入示例数据吗？\n\n这将会创建/更新以下内容：\n• 8 个品牌（Elf Bar、Geek Bar、Lost Mary 等）\n• 6 个产品分类\n• 23 个示例产品（包含热门产品）\n\n已经存在的数据会被更新，不会删除现有数据。')) return
-
-    setSeeding(true)
-    setSeedMessage('')
-
-    try {
-      const res = await fetch('/api/admin/seed', { method: 'POST' })
-      const data = await res.json()
-      if (res.ok) {
-        setSeedMessage('✅ ' + data.message)
-      } else {
-        setSeedMessage('❌ ' + (data.error || '导入失败'))
-      }
-    } catch {
-      setSeedMessage('❌ 网络错误，请稍后重试')
-    }
-    setSeeding(false)
-  }
 
   const settingMap = Object.fromEntries(settings.map(s => [s.key, s.value]))
 
@@ -104,34 +82,9 @@ export default function AdminSettingsPage() {
   return (
     <AdminLayout active="系统设置">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900"> 系统设置</h1>
-            <p className="text-sm text-gray-500 mt-1">所有设置实时生效，修改后无需重启</p>
-          </div>
-
-          {/* 导入示例数据按钮 */}
-          <div className="text-right">
-            <button
-              onClick={handleSeed}
-              disabled={seeding}
-              className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-medium rounded-lg transition text-sm flex items-center gap-2"
-            >
-              {seeding ? (
-                <>
-                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                  导入中...
-                </>
-              ) : (
-                ' 导入示例数据'
-              )}
-            </button>
-            {seedMessage && (
-              <p className={`text-xs mt-2 ${seedMessage.startsWith('✅') ? 'text-green-600' : 'text-red-600'}`}>
-                {seedMessage}
-              </p>
-            )}
-          </div>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900"> 系统设置</h1>
+          <p className="text-sm text-gray-500 mt-1">所有设置实时生效，修改后无需重启</p>
         </div>
 
         <form action="/api/settings" method="POST" className="space-y-6">
