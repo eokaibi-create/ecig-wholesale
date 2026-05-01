@@ -161,7 +161,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
  'product.title': '产品中心',
  'product.desc': '全系列产品，满足各类批发需求',
  'product.all': '全部',
- 'product.none': '暂无产品',
+ 'product.none': 'Coming Soon',
  'product.addToCart': '加入购物车',
  'product.added': '已加入购物车 ',
  'product.quantity': '数量',
@@ -206,7 +206,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
 
  'product.emptyDesc': '浏览我们的产品目录，发现更多选择',
  'product.addInAdmin': '去后台添加产品 →',
- 'products.emptyDesc': '浏览我们的产品目录，发现更多选择',
+ 'products.emptyDesc': '我们的产品目录即将上线，敬请期待',
  'products.withBrand': '产品',
  'products.brandSeries': '系列产品批发',
 
@@ -526,7 +526,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
  'product.title': 'Products',
  'product.desc': 'Full range of products for all wholesale needs',
  'product.all': 'All',
- 'product.none': 'No products yet',
+ 'product.none': 'Coming Soon',
  'product.addToCart': 'Add to Cart',
  'product.added': 'Added to Cart ',
  'product.quantity': 'Qty',
@@ -570,7 +570,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
 
  'product.emptyDesc': 'Browse our product catalog for more choices',
  'product.addInAdmin': 'Add products in admin →',
- 'products.emptyDesc': 'Browse our product catalog for more choices',
+ 'products.emptyDesc': 'Our product catalog is coming soon, stay tuned',
  'products.withBrand': 'Products',
  'products.brandSeries': 'Wholesale Series',
 
