@@ -77,7 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
       googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 },
     },
     verification: {
-      google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || '',
+      google: 'UJbpC_2y6q0h6OGZlObTZ2shiTlPJii3tMdQCUxQ0dE',
     },
     keywords: lang === 'zh'
       ? ['电子烟批发', '一次性电子烟', '美国电子烟', 'VAPE批发', '烟油批发', '电子烟供应商', 'ELF BAR批发', 'Geek Bar批发']
@@ -146,6 +146,8 @@ export default async function RootLayout({
   return (
     <html lang={lang === "en" ? "en-US" : "zh-CN"}>
       <head>
+        {/* Google Search Console 验证 */}
+        <meta name="google-site-verification" content="UJbpC_2y6q0h6OGZlObTZ2shiTlPJii3tMdQCUxQ0dE" />
         {/* Google Analytics */}
         {GA_ID && (
           <>
