@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import AgeGate from "@/components/AgeGate";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { cookies, headers } from "next/headers";
 
@@ -62,6 +63,7 @@ export default async function RootLayout({
  <html lang={lang === "en" ? "en-US" : "zh-CN"}>
  <body className={`${inter.className} bg-white text-gray-900 min-h-screen flex flex-col`}>
  <LanguageProvider defaultLang={lang}>
+ <AgeGate />
  <Header />
  <main className="flex-1">{children}</main>
  <Footer />
