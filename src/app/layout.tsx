@@ -4,7 +4,6 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AgeGate from "@/components/AgeGate";
-import Analytics from "@/components/Analytics";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { cookies, headers } from "next/headers";
 
@@ -68,7 +67,6 @@ export default async function RootLayout({
  <Header />
  <main className="flex-1">{children}</main>
  <Footer />
- <Analytics />
  </LanguageProvider>
  </body>
  </html>
