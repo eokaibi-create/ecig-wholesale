@@ -2,23 +2,34 @@
 
 import { useState, useEffect } from 'react'
 
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000 // 2小时
+
 export default function AgeGate() {
   const [show, setShow] = useState(false)
   const [declined, setDeclined] = useState(false)
 
   useEffect(() => {
-    const verified = localStorage.getItem('age_verified')
-    if (!verified) {
-      setShow(true)
-      document.body.style.overflow = 'hidden'
+    const stored = localStorage.getItem('age_verified')
+    if (stored) {
+      const timestamp = parseInt(stored, 10)
+      const elapsed = Date.now() - timestamp
+      if (elapsed < TWO_HOURS_MS) {
+        // 2小时内，不显示弹窗
+        return
+      }
     }
+    // 未验证或已过期
+    setShow(true)
+    document.body.style.overflow = 'hidden'
+
     return () => {
       document.body.style.overflow = ''
     }
   }, [])
 
   const handleYes = () => {
-    localStorage.setItem('age_verified', 'true')
+    // 存储当前时间戳
+    localStorage.setItem('age_verified', String(Date.now()))
     setShow(false)
     document.body.style.overflow = ''
   }
