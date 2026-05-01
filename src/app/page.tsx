@@ -1,10 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { prisma } from '@/lib/prisma'
-import HeroSwiper from '@/components/HeroSwiper'
 import { getServerLang, serverT, type Lang } from '@/i18n/server'
 import { cookies } from 'next/headers'
 import { verifyToken } from '@/lib/auth'
+
+// 动态导入 HeroSwiper（客户端组件），减少首屏 JS
+const HeroSwiper = dynamic(() => import('@/components/HeroSwiper'), {
+  ssr: true,
+})
 
 export async function generateMetadata(): Promise<Metadata> {
  const lang = await getServerLang()
@@ -134,7 +140,7 @@ export default async function HomePage() {
  <p className="mt-2 md:mt-4 text-sm md:text-base text-gray-500">{serverT('product.desc' as any, lang)}</p>
  </div>
  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
- {products.map((product) => {
+ {products.map((product, idx) => {
  const displayPrice = getDisplayPrice(product, customerType)
  return (
  <Link
@@ -144,10 +150,13 @@ export default async function HomePage() {
  >
  <div className="aspect-square bg-gray-50 relative overflow-hidden">
  {product.images && product.images.length > 0 ? (
- <img
+ <Image
  src={product.images[0]}
  alt={product.name}
- className="w-full h-full object-contain p-2 md:p-4 group-hover:scale-105 transition-transform duration-500"
+ fill
+ sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
+ className="object-contain p-2 md:p-4 group-hover:scale-105 transition-transform duration-500"
+ priority={idx < 2}
  />
  ) : (
  <div className="w-full h-full flex items-center justify-center text-gray-300">
@@ -157,7 +166,7 @@ export default async function HomePage() {
  </div>
  )}
  {product.featured && (
- <span className="absolute top-1 left-1 md:top-2 md:left-2 bg-red-500 text-white text-[10px] md:text-xs px-1.5 py-0.5 md:px-2 md:py-1 rounded-full">
+ <span className="absolute top-1 left-1 md:top-2 md:left-2 bg-red-500 text-white text-[10px] md:text-xs px-1.5 py-0.5 md:px-2 md:py-1 rounded-full z-10">
  {serverT('product.hot' as any, lang)}
  </span>
  )}
@@ -211,11 +220,15 @@ export default async function HomePage() {
  className="group flex flex-col items-center p-3 md:p-6 bg-white rounded-lg md:rounded-xl border border-gray-100 hover:shadow-md transition-all"
  >
  {brand.logo ? (
- <img
+ <div className="relative w-full h-8 md:h-16 mb-2 md:mb-3">
+ <Image
  src={brand.logo}
  alt={brand.name}
- className="h-8 md:h-16 w-auto object-contain mb-2 md:mb-3 group-hover:scale-110 transition-transform"
+ fill
+ sizes="(max-width: 640px) 33vw, 16vw"
+ className="object-contain group-hover:scale-110 transition-transform"
  />
+ </div>
  ) : (
  <div className="h-8 w-8 md:h-16 md:w-16 bg-gray-100 rounded-full flex items-center justify-center mb-2 md:mb-3">
  <span className="text-sm md:text-2xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
@@ -239,7 +252,9 @@ export default async function HomePage() {
  {platforms.map((platform) => (
  <div key={platform.id} className="bg-white rounded-lg md:rounded-xl border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow">
  {platform.logo && (
- <img src={platform.logo} alt={platform.name} className="h-8 md:h-12 object-contain mb-3 md:mb-4" />
+ <div className="relative h-8 md:h-12 mb-3 md:mb-4">
+ <Image src={platform.logo} alt={platform.name} fill sizes="25vw" className="object-contain" />
+ </div>
  )}
  <h3 className="text-sm md:text-base font-semibold text-gray-900 mb-1 md:mb-2">{platform.name}</h3>
  {platform.description && (
@@ -267,25 +282,28 @@ export default async function HomePage() {
  <video
  src={video.url}
  controls
+ preload="metadata"
+ poster={video.poster || undefined}
  className="w-full h-full object-cover"
- poster={video.cover || undefined}
- title={video.title}
- />
+ /* 添加 loading="lazy" 属性给视频 */
+ >
+ {/* 降级提示 */}
+ <p className="text-xs text-gray-400 p-2">Your browser does not support the video tag.</p>
+ </video>
  ) : (
- <div className="w-full h-full flex items-center justify-center text-gray-400">
- <svg className="w-8 h-8 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+ <div className="w-full h-full flex items-center justify-center text-gray-300">
+ <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
  </svg>
  </div>
  )}
  </div>
+ {video.title && (
  <div className="p-3 md:p-4">
- <h3 className="text-sm md:text-base font-semibold text-gray-900">{video.title}</h3>
- {video.description && (
- <p className="text-xs md:text-sm text-gray-500 mt-1">{video.description}</p>
- )}
+ <p className="text-xs md:text-sm font-medium text-gray-700">{video.title}</p>
  </div>
+ )}
  </div>
  ))}
  </div>
@@ -299,65 +317,42 @@ export default async function HomePage() {
  <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{contactTitle}</h2>
  <p className="mt-2 md:mt-4 text-sm md:text-base text-gray-500">{serverT('contact.desc' as any, lang)}</p>
  </div>
- <div className="max-w-2xl mx-auto">
- <div className="bg-white rounded-lg md:rounded-xl border border-gray-100 p-4 md:p-8">
- <div className="space-y-3 md:space-y-4">
- {(isLoggedIn || settings.show_whatsapp !== 'false') && (
- <a href={'https://wa.me/' + (settings.whatsapp || '+13239260829').replace(/[^0-9]/g, '')} target="_blank" rel="noopener noreferrer"
- className="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg hover:bg-green-50 transition-colors">
- <span className="text-xl md:text-2xl">💬</span>
- <div>
- <p className="text-sm md:text-base font-semibold text-gray-900">{serverT('contact.whatsapp' as any, lang)}</p>
- <p className="text-xs md:text-sm text-gray-500">{settings.whatsapp || '+1 (323) 926-0829'}</p>
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+ <div className="bg-white rounded-lg md:rounded-xl border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow">
+ <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-green-100 flex items-center justify-center mb-3">
+ <svg className="w-5 h-5 md:w-6 md:h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+ </svg>
  </div>
- </a>
- )}
- {(isLoggedIn || settings.show_email !== 'false') && (
- <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg">
- <span className="text-xl md:text-2xl">📧</span>
- <div>
- <p className="text-sm md:text-base font-semibold text-gray-900">{serverT('contact.email' as any, lang)}</p>
- <p className="text-xs md:text-sm text-gray-500">{settings.email || 'sales@okaibiglobal.com'}</p>
+ <h3 className="text-sm md:text-base font-semibold text-gray-900 mb-1">WhatsApp</h3>
+ <a href="https://wa.me/13239260829" className="text-xs md:text-sm text-blue-600 hover:underline break-all">+13239260829</a>
  </div>
+ <div className="bg-white rounded-lg md:rounded-xl border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow">
+ <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
+ <svg className="w-5 h-5 md:w-6 md:h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+ </svg>
  </div>
- )}
- {(isLoggedIn || settings.show_phone !== 'false') && (
- <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg">
- <span className="text-xl md:text-2xl">📞</span>
- <div>
- <p className="text-sm md:text-base font-semibold text-gray-900">{serverT('contact.phone' as any, lang)}</p>
- <p className="text-xs md:text-sm text-gray-500">{settings.phone || '+1 (323) 926-0829'}</p>
+ <h3 className="text-sm md:text-base font-semibold text-gray-900 mb-1">Email</h3>
+ <a href="mailto:sales@okaibiglobal.com" className="text-xs md:text-sm text-blue-600 hover:underline break-all">sales@okaibiglobal.com</a>
  </div>
+ <div className="bg-white rounded-lg md:rounded-xl border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow">
+ <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-purple-100 flex items-center justify-center mb-3">
+ <svg className="w-5 h-5 md:w-6 md:h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+ </svg>
  </div>
- )}
- {(isLoggedIn || settings.show_address !== 'false') && (
- <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg">
- <span className="text-xl md:text-2xl">📍</span>
- <div>
- <p className="text-sm md:text-base font-semibold text-gray-900">{serverT('contact.address' as any, lang)}</p>
- <p className="text-xs md:text-sm text-gray-500">{settings.address || 'Los Angeles, CA'}</p>
+ <h3 className="text-sm md:text-base font-semibold text-gray-900 mb-1">Phone</h3>
+ <a href="tel:+601123093400" className="text-xs md:text-sm text-blue-600 hover:underline">+60 11 2309 3400</a>
  </div>
+ <div className="bg-white rounded-lg md:rounded-xl border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow">
+ <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-green-100 flex items-center justify-center mb-3">
+ <svg className="w-5 h-5 md:w-6 md:h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+ </svg>
  </div>
- )}
- {(isLoggedIn || settings.show_wechat !== 'false') && (
- <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg">
- <span className="text-xl md:text-2xl">💚</span>
- <div>
- <p className="text-sm md:text-base font-semibold text-gray-900">{serverT('contact.wechat' as any, lang)}</p>
- <p className="text-xs md:text-sm text-gray-500">{settings.wechat || 'EA_YONG'}</p>
- </div>
- </div>
- )}
-
- {(!isLoggedIn && settings.show_whatsapp === 'false' && settings.show_email === 'false' && settings.show_phone === 'false' && settings.show_address === 'false' && settings.show_wechat === 'false') && (
- <div className="text-center py-6 md:py-8 text-gray-400">
- <p className="text-xs md:text-sm">{serverT('contact.contactHidden' as any, lang)}</p>
- <Link href="/login" className="text-amber-600 hover:underline text-xs md:text-sm mt-2 inline-block">
- {serverT('login.title' as any, lang)}
- </Link>
- </div>
- )}
- </div>
+ <h3 className="text-sm md:text-base font-semibold text-gray-900 mb-1">WeChat</h3>
+ <p className="text-xs md:text-sm text-gray-600">EA_YONG</p>
  </div>
  </div>
  </section>

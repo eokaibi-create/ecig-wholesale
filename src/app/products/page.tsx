@@ -162,7 +162,7 @@ export default async function ProductsPage({
                   className={`h-8 md:h-10 px-2 md:px-3 flex items-center border rounded-lg transition ${
                     params.brand === b.slug ? 'border-amber-400 bg-amber-50' : 'border-gray-100 hover:border-amber-200'
                   }`}>
-                  {b.logo && <img src={b.logo} alt={b.name} className="h-4 md:h-6 w-auto" />}
+                  {b.logo && <img src={b.logo} alt={b.name} className="h-4 md:h-6 w-auto" loading="lazy" width="48" height="24" />}
                 </Link>
               ))}
             </div>
@@ -185,7 +185,7 @@ export default async function ProductsPage({
               <Link key={product.id} href={`/products/${product.slug}`} className="group bg-white border border-gray-200 rounded-lg md:rounded-xl overflow-hidden hover:shadow-lg hover:border-amber-300 transition-all">
                 <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-3 md:p-6">
                   {product.image ? (
-                    <img src={product.image} alt={product.name} className="w-full h-full object-contain" />
+                    <img src={product.image} alt={product.name} className="w-full h-full object-contain" loading="lazy" width="400" height="300" />
                   ) : (
                     <div className="text-3xl md:text-6xl">📦</div>
                   )}

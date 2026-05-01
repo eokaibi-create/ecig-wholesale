@@ -55,7 +55,8 @@ export default function Header() {
  <Link href="/contact" className="hover:text-amber-400 transition">{t('nav.contact')}</Link>
  </nav>
 
- <div className="hidden md:flex items-center space-x-3">
+ {/* 固定高度占位，防止 CLS 跳动 */}
+ <div className="hidden md:flex items-center space-x-3 min-h-[40px]">
  <button
  onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')}
  className="flex items-center space-x-1 px-2 py-1.5 rounded-lg border border-gray-700 hover:border-amber-500 text-xs transition"
@@ -68,7 +69,12 @@ export default function Header() {
  )}
  </button>
 
- {loading ? null : customer ? (
+ {loading ? (
+ /* 加载中占位 - 保持宽度不变 */
+ <div className="flex items-center space-x-2">
+ <div className="w-[70px] h-[38px] bg-gray-800 rounded-lg animate-pulse" />
+ </div>
+ ) : customer ? (
  <div className="relative">
  <button
  onClick={() => setUserMenu(!userMenu)}
@@ -153,7 +159,6 @@ export default function Header() {
  {customer ? (
  <>
  <div className="px-4 py-2 text-sm text-gray-400">{customer.name} - {customer.email}</div>
-
  <Link href="/orders" className="block px-4 py-2 hover:bg-gray-800 rounded" onClick={() => setOpen(false)}> {t('nav.myOrders')}</Link>
  <button onClick={() => { handleLogout(); setOpen(false) }}
  className="block w-full text-left px-4 py-2 text-red-400 hover:bg-gray-800 rounded">{t('nav.logout')}</button>

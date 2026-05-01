@@ -245,7 +245,7 @@ export default function ProductDetailPage() {
                   {allImages[activeImage]?.match(/\.(mp4|webm|ogg|mov)$/i) || allImages[activeImage]?.includes('video') ? (
                     <video src={allImages[activeImage]} controls className="w-full h-full object-contain rounded-lg" />
                   ) : (
-                    <img key={activeImage} src={allImages[activeImage]} alt={product.name}
+                    <img key={activeImage} src={allImages[activeImage]} alt={product.name} width="600" height="600"
                       className="w-full h-full object-contain transition-opacity duration-300" />
                   )}
                 </div>
@@ -259,7 +259,7 @@ export default function ProductDetailPage() {
                         {img.match(/\.(mp4|webm|ogg|mov)$/i) || img.includes('video') ? (
                           <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white text-xl">▶</div>
                         ) : (
-                          <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
+                          <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" loading="lazy" width="80" height="80" />
                         )}
                       </button>
                     ))}

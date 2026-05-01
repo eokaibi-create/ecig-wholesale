@@ -55,7 +55,7 @@ export default async function BrandsPage() {
                 >
                   <div className="h-10 md:h-16 flex items-center justify-center mb-2 md:mb-4">
                     {brand.logo ? (
-                      <img src={brand.logo} alt={brand.name} className="h-full w-auto" />
+                      <img src={brand.logo} alt={brand.name} className="h-full w-auto" loading="lazy" width="120" height="80" />
                     ) : (
                       <span className="text-2xl md:text-4xl">🏷️</span>
                     )}
