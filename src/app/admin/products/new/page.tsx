@@ -379,7 +379,7 @@ export default function NewProductPage() {
  </div>
  <div>
  <label className="block text-sm font-medium text-gray-700 mb-1">
- <span className="text-purple-600">🔮 批发商价 (USD)</span>
+ <span className="text-purple-600"> 批发商价 (USD)</span>
  </label>
  <input type="number" step="0.01" value={form.wholesalerPrice} onChange={e => setForm({ ...form, wholesalerPrice: e.target.value })}
  className="w-full px-4 py-2.5 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"

@@ -492,7 +492,7 @@ function HeroSlidesTab() {
  ) : items.map((item) => (
  <tr key={item.id} className="hover:bg-gray-50">
  <td className="px-4 py-3">
- {item.videoUrl ? : item.image ? <img src={item.image} alt="" className="h-12 w-16 object-cover rounded" />
+ {item.videoUrl ? <span className="text-blue-500 text-xs">Video</span> : item.image ? <img src={item.image} alt="" className="h-12 w-16 object-cover rounded" />
  : <span className="text-gray-300">—</span>}
  </td>
  <td className="px-4 py-3 font-medium text-gray-900">{item.title || '无标题'}</td>

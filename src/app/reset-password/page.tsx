@@ -62,9 +62,7 @@ export default function ResetPasswordPage() {
  }
 
  if (!token && !error) {
- return (
- <div className="min-h-[80vh] flex items-center justify-center bg-gray-50">
- )
+ return null
  }
 
  return (
