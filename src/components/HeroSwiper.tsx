@@ -106,12 +106,11 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
 
   const filteredItems = items.filter(i => i.image || i.videoUrl || i.product?.image)
 
-  // 如果数据库没有产品，显示空状态
-  if (filteredItems.length === 0) {
-    return (
-      <section className="relative bg-gray-900 text-white overflow-hidden min-h-[480px] md:min-h-[560px] flex items-center">
-        {/* 背景视频 */}
-        {bgVideos.length > 0 && bgVideos[currentVideoIdx] && (
+  // 渲染背景视频层
+  const renderBackground = () => {
+    if (bgVideos.length > 0 && bgVideos[currentVideoIdx]) {
+      return (
+        <>
           <div className="absolute inset-0">
             <video
               key={bgVideos[currentVideoIdx].id}
@@ -123,85 +122,101 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
               playsInline
               className="absolute inset-0 w-full h-full object-cover"
             />
-            {/* 视频遮罩 */}
+            {/* 视频遮罩 - 确保文字可读 */}
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-gray-900/70 to-gray-900/85" />
             <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-transparent to-transparent" />
           </div>
-        )}
+        </>
+      )
+    }
+    // 无视频时的装饰背景
+    return (
+      <>
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
+        <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-amber-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-400/5 rounded-full blur-3xl" />
+      </>
+    )
+  }
 
-        {/* 无视频时的装饰 */}
-        {bgVideos.length === 0 && (
-          <>
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
-            <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-amber-500/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-400/5 rounded-full blur-3xl" />
-          </>
+  // 声音开关按钮
+  const renderSoundButton = () => {
+    if (bgVideos.length === 0) return null
+    return (
+      <button
+        onClick={toggleSound}
+        className="absolute top-3 right-3 md:top-4 md:right-4 z-20 w-8 h-8 md:w-10 md:h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg"
+        aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+      >
+        {isMuted ? (
+          <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+        ) : (
+          <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
         )}
+      </button>
+    )
+  }
 
-        {/*  声音开关 */}
-        {bgVideos.length > 0 && (
-          <button
-            onClick={toggleSound}
-            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg"
-            aria-label={isMuted ? 'Unmute video' : 'Mute video'}
-          >
-            {isMuted ? (
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              </svg>
-            )}
-          </button>
-        )}
-        {/*  视频切换按钮 */}
-        {bgVideos.length > 1 && (
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 flex justify-between px-4 pointer-events-none">
-            <button onClick={playPrev}
-              className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg pointer-events-auto"
-              aria-label="上一个视频">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button onClick={playNext}
-              className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg pointer-events-auto"
-              aria-label="下一个视频">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        )}
+  // 视频切换按钮
+  const renderNavButtons = () => {
+    if (bgVideos.length < 2) return null
+    return (
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 flex justify-between px-2 md:px-4 pointer-events-none">
+        <button onClick={playPrev}
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg pointer-events-auto"
+          aria-label="上一个视频">
+          <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button onClick={playNext}
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg pointer-events-auto"
+          aria-label="下一个视频">
+          <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    )
+  }
 
+  // ===== 空状态（无推荐产品） =====
+  if (filteredItems.length === 0) {
+    return (
+      <section className="relative bg-gray-900 text-white overflow-hidden min-h-[420px] md:min-h-[560px] flex items-center">
+        {renderBackground()}
+        {renderSoundButton()}
+        {renderNavButtons()}
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
-          <div className="text-center mb-4">
-            <p className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight drop-shadow-[0_2px_15px_rgba(0,0,0,0.9)]">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+          <div className="text-center">
+            <p className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tight drop-shadow-[0_2px_15px_rgba(0,0,0,0.9)]">
               <span className="text-amber-400">VAPOR</span>
               <span className="text-white">-X</span>
             </p>
-            <p className="mt-1 text-sm md:text-base text-gray-400 font-light tracking-widest uppercase">
+            <p className="mt-1 text-xs md:text-sm lg:text-base text-gray-400 font-light tracking-widest uppercase">
               {t('hero.vaporDesc')}
             </p>
           </div>
 
-          <div className="text-center py-10">
-            <div className="text-6xl mb-4"></div>
-            <h2 className="text-2xl font-bold text-white mb-2">{heroTitle}</h2>
-            <p className="text-gray-500">{t('hero.noProducts')}</p>
+          <div className="text-center py-8 md:py-10">
+            <div className="text-5xl md:text-6xl mb-3 md:mb-4">🚧</div>
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-2">{heroTitle}</h2>
+            <p className="text-sm md:text-base text-gray-400">{t('hero.noProducts')}</p>
           </div>
 
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <div className="mt-4 md:mt-6 flex flex-wrap justify-center gap-2 md:gap-3">
             <Link href="/products"
-              className="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition shadow-lg shadow-amber-500/25">
+              className="inline-flex items-center px-5 py-2.5 md:px-6 md:py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition shadow-lg shadow-amber-500/25 text-sm md:text-base">
               {t('hero.browse')}
             </Link>
             <Link href="/login"
-              className="inline-flex items-center px-6 py-3 border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-black font-semibold rounded-xl transition">
+              className="inline-flex items-center px-5 py-2.5 md:px-6 md:py-3 border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-black font-semibold rounded-xl transition text-sm md:text-base">
               {t('hero.login')}
             </Link>
           </div>
@@ -210,86 +225,23 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
     )
   }
 
+  // ===== 有推荐产品 =====
   const slides = filteredItems
 
   return (
-    <section className="relative bg-gray-900 text-white overflow-hidden min-h-[480px] md:min-h-[560px] flex items-center">
-      {/*  全屏自动播放背景视频 */}
-      {bgVideos.length > 0 && bgVideos[currentVideoIdx] && (
-        <div className="absolute inset-0">
-          <video
-            key={bgVideos[currentVideoIdx].id}
-            ref={el => { videoRefs.current[currentVideoIdx] = el }}
-            src={bgVideos[currentVideoIdx].url}
-            poster={bgVideos[currentVideoIdx].poster || undefined}
-            muted
-            autoPlay
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          {/* 视频遮罩 */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-gray-900/70 to-gray-900/85" />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-transparent to-transparent" />
-        </div>
-      )}
+    <section className="relative bg-gray-900 text-white overflow-hidden min-h-[420px] md:min-h-[560px] flex items-center">
+      {renderBackground()}
+      {renderSoundButton()}
+      {renderNavButtons()}
 
-      {/*  声音开关 */}
-      {bgVideos.length > 0 && (
-        <button
-          onClick={toggleSound}
-          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg"
-          aria-label={isMuted ? 'Unmute video' : 'Mute video'}
-        >
-          {isMuted ? (
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-            </svg>
-          )}
-        </button>
-      )}
-      {/*  视频切换按钮 */}
-      {bgVideos.length > 1 && (
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 flex justify-between px-4 pointer-events-none">
-          <button onClick={playPrev}
-            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg pointer-events-auto"
-            aria-label="上一个视频">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button onClick={playNext}
-            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-black/60 transition shadow-lg pointer-events-auto"
-            aria-label="下一个视频">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-      )}
-
-
-      {/* 没有背景视频时的装饰 */}
-      {bgVideos.length === 0 && (
-        <>
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
-          <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-amber-500/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-400/5 rounded-full blur-3xl" />
-        </>
-      )}
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 w-full">
         {/* 标题 */}
-        <div className="text-center mb-4">
-          <p className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight">
+        <div className="text-center mb-3 md:mb-4">
+          <p className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tight drop-shadow-[0_2px_15px_rgba(0,0,0,0.9)]">
             <span className="text-amber-400">VAPOR</span>
             <span className="text-white">-X</span>
           </p>
-          <p className="mt-1 text-sm md:text-base text-gray-400 font-light tracking-widest uppercase">
+          <p className="mt-1 text-xs md:text-sm lg:text-base text-gray-400 font-light tracking-widest uppercase">
             {t('hero.vaporDesc')}
           </p>
         </div>
@@ -297,47 +249,48 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
         {/* 背景视频标题浮层 */}
         {bgVideos[currentVideoIdx]?.title && (
           <div className="text-center mb-2">
-            <span className="inline-block px-4 py-1 bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 rounded-full text-xs text-amber-300 tracking-wider uppercase">
+            <span className="inline-block px-3 py-0.5 md:px-4 md:py-1 bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 rounded-full text-[10px] md:text-xs text-amber-300 tracking-wider uppercase">
               {bgVideos[currentVideoIdx].title}
             </span>
           </div>
         )}
 
         {/* 新品轮播 */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-lg"></span>
-            <h2 className="text-lg md:text-xl font-bold text-amber-400">{heroTitle}</h2>
+        <div className="flex items-center justify-between mb-2 md:mb-3">
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <span className="text-base md:text-lg">🔥</span>
+            <h2 className="text-sm md:text-lg lg:text-xl font-bold text-amber-400">{heroTitle}</h2>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 md:gap-2">
             <button onClick={() => swiperRef.current?.slidePrev()}
-              className="w-9 h-9 rounded-full bg-gray-800/80 hover:bg-amber-500 border border-gray-700 hover:border-amber-400 flex items-center justify-center transition group"
+              className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gray-800/80 hover:bg-amber-500 border border-gray-700 hover:border-amber-400 flex items-center justify-center transition group"
               aria-label={t('hero.previous')}>
-              <svg className="w-4 h-4 text-gray-400 group-hover:text-black transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3 h-3 md:w-4 md:h-4 text-gray-400 group-hover:text-black transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button onClick={() => swiperRef.current?.slideNext()}
-              className="w-9 h-9 rounded-full bg-gray-800/80 hover:bg-amber-500 border border-gray-700 hover:border-amber-400 flex items-center justify-center transition group"
+              className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gray-800/80 hover:bg-amber-500 border border-gray-700 hover:border-amber-400 flex items-center justify-center transition group"
               aria-label={t('hero.next')}>
-              <svg className="w-4 h-4 text-gray-400 group-hover:text-black transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3 h-3 md:w-4 md:h-4 text-gray-400 group-hover:text-black transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </div>
         </div>
 
-        {/* 产品轮播 */}
+        {/* 产品轮播 - 手机端卡片更小 */}
         <div className="relative">
           <Swiper
             modules={[Autoplay]}
-            spaceBetween={16}
-            slidesPerView={1.2}
+            spaceBetween={10}
+            slidesPerView={1.5}
             breakpoints={{
-              480: { slidesPerView: 2.2 },
-              768: { slidesPerView: 3.2 },
-              1024: { slidesPerView: 4.2 },
-              1280: { slidesPerView: 5 }
+              480: { slidesPerView: 2.2, spaceBetween: 12 },
+              640: { slidesPerView: 2.5, spaceBetween: 14 },
+              768: { slidesPerView: 3.2, spaceBetween: 16 },
+              1024: { slidesPerView: 4.2, spaceBetween: 16 },
+              1280: { slidesPerView: 5, spaceBetween: 16 }
             }}
             autoplay={{ delay: 3000, disableOnInteraction: false }}
             loop={true}
@@ -352,7 +305,7 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
               return (
                 <SwiperSlide key={item.id}>
                   <Link href={href} className="block group">
-                    <div className="relative rounded-xl overflow-hidden bg-gray-800/95 backdrop-blur-md shadow-lg shadow-black/30 border border-gray-700 hover:border-amber-500/50 transition-all duration-300 group">
+                    <div className="relative rounded-lg md:rounded-xl overflow-hidden bg-gray-800/95 backdrop-blur-md shadow-lg shadow-black/30 border border-gray-700 hover:border-amber-500/50 transition-all duration-300 group">
                       <div className="relative w-full" style={{ aspectRatio: '3 / 2' }}>
                         {imgSrc ? (
                           <img
@@ -363,12 +316,12 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gray-800">
-                            <span className="text-4xl opacity-30">{item.videoUrl ? '' : ''}</span>
+                            <span className="text-3xl md:text-4xl opacity-30">📦</span>
                           </div>
                         )}
                       </div>
-                      <div className="p-3">
-                        <p className="text-sm font-semibold text-white truncate group-hover:text-amber-400 transition">
+                      <div className="p-2 md:p-3">
+                        <p className="text-xs md:text-sm font-semibold text-white truncate group-hover:text-amber-400 transition">
                           {name}
                         </p>
                       </div>
@@ -381,13 +334,13 @@ export default function HeroSwiper({ items, heroTitle }: HeroSwiperProps) {
         </div>
 
         {/* 底部按钮 */}
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <div className="mt-4 md:mt-6 flex flex-wrap justify-center gap-2 md:gap-3">
           <Link href="/products"
-            className="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition shadow-lg shadow-amber-500/25">
+            className="inline-flex items-center px-5 py-2.5 md:px-6 md:py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition shadow-lg shadow-amber-500/25 text-sm md:text-base">
             {t('hero.browse')}
           </Link>
           <Link href="/login"
-            className="inline-flex items-center px-6 py-3 border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-black font-semibold rounded-xl transition">
+            className="inline-flex items-center px-5 py-2.5 md:px-6 md:py-3 border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-black font-semibold rounded-xl transition text-sm md:text-base">
             {t('hero.login')}
           </Link>
         </div>

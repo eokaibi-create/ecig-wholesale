@@ -30,19 +30,19 @@ export default async function BrandsPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
+      <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold">{t('brand.title')}</h1>
-          <p className="mt-2 text-lg text-gray-300">{t('brands.desc')}</p>
+          <h1 className="text-2xl md:text-4xl font-bold">{t('brand.title')}</h1>
+          <p className="mt-1 md:mt-2 text-sm md:text-lg text-gray-300">{t('brands.desc')}</p>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           {brands.length === 0 ? (
-            <div className="col-span-full text-center py-20">
-              <div className="text-6xl mb-4"></div>
-              <p className="text-gray-400">{t('brand.noBrands')}</p>
+            <div className="col-span-full text-center py-16 md:py-20">
+              <div className="text-5xl md:text-6xl mb-3 md:mb-4">🏷️</div>
+              <p className="text-sm md:text-base text-gray-400">{t('brand.noBrands')}</p>
             </div>
           ) : (
             brands.map((brand) => {
@@ -51,19 +51,19 @@ export default async function BrandsPage() {
                 <Link
                   key={brand.id}
                   href={`/products?brand=${brand.slug}`}
-                  className="group bg-white rounded-xl border border-gray-200 p-8 text-center hover:border-amber-300 hover:shadow-lg transition-all"
+                  className="group bg-white rounded-lg md:rounded-xl border border-gray-200 p-4 md:p-8 text-center hover:border-amber-300 hover:shadow-lg transition-all"
                 >
-                  <div className="h-16 flex items-center justify-center mb-4">
+                  <div className="h-10 md:h-16 flex items-center justify-center mb-2 md:mb-4">
                     {brand.logo ? (
                       <img src={brand.logo} alt={brand.name} className="h-full w-auto" />
                     ) : (
-                      <span className="text-4xl"></span>
+                      <span className="text-2xl md:text-4xl">🏷️</span>
                     )}
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 group-hover:text-amber-600 transition">
+                  <h3 className="text-sm md:text-lg font-bold text-gray-900 group-hover:text-amber-600 transition">
                     {brand.name}
                   </h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-[10px] md:text-sm text-gray-500 mt-0.5 md:mt-1">
                     {count > 0 ? `${count} ${t('product.productsCount')}` : t('product.comingSoon')}
                   </p>
                 </Link>
@@ -72,12 +72,12 @@ export default async function BrandsPage() {
           )}
         </div>
 
-        <div className="mt-16 bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-10 text-center">
-          <h2 className="text-2xl font-bold text-gray-900">{t('brand.becomePartner')}</h2>
-          <p className="mt-2 text-gray-600 max-w-lg mx-auto">{t('brand.becomeDesc')}</p>
+        <div className="mt-10 md:mt-16 bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl md:rounded-2xl p-6 md:p-10 text-center">
+          <h2 className="text-lg md:text-2xl font-bold text-gray-900">{t('brand.becomePartner')}</h2>
+          <p className="mt-1 md:mt-2 text-sm md:text-base text-gray-600 max-w-lg mx-auto">{t('brand.becomeDesc')}</p>
           <Link
             href="/contact"
-            className="mt-6 inline-block px-8 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition"
+            className="mt-4 md:mt-6 inline-block px-6 py-2.5 md:px-8 md:py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg transition text-sm md:text-base"
           >
             {t('nav.contact')}
           </Link>
