@@ -54,19 +54,6 @@ export default function ProductDetailPage() {
     return { price: product.price, label: 'retail', showMsrp: !!product.msrp, className: 'text-amber-600' }
   }
 
-  const getEnglishDescription = () => {
-    if (lang !== 'en') return product?.description || ''
-    const descMap: Record<string, string> = {
-      'elfbar-bc5000': t('product.elfbarBc5000'),
-      'geek-bar-pulse': t('product.geekBarPulse'),
-      'lost-mary-mo20000-pro': t('product.lostMary'),
-      'raz-tn9000': t('product.razTn9000'),
-      'geek-bar-meloso-mini': t('product.geekBarMelosoMini'),
-      'elfbar-600': t('product.elfbar600'),
-    }
-    return descMap[product?.slug || ''] || product?.description || ''
-  }
-
   useEffect(() => {
     try {
       const infoStr = localStorage.getItem('customer_info')
@@ -101,6 +88,53 @@ export default function ProductDetailPage() {
     load()
   }, [slug])
 
+  // 动态更新页面标题和meta
+  useEffect(() => {
+    if (!product) return
+    const title = `${product.name} - VAPOR-X Wholesale`
+    document.title = title
+    const metaDesc = document.querySelector('meta[name="description"]')
+    if (metaDesc) metaDesc.setAttribute('content', product.shortDesc || product.description || `${product.name} wholesale pricing at VAPOR-X`)
+  }, [product])
+
+  // 构建 JSON-LD 结构化数据
+  const getJsonLd = () => {
+    if (!product) return null
+    const baseUrl = 'https://ecig-wholesale.vercel.app'
+    const display = getDisplayPrice()
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      description: product.shortDesc || product.description,
+      sku: `VAPORX-${product.id}`,
+      mpn: `VAPORX-${product.id}`,
+      brand: product.brand ? {
+        '@type': 'Brand',
+        name: product.brand,
+      } : undefined,
+      image: product.images?.[0] || product.image || undefined,
+      offers: {
+        '@type': 'Offer',
+        price: display.price,
+        priceCurrency: 'USD',
+        availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        url: `${baseUrl}/products/${product.slug}`,
+        hasMerchantReturnPolicy: {
+          '@type': 'MerchantReturnPolicy',
+          applicableCountry: 'US',
+          returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+        },
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'US' },
+        },
+      },
+      category: product.category?.name,
+    }
+  }
+
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="animate-spin w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full" />
@@ -111,22 +145,14 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="max-w-md mx-auto text-center px-4">
-          <div className="text-6xl mb-4 text-gray-300"></div>
+          <div className="text-6xl mb-4 text-gray-300">🔍</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('product.notFound') || 'Product Not Found'}</h2>
           <p className="text-gray-500 mb-6">
             {t('products.emptyDesc') || 'The product you are looking for does not exist or may have been removed.'}
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/products" className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition">
-              {t('product.backToProducts') || 'View All Products'}
-            </Link>
-            <Link href="/admin/settings" className="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition">
-              {t('admin.importData') || 'Import Sample Data'}
-            </Link>
-          </div>
-          <p className="mt-4 text-xs text-gray-400">
-            {t('products.emptyDescHint') || 'Database is empty? Import sample data via the Admin Panel → Settings'}
-          </p>
+          <Link href="/products" className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition inline-block">
+            {t('product.backToProducts') || 'View All Products'}
+          </Link>
         </div>
       </div>
     )
@@ -146,8 +172,35 @@ export default function ProductDetailPage() {
   }
   if (product.videoUrl) allImages.push(product.videoUrl)
 
+  const jsonLd = getJsonLd()
+
   return (
     <div className="bg-white min-h-screen">
+      {/* JSON-LD Structured Data */}
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+
+      {/* BreadcrumbList JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ecig-wholesale.vercel.app/' },
+              { '@type': 'ListItem', position: 2, name: 'Products', item: 'https://ecig-wholesale.vercel.app/products' },
+              { '@type': 'ListItem', position: 3, name: product.category.name, item: `https://ecig-wholesale.vercel.app/products?category=${product.category.slug}` },
+              { '@type': 'ListItem', position: 4, name: product.name },
+            ],
+          })
+        }}
+      />
+
       <div className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="text-sm text-gray-500">
@@ -184,7 +237,7 @@ export default function ProductDetailPage() {
                           i === activeImage ? 'border-amber-500 ring-2 ring-amber-200' : 'border-gray-200 hover:border-gray-400 opacity-70 hover:opacity-100'
                         }`}>
                         {img.match(/\.(mp4|webm|ogg|mov)$/i) || img.includes('video') ? (
-                          <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white text-xl"></div>
+                          <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white text-xl">▶</div>
                         ) : (
                           <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
                         )}
@@ -195,7 +248,7 @@ export default function ProductDetailPage() {
               </>
             ) : (
               <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
-                <div className="text-8xl"></div>
+                <div className="text-8xl">📦</div>
               </div>
             )}
           </div>
@@ -213,8 +266,8 @@ export default function ProductDetailPage() {
               {(() => {
                 const display = getDisplayPrice()
                 return <>
-                  <span className={"text-4xl font-bold " + display.className}>{'\u0024' + Number(display.price).toFixed(2)}</span>
-                  {display.showMsrp && <span className="text-xl text-gray-400 line-through ml-2">{'\u0024' + Number(product.msrp).toFixed(2)}</span>}
+                  <span className={"text-4xl font-bold " + display.className}>${Number(display.price).toFixed(2)}</span>
+                  {display.showMsrp && <span className="text-xl text-gray-400 line-through ml-2">${Number(product.msrp).toFixed(2)}</span>}
                 </>
               })()}
             </div>
@@ -243,10 +296,10 @@ export default function ProductDetailPage() {
             </div>
 
             {/* 产品描述 */}
-            {getEnglishDescription() && (
+            {product.description && (
               <div className="mt-6">
                 <h3 className="font-semibold text-gray-900 mb-2">{t('product.description')}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{getEnglishDescription()}</p>
+                <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{product.description}</p>
               </div>
             )}
 

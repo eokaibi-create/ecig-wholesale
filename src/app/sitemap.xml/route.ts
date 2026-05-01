@@ -24,15 +24,22 @@ export async function GET() {
 
   const today = new Date().toISOString().split('T')[0]
 
-  let xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
 <url>
 <loc>${baseUrl}</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}" />
+<xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}" />
 <lastmod>${today}</lastmod>
 <changefreq>daily</changefreq>
 <priority>1.0</priority>
 </url>
 <url>
 <loc>${baseUrl}/products</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/products" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/products" />
 <lastmod>${today}</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.9</priority>
@@ -44,6 +51,12 @@ export async function GET() {
 <priority>0.8</priority>
 </url>
 <url>
+<loc>${baseUrl}/categories</loc>
+<lastmod>${today}</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
 <loc>${baseUrl}/contact</loc>
 <lastmod>${today}</lastmod>
 <changefreq>monthly</changefreq>
@@ -51,15 +64,23 @@ export async function GET() {
 </url>
 <url>
 <loc>${baseUrl}/login</loc>
-<lastmod>${today}</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.4</priority>
+</url>
+<url>
+<loc>${baseUrl}/register</loc>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
 <url>
-<loc>${baseUrl}/register</loc>
-<lastmod>${today}</lastmod>
+<loc>${baseUrl}/cart</loc>
 <changefreq>monthly</changefreq>
-<priority>0.5</priority>
+<priority>0.3</priority>
+</url>
+<url>
+<loc>${baseUrl}/about</loc>
+<changefreq>monthly</changefreq>
+<priority>0.6</priority>
 </url>`
 
   // 添加分类页面
@@ -82,15 +103,27 @@ export async function GET() {
 </url>`
   }
 
+  // 添加品牌详情页
+  for (const brand of brands) {
+    xml += `
+<url>
+<loc>${baseUrl}/brands/${brand.slug}</loc>
+<changefreq>weekly</changefreq>
+<priority>0.6</priority>
+</url>`
+  }
+
   // 添加产品详情页面
   for (const product of products) {
     const lastmod = product.updatedAt.toISOString().split('T')[0]
     xml += `
 <url>
 <loc>${baseUrl}/products/${product.slug}</loc>
+<xhtml:link rel="alternate" hreflang="zh-CN" href="${baseUrl}/products/${product.slug}" />
+<xhtml:link rel="alternate" hreflang="en-US" href="${baseUrl}/products/${product.slug}" />
 <lastmod>${lastmod}</lastmod>
 <changefreq>weekly</changefreq>
-<priority>0.7</priority>
+<priority>0.8</priority>
 </url>`
   }
 
@@ -99,8 +132,8 @@ export async function GET() {
 
   return new NextResponse(xml, {
     headers: {
-      'Content-Type': 'application/xml',
-      'Cache-Control': 'public, max-age=3600',
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600, s-maxage=86400',
     },
   })
 }
